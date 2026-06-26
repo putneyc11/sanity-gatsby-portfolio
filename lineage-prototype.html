@@ -200,6 +200,61 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .det-col:hover{background:var(--surface-2)}
 .bp-col-tag{display:inline-flex;align-items:center;gap:4px;padding:1px 6px;background:rgba(56,139,253,.1);border:1px solid rgba(56,139,253,.2);border-radius:4px;font-size:10px;color:var(--blue);transition:background .1s;flex-shrink:0;margin-top:2px}
 .det-col:hover .bp-col-tag{background:rgba(56,139,253,.22)}
+
+/* ── INLINE NODE DETAIL (expanded node) ── */
+.node-detail{padding:7px 8px 9px;display:flex;flex-direction:column;gap:5px}
+.nd-card{background:var(--surface-2);border:1px solid var(--border-light);border-radius:7px;padding:7px 8px;cursor:pointer;transition:border-color .12s,background .12s}
+.nd-card:hover{border-color:var(--blue);background:rgba(56,139,253,.06)}
+.nd-card-head{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.nd-card-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim)}
+.nd-card-arrow{margin-left:auto;font-size:13px;color:var(--text-dim);line-height:1}
+.nd-sev{font-size:9.5px;font-weight:600;padding:1px 6px;border-radius:4px;display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+.nd-line{font-size:10.5px;color:var(--text-muted);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.nd-conf{margin-left:auto;font-size:10px;color:var(--text);font-weight:600}
+.nd-conf-cap{font-size:9px;color:var(--text-dim)}
+.nd-spark{display:inline-flex;gap:2px;align-items:center;margin-left:auto}
+.nd-spark i{width:5px;height:8px;border-radius:1px;display:inline-block}
+.nd-conf-bar{height:4px;border-radius:2px;background:var(--bg);overflow:hidden;flex:1;max-width:120px}
+.nd-conf-bar > i{display:block;height:100%;border-radius:2px}
+.nd-explore{margin-top:1px;height:30px;border:1px solid rgba(56,139,253,.4);border-radius:7px;background:rgba(56,139,253,.1);color:var(--blue);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:5px;cursor:pointer;transition:background .12s}
+.nd-explore:hover{background:rgba(56,139,253,.2)}
+
+/* ── DETAIL PANEL VIEW TOGGLE ── */
+.det-toggle{display:flex;gap:2px;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:3px;margin-bottom:14px}
+.det-toggle-btn{flex:1;height:30px;border:none;background:transparent;color:var(--text-muted);font-size:11px;font-weight:600;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .12s;white-space:nowrap}
+.det-toggle-btn:hover{color:var(--text)}
+.det-toggle-btn.on{background:var(--surface-3);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.35)}
+.det-toggle-btn .dt-ico{font-size:12px}
+
+/* gauge + impact widgets */
+.gauge{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+.gauge-ring{width:56px;height:56px;flex-shrink:0;position:relative;border-radius:50%}
+.gauge-hole{position:absolute;inset:6px;background:var(--surface);border-radius:50%}
+.gauge-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--text)}
+.gauge-label{font-size:11px;color:var(--text-muted);line-height:1.45}
+.sev-banner{display:flex;align-items:center;gap:9px;padding:11px;border-radius:9px;margin-bottom:14px;font-size:13px;font-weight:600}
+.scope-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:16px}
+.scope-cell{background:var(--surface-2);border:1px solid var(--border-light);border-radius:8px;padding:9px 10px}
+.scope-cell .sc-num{font-size:19px;font-weight:700;color:var(--text);line-height:1.1}
+.scope-cell .sc-lbl{font-size:10px;color:var(--text-muted);margin-top:2px}
+.spread-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:11px}
+.spread-row .sp-name{width:84px;flex-shrink:0;font-weight:600}
+.spread-bar{flex:1;height:7px;background:var(--bg);border-radius:4px;overflow:hidden}
+.spread-bar > i{display:block;height:100%;border-radius:4px;transition:width .3s}
+.spread-row .sp-val{width:22px;text-align:right;color:var(--text-dim);flex-shrink:0;font-variant-numeric:tabular-nums}
+.impact-item{display:flex;align-items:center;gap:7px;padding:7px 0;border-bottom:1px solid var(--border-light);font-size:12px}
+.impact-item:last-child{border-bottom:none}
+.impact-item .ii-name{font-family:monospace;font-size:12px;color:var(--text)}
+.risk-tag{font-size:8.5px;font-weight:700;padding:2px 6px;border-radius:4px;flex-shrink:0;margin-left:auto;letter-spacing:.04em}
+.path-chip{display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--border-light)}
+.path-chip:last-child{border-bottom:none}
+.path-chip .pc-node{font-family:monospace;padding:2px 6px;background:var(--surface-2);border:1px solid var(--border-light);border-radius:4px;font-size:10px;color:var(--text-muted)}
+.path-chip .pc-node.pc-end{color:var(--amber);border-color:rgba(227,179,65,.3)}
+.path-chip .pc-arrow{color:var(--text-dim);font-size:9px}
+.det-team{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 9px;background:var(--surface-2);border:1px solid var(--border-light);border-radius:12px;color:var(--text-muted);margin:0 4px 5px 0}
+.det-note{font-size:11px;color:var(--text-muted);line-height:1.5;background:var(--surface-2);border:1px solid var(--border-light);border-left:2px solid var(--blue);border-radius:6px;padding:9px 10px;margin-bottom:14px}
+.det-step{display:flex;gap:8px;padding:6px 0;font-size:12px;color:var(--text-muted);align-items:flex-start}
+.det-step .ds-num{width:17px;height:17px;border-radius:50%;background:var(--surface-3);color:var(--text);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
 </style>
 </head>
 <body>
@@ -326,6 +381,117 @@ const NODES = [
    cols:[{n:'customer_count',t:'MEASURE'},{n:'ltv_avg',t:'MEASURE'},{n:'segment',t:'DIMENSION'},{n:'churn_rate',t:'MEASURE'}]},
   {id:'product_report', layer:4, label:'Product Analytics', schema:'tableau', db:'bi_layer', type:'report', rows:null, updated:'2h ago',  fresh:false,
    cols:[{n:'product_name',t:'DIMENSION'},{n:'category',t:'DIMENSION'},{n:'revenue',t:'MEASURE'},{n:'units_sold',t:'MEASURE'}]},
+
+  // ════ ADDITIONAL NODES (scale demo) ════════════════════════
+  // ── RAW (+9) ──
+  {id:'raw_events',        layer:0, label:'events',        schema:'segment',    db:'fivetran', type:'source', rows:'142M', updated:'8m ago',  fresh:true,
+   cols:[{n:'event_id',t:'STRING',k:true},{n:'user_id',t:'STRING'},{n:'event_name',t:'STRING'},{n:'timestamp',t:'TIMESTAMP'},{n:'session_id',t:'STRING'},{n:'properties',t:'JSON'}]},
+  {id:'raw_sessions',      layer:0, label:'sessions',      schema:'segment',    db:'fivetran', type:'source', rows:'38M',  updated:'8m ago',  fresh:true,
+   cols:[{n:'session_id',t:'STRING',k:true},{n:'user_id',t:'STRING'},{n:'started_at',t:'TIMESTAMP'},{n:'ended_at',t:'TIMESTAMP'},{n:'device',t:'STRING'},{n:'source',t:'STRING'}]},
+  {id:'raw_subscriptions', layer:0, label:'subscriptions', schema:'stripe',     db:'fivetran', type:'source', rows:'420K', updated:'1h ago',  fresh:true,
+   cols:[{n:'subscription_id',t:'STRING',k:true},{n:'customer_id',t:'STRING'},{n:'plan_id',t:'STRING'},{n:'status',t:'STRING'},{n:'current_period_start',t:'TIMESTAMP'},{n:'current_period_end',t:'TIMESTAMP'},{n:'mrr',t:'NUMERIC'}]},
+  {id:'raw_invoices',      layer:0, label:'invoices',      schema:'stripe',     db:'fivetran', type:'source', rows:'2.1M', updated:'1h ago',  fresh:true,
+   cols:[{n:'invoice_id',t:'STRING',k:true},{n:'customer_id',t:'STRING'},{n:'subscription_id',t:'STRING'},{n:'amount_due',t:'NUMERIC'},{n:'amount_paid',t:'NUMERIC'},{n:'status',t:'STRING'},{n:'created_at',t:'TIMESTAMP'}]},
+  {id:'raw_tickets',       layer:0, label:'tickets',       schema:'zendesk',    db:'fivetran', type:'source', rows:'310K', updated:'12h ago', fresh:false,
+   cols:[{n:'ticket_id',t:'STRING',k:true},{n:'customer_id',t:'STRING'},{n:'subject',t:'STRING'},{n:'status',t:'STRING'},{n:'priority',t:'STRING'},{n:'created_at',t:'TIMESTAMP'},{n:'resolved_at',t:'TIMESTAMP'}]},
+  {id:'raw_campaigns',     layer:0, label:'campaigns',     schema:'hubspot',    db:'fivetran', type:'source', rows:'4.2K', updated:'3h ago',  fresh:true,
+   cols:[{n:'campaign_id',t:'STRING',k:true},{n:'name',t:'STRING'},{n:'channel',t:'STRING'},{n:'start_date',t:'DATE'},{n:'end_date',t:'DATE'},{n:'budget',t:'NUMERIC'}]},
+  {id:'raw_ad_spend',      layer:0, label:'ad_spend',      schema:'google_ads', db:'fivetran', type:'source', rows:'890K', updated:'5h ago',  fresh:false,
+   cols:[{n:'ad_id',t:'STRING',k:true},{n:'campaign_id',t:'STRING'},{n:'date',t:'DATE'},{n:'impressions',t:'INTEGER'},{n:'clicks',t:'INTEGER'},{n:'spend',t:'NUMERIC'}]},
+  {id:'raw_shipments',     layer:0, label:'shipments',     schema:'shippo',     db:'fivetran', type:'source', rows:'11.8M',updated:'2h ago',  fresh:true,
+   cols:[{n:'shipment_id',t:'STRING',k:true},{n:'order_id',t:'STRING'},{n:'carrier',t:'STRING'},{n:'status',t:'STRING'},{n:'shipped_at',t:'TIMESTAMP'},{n:'delivered_at',t:'TIMESTAMP'}]},
+  {id:'raw_reviews',       layer:0, label:'reviews',       schema:'yotpo',      db:'fivetran', type:'source', rows:'670K', updated:'4h ago',  fresh:true,
+   cols:[{n:'review_id',t:'STRING',k:true},{n:'product_id',t:'STRING'},{n:'customer_id',t:'STRING'},{n:'rating',t:'INTEGER'},{n:'body',t:'STRING'},{n:'created_at',t:'TIMESTAMP'}]},
+
+  // ── STAGING (+9) ──
+  {id:'stg_events',        layer:1, label:'stg_events',        schema:'staging', db:'prod_db', type:'model', rows:'142M', updated:'7m ago',  fresh:true,
+   cols:[{n:'event_id',t:'STRING',k:true},{n:'user_id',t:'STRING'},{n:'event_name',t:'STRING'},{n:'occurred_at',t:'TIMESTAMP'},{n:'session_id',t:'STRING'}]},
+  {id:'stg_sessions',      layer:1, label:'stg_sessions',      schema:'staging', db:'prod_db', type:'model', rows:'38M',  updated:'7m ago',  fresh:true,
+   cols:[{n:'session_id',t:'STRING',k:true},{n:'user_id',t:'STRING'},{n:'started_at',t:'TIMESTAMP'},{n:'duration_sec',t:'INTEGER'},{n:'device',t:'STRING'},{n:'source',t:'STRING'}]},
+  {id:'stg_subscriptions', layer:1, label:'stg_subscriptions', schema:'staging', db:'prod_db', type:'model', rows:'420K', updated:'1h ago',  fresh:true,
+   cols:[{n:'subscription_id',t:'STRING',k:true},{n:'customer_id',t:'STRING'},{n:'plan_id',t:'STRING'},{n:'status',t:'STRING'},{n:'mrr_usd',t:'NUMERIC'},{n:'period_start',t:'TIMESTAMP'},{n:'period_end',t:'TIMESTAMP'}]},
+  {id:'stg_invoices',      layer:1, label:'stg_invoices',      schema:'staging', db:'prod_db', type:'model', rows:'2.1M', updated:'1h ago',  fresh:true,
+   cols:[{n:'invoice_id',t:'STRING',k:true},{n:'customer_id',t:'STRING'},{n:'subscription_id',t:'STRING'},{n:'amount_due_usd',t:'NUMERIC'},{n:'amount_paid_usd',t:'NUMERIC'},{n:'is_paid',t:'BOOLEAN'}]},
+  {id:'stg_tickets',       layer:1, label:'stg_tickets',       schema:'staging', db:'prod_db', type:'model', rows:'310K', updated:'12h ago', fresh:false,
+   cols:[{n:'ticket_id',t:'STRING',k:true},{n:'customer_id',t:'STRING'},{n:'status',t:'STRING'},{n:'priority',t:'STRING'},{n:'created_at',t:'TIMESTAMP'},{n:'resolution_hours',t:'NUMERIC'}]},
+  {id:'stg_campaigns',     layer:1, label:'stg_campaigns',     schema:'staging', db:'prod_db', type:'model', rows:'4.2K', updated:'3h ago',  fresh:true,
+   cols:[{n:'campaign_id',t:'STRING',k:true},{n:'name',t:'STRING'},{n:'channel',t:'STRING'},{n:'budget_usd',t:'NUMERIC'},{n:'start_date',t:'DATE'}]},
+  {id:'stg_ad_spend',      layer:1, label:'stg_ad_spend',      schema:'staging', db:'prod_db', type:'model', rows:'890K', updated:'5h ago',  fresh:false,
+   cols:[{n:'ad_id',t:'STRING',k:true},{n:'campaign_id',t:'STRING'},{n:'date',t:'DATE'},{n:'impressions',t:'INTEGER'},{n:'clicks',t:'INTEGER'},{n:'spend_usd',t:'NUMERIC'}]},
+  {id:'stg_shipments',     layer:1, label:'stg_shipments',     schema:'staging', db:'prod_db', type:'model', rows:'11.8M',updated:'2h ago',  fresh:true,
+   cols:[{n:'shipment_id',t:'STRING',k:true},{n:'order_id',t:'STRING'},{n:'carrier',t:'STRING'},{n:'status',t:'STRING'},{n:'transit_days',t:'NUMERIC'}]},
+  {id:'stg_reviews',       layer:1, label:'stg_reviews',       schema:'staging', db:'prod_db', type:'model', rows:'670K', updated:'4h ago',  fresh:true,
+   cols:[{n:'review_id',t:'STRING',k:true},{n:'product_id',t:'STRING'},{n:'customer_id',t:'STRING'},{n:'rating',t:'INTEGER'},{n:'sentiment',t:'STRING'}]},
+
+  // ── INTERMEDIATE (+11) ──
+  {id:'int_sessions_enriched',    layer:2, label:'int_sessions_enriched',    schema:'intermediate', db:'prod_db', type:'model', rows:'38M',  updated:'30m ago', fresh:true,
+   cols:[{n:'session_id',t:'STRING',k:true},{n:'user_id',t:'STRING'},{n:'customer_id',t:'STRING'},{n:'duration_sec',t:'INTEGER'},{n:'page_count',t:'INTEGER'},{n:'converted',t:'BOOLEAN'}]},
+  {id:'int_subscription_periods', layer:2, label:'int_subscription_periods', schema:'intermediate', db:'prod_db', type:'model', rows:'1.2M', updated:'50m ago', fresh:true,
+   cols:[{n:'subscription_id',t:'STRING',k:true},{n:'customer_id',t:'STRING'},{n:'mrr_usd',t:'NUMERIC'},{n:'period_start',t:'TIMESTAMP'},{n:'period_end',t:'TIMESTAMP'},{n:'is_active',t:'BOOLEAN'}]},
+  {id:'int_marketing_attribution',layer:2, label:'int_marketing_attribution',schema:'intermediate', db:'prod_db', type:'model', rows:'3.4M', updated:'1h ago',  fresh:true,
+   cols:[{n:'touch_id',t:'STRING',k:true},{n:'customer_id',t:'STRING'},{n:'campaign_id',t:'STRING'},{n:'channel',t:'STRING'},{n:'attributed_revenue_usd',t:'NUMERIC'}]},
+  {id:'int_ticket_resolution',    layer:2, label:'int_ticket_resolution',    schema:'intermediate', db:'prod_db', type:'model', rows:'310K', updated:'12h ago', fresh:false,
+   cols:[{n:'ticket_id',t:'STRING',k:true},{n:'customer_id',t:'STRING'},{n:'resolution_hours',t:'NUMERIC'},{n:'is_escalated',t:'BOOLEAN'},{n:'csat',t:'NUMERIC'}]},
+  {id:'int_shipment_tracking',    layer:2, label:'int_shipment_tracking',    schema:'intermediate', db:'prod_db', type:'model', rows:'11.8M',updated:'1h ago',  fresh:true,
+   cols:[{n:'shipment_id',t:'STRING',k:true},{n:'order_id',t:'STRING'},{n:'carrier',t:'STRING'},{n:'transit_days',t:'NUMERIC'},{n:'is_late',t:'BOOLEAN'}]},
+  {id:'int_product_performance',  layer:2, label:'int_product_performance',  schema:'intermediate', db:'prod_db', type:'model', rows:'45K',  updated:'1h ago',  fresh:true,
+   cols:[{n:'product_id',t:'STRING',k:true},{n:'units_sold',t:'INTEGER'},{n:'revenue_usd',t:'NUMERIC'},{n:'return_rate',t:'NUMERIC'},{n:'avg_rating',t:'NUMERIC'}]},
+  {id:'int_revenue_recognition',  layer:2, label:'int_revenue_recognition',  schema:'intermediate', db:'prod_db', type:'model', rows:'2.4M', updated:'55m ago', fresh:true,
+   cols:[{n:'recognition_id',t:'STRING',k:true},{n:'customer_id',t:'STRING'},{n:'period',t:'STRING'},{n:'recognized_usd',t:'NUMERIC'},{n:'deferred_usd',t:'NUMERIC'}]},
+  {id:'int_customer_events',      layer:2, label:'int_customer_events',      schema:'intermediate', db:'prod_db', type:'model', rows:'890K', updated:'35m ago', fresh:true,
+   cols:[{n:'customer_id',t:'STRING',k:true},{n:'event_count',t:'INTEGER'},{n:'last_event_at',t:'TIMESTAMP'},{n:'top_event',t:'STRING'}]},
+  {id:'int_ad_performance',       layer:2, label:'int_ad_performance',       schema:'intermediate', db:'prod_db', type:'model', rows:'890K', updated:'5h ago',  fresh:false,
+   cols:[{n:'ad_id',t:'STRING',k:true},{n:'campaign_id',t:'STRING'},{n:'ctr',t:'NUMERIC'},{n:'cpc_usd',t:'NUMERIC'},{n:'roas',t:'NUMERIC'}]},
+  {id:'int_invoice_lines',        layer:2, label:'int_invoice_lines',        schema:'intermediate', db:'prod_db', type:'model', rows:'6.8M', updated:'1h ago',  fresh:true,
+   cols:[{n:'line_id',t:'STRING',k:true},{n:'invoice_id',t:'STRING'},{n:'customer_id',t:'STRING'},{n:'amount_usd',t:'NUMERIC'},{n:'line_type',t:'STRING'}]},
+  {id:'int_review_sentiment',     layer:2, label:'int_review_sentiment',     schema:'intermediate', db:'prod_db', type:'model', rows:'670K', updated:'4h ago',  fresh:true,
+   cols:[{n:'review_id',t:'STRING',k:true},{n:'product_id',t:'STRING'},{n:'rating',t:'INTEGER'},{n:'sentiment_score',t:'NUMERIC'},{n:'topic',t:'STRING'}]},
+
+  // ── MARTS (+11) ──
+  {id:'fct_payments',      layer:3, label:'fct_payments',      schema:'marts', db:'prod_db', type:'mart', rows:'15.1M',updated:'40m ago', fresh:true,
+   cols:[{n:'payment_id',t:'STRING',k:true},{n:'order_id',t:'STRING'},{n:'customer_id',t:'STRING'},{n:'amount_usd',t:'NUMERIC'},{n:'is_paid',t:'BOOLEAN'},{n:'gateway',t:'STRING'},{n:'payment_date',t:'DATE'}]},
+  {id:'fct_subscriptions', layer:3, label:'fct_subscriptions', schema:'marts', db:'prod_db', type:'mart', rows:'420K', updated:'45m ago', fresh:true,
+   cols:[{n:'subscription_id',t:'STRING',k:true},{n:'customer_id',t:'STRING'},{n:'mrr_usd',t:'NUMERIC'},{n:'status',t:'STRING'},{n:'started_at',t:'TIMESTAMP'},{n:'churned_at',t:'TIMESTAMP'}]},
+  {id:'fct_sessions',      layer:3, label:'fct_sessions',      schema:'marts', db:'prod_db', type:'mart', rows:'38M',  updated:'25m ago', fresh:true,
+   cols:[{n:'session_id',t:'STRING',k:true},{n:'customer_id',t:'STRING'},{n:'duration_sec',t:'INTEGER'},{n:'page_count',t:'INTEGER'},{n:'converted',t:'BOOLEAN'},{n:'session_date',t:'DATE'}]},
+  {id:'dim_accounts',      layer:3, label:'dim_accounts',      schema:'marts', db:'prod_db', type:'mart', rows:'234K', updated:'45m ago', fresh:true,
+   cols:[{n:'account_id',t:'STRING',k:true},{n:'account_name',t:'STRING'},{n:'arr_usd',t:'NUMERIC'},{n:'account_type',t:'STRING'},{n:'csm',t:'STRING'}]},
+  {id:'dim_dates',         layer:3, label:'dim_dates',         schema:'marts', db:'prod_db', type:'mart', rows:'3.6K', updated:'1d ago',  fresh:true,
+   cols:[{n:'date_key',t:'STRING',k:true},{n:'date',t:'DATE'},{n:'day_of_week',t:'STRING'},{n:'month',t:'STRING'},{n:'quarter',t:'STRING'},{n:'year',t:'INTEGER'},{n:'is_holiday',t:'BOOLEAN'}]},
+  {id:'fct_tickets',       layer:3, label:'fct_tickets',       schema:'marts', db:'prod_db', type:'mart', rows:'310K', updated:'12h ago', fresh:false,
+   cols:[{n:'ticket_id',t:'STRING',k:true},{n:'customer_id',t:'STRING'},{n:'resolution_hours',t:'NUMERIC'},{n:'csat',t:'NUMERIC'},{n:'is_escalated',t:'BOOLEAN'},{n:'ticket_date',t:'DATE'}]},
+  {id:'fct_marketing_spend',layer:3,label:'fct_marketing_spend',schema:'marts',db:'prod_db', type:'mart', rows:'894K', updated:'1h ago',  fresh:true,
+   cols:[{n:'spend_id',t:'STRING',k:true},{n:'campaign_id',t:'STRING'},{n:'channel',t:'STRING'},{n:'spend_usd',t:'NUMERIC'},{n:'attributed_revenue_usd',t:'NUMERIC'},{n:'date',t:'DATE'}]},
+  {id:'dim_campaigns',     layer:3, label:'dim_campaigns',     schema:'marts', db:'prod_db', type:'mart', rows:'4.2K', updated:'3h ago',  fresh:true,
+   cols:[{n:'campaign_id',t:'STRING',k:true},{n:'name',t:'STRING'},{n:'channel',t:'STRING'},{n:'budget_usd',t:'NUMERIC'},{n:'status',t:'STRING'}]},
+  {id:'fct_shipments',     layer:3, label:'fct_shipments',     schema:'marts', db:'prod_db', type:'mart', rows:'11.8M',updated:'1h ago',  fresh:true,
+   cols:[{n:'shipment_id',t:'STRING',k:true},{n:'order_id',t:'STRING'},{n:'carrier',t:'STRING'},{n:'transit_days',t:'NUMERIC'},{n:'is_late',t:'BOOLEAN'},{n:'ship_date',t:'DATE'}]},
+  {id:'fct_reviews',       layer:3, label:'fct_reviews',       schema:'marts', db:'prod_db', type:'mart', rows:'670K', updated:'4h ago',  fresh:true,
+   cols:[{n:'review_id',t:'STRING',k:true},{n:'product_id',t:'STRING'},{n:'customer_id',t:'STRING'},{n:'rating',t:'INTEGER'},{n:'sentiment_score',t:'NUMERIC'},{n:'review_date',t:'DATE'}]},
+  {id:'fct_revenue',       layer:3, label:'fct_revenue',       schema:'marts', db:'prod_db', type:'mart', rows:'2.4M', updated:'50m ago', fresh:true,
+   cols:[{n:'revenue_id',t:'STRING',k:true},{n:'customer_id',t:'STRING'},{n:'period',t:'STRING'},{n:'recognized_usd',t:'NUMERIC'},{n:'deferred_usd',t:'NUMERIC'},{n:'mrr_usd',t:'NUMERIC'}]},
+
+  // ── REPORTING (+10) ──
+  {id:'marketing_roi',      layer:4, label:'Marketing ROI',      schema:'looker',  db:'bi_layer', type:'report', rows:null, updated:'1h ago',  fresh:true,
+   cols:[{n:'spend',t:'MEASURE'},{n:'attributed_revenue',t:'MEASURE'},{n:'roas',t:'MEASURE'},{n:'channel',t:'DIMENSION'}]},
+  {id:'subscription_metrics',layer:4,label:'Subscription Metrics',schema:'looker', db:'bi_layer', type:'report', rows:null, updated:'45m ago', fresh:true,
+   cols:[{n:'mrr',t:'MEASURE'},{n:'active_subs',t:'MEASURE'},{n:'churn_rate',t:'MEASURE'},{n:'plan',t:'DIMENSION'}]},
+  {id:'support_analytics',  layer:4, label:'Support Analytics',  schema:'tableau', db:'bi_layer', type:'report', rows:null, updated:'12h ago', fresh:false,
+   cols:[{n:'ticket_count',t:'MEASURE'},{n:'avg_resolution',t:'MEASURE'},{n:'csat',t:'MEASURE'},{n:'priority',t:'DIMENSION'}]},
+  {id:'shipping_dash',      layer:4, label:'Shipping Dashboard', schema:'looker',  db:'bi_layer', type:'report', rows:null, updated:'1h ago',  fresh:true,
+   cols:[{n:'shipment_count',t:'MEASURE'},{n:'avg_transit',t:'MEASURE'},{n:'late_rate',t:'MEASURE'},{n:'carrier',t:'DIMENSION'}]},
+  {id:'exec_summary',       layer:4, label:'Executive Summary',  schema:'looker',  db:'bi_layer', type:'report', rows:null, updated:'30m ago', fresh:true,
+   cols:[{n:'gmv',t:'MEASURE'},{n:'mrr',t:'MEASURE'},{n:'customer_count',t:'MEASURE'},{n:'date',t:'DIMENSION'}]},
+  {id:'churn_analysis',     layer:4, label:'Churn Analysis',     schema:'looker',  db:'bi_layer', type:'report', rows:null, updated:'45m ago', fresh:true,
+   cols:[{n:'churn_rate',t:'MEASURE'},{n:'at_risk_count',t:'MEASURE'},{n:'segment',t:'DIMENSION'}]},
+  {id:'cohort_report',      layer:4, label:'Cohort Report',      schema:'tableau', db:'bi_layer', type:'report', rows:null, updated:'2h ago',  fresh:true,
+   cols:[{n:'cohort',t:'DIMENSION'},{n:'retention',t:'MEASURE'},{n:'ltv',t:'MEASURE'}]},
+  {id:'ad_performance',     layer:4, label:'Ad Performance',     schema:'tableau', db:'bi_layer', type:'report', rows:null, updated:'5h ago',  fresh:false,
+   cols:[{n:'impressions',t:'MEASURE'},{n:'clicks',t:'MEASURE'},{n:'ctr',t:'MEASURE'},{n:'campaign',t:'DIMENSION'}]},
+  {id:'finance_pnl',        layer:4, label:'Finance P&L',        schema:'looker',  db:'bi_layer', type:'report', rows:null, updated:'50m ago', fresh:true,
+   cols:[{n:'revenue',t:'MEASURE'},{n:'recognized',t:'MEASURE'},{n:'deferred',t:'MEASURE'},{n:'period',t:'DIMENSION'}]},
+  {id:'review_insights',    layer:4, label:'Review Insights',    schema:'tableau', db:'bi_layer', type:'report', rows:null, updated:'4h ago',  fresh:true,
+   cols:[{n:'avg_rating',t:'MEASURE'},{n:'review_count',t:'MEASURE'},{n:'sentiment',t:'MEASURE'},{n:'category',t:'DIMENSION'}]},
 ];
 
 const EDGES = [
@@ -355,6 +521,78 @@ const EDGES = [
   {f:'dim_customers', t:'customer_360'},
   {f:'fct_orders',    t:'product_report'},
   {f:'dim_products',  t:'product_report'},
+
+  // ════ ADDITIONAL EDGES (scale demo) ════════════════════════
+  // raw → staging
+  {f:'raw_events',        t:'stg_events'},
+  {f:'raw_sessions',      t:'stg_sessions'},
+  {f:'raw_subscriptions', t:'stg_subscriptions'},
+  {f:'raw_invoices',      t:'stg_invoices'},
+  {f:'raw_tickets',       t:'stg_tickets'},
+  {f:'raw_campaigns',     t:'stg_campaigns'},
+  {f:'raw_ad_spend',      t:'stg_ad_spend'},
+  {f:'raw_shipments',     t:'stg_shipments'},
+  {f:'raw_reviews',       t:'stg_reviews'},
+  // staging → intermediate
+  {f:'stg_events',        t:'int_sessions_enriched'},
+  {f:'stg_sessions',      t:'int_sessions_enriched'},
+  {f:'stg_events',        t:'int_customer_events'},
+  {f:'stg_subscriptions', t:'int_subscription_periods'},
+  {f:'stg_invoices',      t:'int_invoice_lines'},
+  {f:'stg_subscriptions', t:'int_revenue_recognition'},
+  {f:'stg_invoices',      t:'int_revenue_recognition'},
+  {f:'stg_campaigns',     t:'int_marketing_attribution'},
+  {f:'stg_ad_spend',      t:'int_marketing_attribution'},
+  {f:'stg_ad_spend',      t:'int_ad_performance'},
+  {f:'stg_campaigns',     t:'int_ad_performance'},
+  {f:'stg_tickets',       t:'int_ticket_resolution'},
+  {f:'stg_shipments',     t:'int_shipment_tracking'},
+  {f:'stg_products',      t:'int_product_performance'},
+  {f:'stg_orders',        t:'int_product_performance'},
+  {f:'stg_reviews',       t:'int_review_sentiment'},
+  // intermediate → marts
+  {f:'int_payment_enriched',     t:'fct_payments'},
+  {f:'int_subscription_periods', t:'fct_subscriptions'},
+  {f:'int_sessions_enriched',    t:'fct_sessions'},
+  {f:'stg_accounts',             t:'dim_accounts'},
+  {f:'int_marketing_attribution',t:'fct_marketing_spend'},
+  {f:'int_ad_performance',       t:'fct_marketing_spend'},
+  {f:'stg_campaigns',            t:'dim_campaigns'},
+  {f:'int_ticket_resolution',    t:'fct_tickets'},
+  {f:'int_shipment_tracking',    t:'fct_shipments'},
+  {f:'int_review_sentiment',     t:'fct_reviews'},
+  {f:'int_revenue_recognition',  t:'fct_revenue'},
+  {f:'int_invoice_lines',        t:'fct_revenue'},
+  {f:'int_product_performance',  t:'dim_products'},
+  {f:'int_customer_events',      t:'dim_customers'},
+  // marts → reporting
+  {f:'fct_marketing_spend', t:'marketing_roi'},
+  {f:'dim_campaigns',       t:'marketing_roi'},
+  {f:'fct_orders',          t:'marketing_roi'},
+  {f:'fct_subscriptions',   t:'subscription_metrics'},
+  {f:'dim_customers',       t:'subscription_metrics'},
+  {f:'fct_tickets',         t:'support_analytics'},
+  {f:'dim_customers',       t:'support_analytics'},
+  {f:'fct_shipments',       t:'shipping_dash'},
+  {f:'fct_orders',          t:'shipping_dash'},
+  {f:'fct_orders',          t:'exec_summary'},
+  {f:'fct_revenue',         t:'exec_summary'},
+  {f:'dim_customers',       t:'exec_summary'},
+  {f:'fct_subscriptions',   t:'exec_summary'},
+  {f:'dim_dates',           t:'exec_summary'},
+  {f:'dim_customers',       t:'churn_analysis'},
+  {f:'fct_subscriptions',   t:'churn_analysis'},
+  {f:'fct_sessions',        t:'churn_analysis'},
+  {f:'dim_customers',       t:'cohort_report'},
+  {f:'fct_orders',          t:'cohort_report'},
+  {f:'fct_marketing_spend', t:'ad_performance'},
+  {f:'dim_campaigns',       t:'ad_performance'},
+  {f:'fct_revenue',         t:'finance_pnl'},
+  {f:'fct_payments',        t:'finance_pnl'},
+  {f:'fct_reviews',         t:'review_insights'},
+  {f:'dim_products',        t:'review_insights'},
+  {f:'fct_sessions',        t:'revenue_dash'},
+  {f:'fct_payments',        t:'revenue_dash'},
 ];
 
 // Column-level lineage (simplified subset)
@@ -375,6 +613,16 @@ const COL_EDGES = [
   {f:'int_customer_orders.lifetime_value',t:'dim_customers.ltv_usd'},
   {f:'fct_orders.gmv_usd',      t:'revenue_dash.gmv'},
   {f:'fct_orders.order_id',     t:'revenue_dash.order_count', note:'COUNT(DISTINCT)'},
+  // ── subscription revenue chain ──
+  {f:'raw_subscriptions.mrr',   t:'stg_subscriptions.mrr_usd', note:'currency_convert()'},
+  {f:'stg_subscriptions.mrr_usd',t:'int_subscription_periods.mrr_usd'},
+  {f:'int_subscription_periods.mrr_usd',t:'fct_subscriptions.mrr_usd'},
+  {f:'fct_subscriptions.mrr_usd',t:'subscription_metrics.mrr', note:'SUM()'},
+  // ── marketing attribution chain ──
+  {f:'raw_ad_spend.spend',      t:'stg_ad_spend.spend_usd',   note:'currency_convert()'},
+  {f:'stg_ad_spend.spend_usd',  t:'int_marketing_attribution.attributed_revenue_usd', note:'attribution_model()'},
+  {f:'int_marketing_attribution.attributed_revenue_usd',t:'fct_marketing_spend.attributed_revenue_usd'},
+  {f:'fct_marketing_spend.attributed_revenue_usd',t:'marketing_roi.attributed_revenue', note:'SUM()'},
 ];
 
 // ═══════════════════════════════════════════════════════════
@@ -581,9 +829,10 @@ const NODE_W    = 204;
 const LAYER_W   = 270;   // gap between layer centers
 const LAYER_X0  = 180;   // first layer center x
 const NODE_H    = 66;    // collapsed node height
+const EXPAND_H  = 250;   // extra height when a node is expanded inline
 const COL_H     = 24;    // height per column row
 const COLS_DEF  = 4;     // columns shown when expanded (before "more")
-const ROW_GAP   = 18;    // gap between nodes vertically
+const ROW_GAP   = 16;    // gap between nodes vertically
 const GRAPH_TOP = 70;    // top margin for layer labels
 
 const nodeById = {};
@@ -596,20 +845,30 @@ NODES.forEach(n => {
   byLayer[n.layer].push(n);
 });
 
-// Assign x/y
-NODES.forEach(n => {
-  const group = byLayer[n.layer];
-  const idx   = group.indexOf(n);
-  const count = group.length;
-  const totalH = count * NODE_H + (count - 1) * ROW_GAP;
-  const startY = GRAPH_TOP + 60 + Math.max(0, (460 - totalH) / 2);
-  n.x = LAYER_X0 + n.layer * LAYER_W;
-  n.y = startY + idx * (NODE_H + ROW_GAP);
-  n.baseY = n.y;
+// Collapsed-layout heights, used to vertically center each layer.
+const collapsedLayerH = lyr => {
+  const g = byLayer[lyr] || [];
+  return g.length * NODE_H + Math.max(0, g.length - 1) * ROW_GAP;
+};
+let maxCollapsedH = 0;
+Object.keys(byLayer).forEach(l => { maxCollapsedH = Math.max(maxCollapsedH, collapsedLayerH(l)); });
+
+// Assign x and baseY (collapsed positions; computeY restacks for expansion)
+Object.keys(byLayer).forEach(l => {
+  const group  = byLayer[l];
+  const startY = GRAPH_TOP + 50 + (maxCollapsedH - collapsedLayerH(l)) / 2;
+  group.forEach((n, idx) => {
+    n.x     = LAYER_X0 + n.layer * LAYER_W;
+    n.baseY = startY + idx * (NODE_H + ROW_GAP);
+    n.y     = n.baseY;
+  });
 });
 
-const CANVAS_W = LAYER_X0 + 4 * LAYER_W + 200;
-const CANVAS_H = 800;
+const maxLayerCount = Math.max(...Object.values(byLayer).map(g => g.length));
+const CANVAS_W = LAYER_X0 + 4 * LAYER_W + 230;
+const CANVAS_H = GRAPH_TOP + 50 + maxCollapsedH + 90;
+// Generous draw height so expanded nodes never clip the SVG / minimap.
+const DRAW_H   = CANVAS_H + maxLayerCount * EXPAND_H + 120;
 
 // ═══════════════════════════════════════════════════════════
 // STATE
@@ -622,6 +881,8 @@ const S = {
   hoverEdge:       null,
   hoverCol:        null,   // 'nodeId.colName'
   selCol:          null,   // 'nodeId.colName'
+  detailNode:      null,   // node currently shown in the sidebar
+  detailView:      'details', // 'details' | 'migration' | 'blast'
   bottomPanelOpen: false,
   bottomTab:       'preview',
   filter:          'all',
@@ -638,10 +899,7 @@ const S = {
 function layerColor(l) { return LAYERS[l].color; }
 
 function nodeH(n) {
-  if (!S.expanded.has(n.id)) return NODE_H;
-  const shown = Math.min(n.cols.length, COLS_DEF);
-  const hasMore = n.cols.length > COLS_DEF;
-  return NODE_H + 5 + shown * COL_H + (hasMore ? 20 : 4);
+  return S.expanded.has(n.id) ? NODE_H + EXPAND_H : NODE_H;
 }
 
 function upstream(id, acc = new Set()) {
@@ -681,6 +939,120 @@ function computeY() {
     });
   });
 }
+
+// ═══════════════════════════════════════════════════════════
+// IMPACT / STATUS / BLAST ANALYTICS
+// ═══════════════════════════════════════════════════════════
+
+const TEAMS = ['Data Platform','Growth','Finance','Marketing','Core Product','Support Eng','Revenue Ops'];
+
+// Stable hash → used to synthesize realistic-but-deterministic metadata.
+function hashStr(s) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+
+// Per-node operational metadata (status, confidence, ownership). Memoized.
+function nodeMeta(n) {
+  if (n._meta) return n._meta;
+  const h = hashStr(n.id);
+  const migConf   = 70 + (h % 28);              // 70–97
+  const blastConf = 72 + ((h >> 5) % 26);        // 72–97
+  const runtime   = (0.3 + ((h >> 8) % 120) / 10).toFixed(1) + 's';
+  const total     = 5 + ((h >> 11) % 8);
+  const failRoll  = (h >> 14) % 12;
+  let state = !n.fresh ? 'stale' : (failRoll === 0 ? 'failing' : 'passing');
+  const runs = [];
+  for (let i = 0; i < 5; i++) {
+    const r = (h >> (i * 4)) & 3;
+    runs.push(r === 0 ? 'fail' : (r === 1 && !n.fresh ? 'warn' : 'ok'));
+  }
+  runs[4] = state === 'failing' ? 'fail' : (state === 'stale' ? 'warn' : 'ok');
+  const passed = state === 'passing' ? total : total - 1;
+  const team = TEAMS[h % TEAMS.length];
+  n._meta = { migConf, blastConf, runtime, tests:{passed, total}, state, runs, team };
+  return n._meta;
+}
+
+// Downstream scope of a node (the heart of impact analysis). Memoized.
+function scopeOf(n) {
+  if (n._scope) return n._scope;
+  const down  = downstream(n.id);
+  const byLyr = [0,0,0,0,0];
+  down.forEach(id => byLyr[nodeById[id].layer]++);
+  const reports = [...down].filter(id => nodeById[id].layer === 4);
+  const teams   = new Set();
+  down.forEach(id => teams.add(nodeMeta(nodeById[id]).team));
+  const directConsumers = EDGES.filter(e => e.f === n.id).map(e => e.t);
+  n._scope = { down, byLyr, reports, teams:[...teams], directConsumers };
+  return n._scope;
+}
+
+function severityForCount(count) {
+  if (count === 0)  return { label:'None',   color:'var(--text-dim)', icon:'○', bg:'var(--surface-3)' };
+  if (count <= 4)   return { label:'Low',    color:'var(--green)',    icon:'●', bg:'rgba(63,185,80,.14)' };
+  if (count <= 14)  return { label:'Medium', color:'var(--amber)',    icon:'◆', bg:'rgba(227,179,65,.14)' };
+  return              { label:'High',   color:'var(--red)',      icon:'▲', bg:'rgba(248,81,73,.14)' };
+}
+
+function blastSeverity(reportCount) {
+  if (reportCount === 0) return { label:'Contained', color:'var(--text-dim)', icon:'○', bg:'var(--surface-3)' };
+  if (reportCount <= 2)  return { label:'Low',       color:'var(--green)',    icon:'●', bg:'rgba(63,185,80,.14)' };
+  if (reportCount <= 5)  return { label:'Elevated',  color:'var(--amber)',    icon:'◆', bg:'rgba(227,179,65,.14)' };
+  return                   { label:'Critical',  color:'var(--red)',      icon:'▲', bg:'rgba(248,81,73,.14)' };
+}
+
+const STATE_META = {
+  passing: { color:'var(--green)', label:'Passing' },
+  failing: { color:'var(--red)',   label:'Failing' },
+  stale:   { color:'var(--amber)', label:'Stale' },
+  running: { color:'var(--blue)',  label:'Running' },
+};
+function stateColor(s) { return (STATE_META[s] || STATE_META.passing).color; }
+function stateLabel(s) { return (STATE_META[s] || STATE_META.passing).label; }
+
+function sparkHTML(runs) {
+  const c = { ok:'var(--green)', warn:'var(--amber)', fail:'var(--red)' };
+  return `<span class="nd-spark">${runs.map(r => `<i style="background:${c[r]}"></i>`).join('')}</span>`;
+}
+
+function gaugeHTML(pct, color, label, sub) {
+  return `<div class="gauge">
+    <div class="gauge-ring" style="background:conic-gradient(${color} ${pct * 3.6}deg, var(--border) 0)">
+      <div class="gauge-hole"></div>
+      <div class="gauge-num">${pct}%</div>
+    </div>
+    <div class="gauge-label"><b style="color:var(--text)">${label}</b><br>${sub}</div>
+  </div>`;
+}
+
+function spreadBars(byLyr) {
+  const max = Math.max(1, ...byLyr);
+  return LAYERS.map((l, i) => `
+    <div class="spread-row">
+      <span class="sp-name" style="color:${l.color}">${l.label}</span>
+      <span class="spread-bar"><i style="width:${(byLyr[i] / max) * 100}%;background:${l.color}"></i></span>
+      <span class="sp-val">${byLyr[i]}</span>
+    </div>`).join('');
+}
+
+// BFS shortest path between two nodes over the forward graph.
+function pathTo(fromId, toId) {
+  const q = [[fromId]];
+  const seen = new Set([fromId]);
+  while (q.length) {
+    const p = q.shift();
+    const last = p[p.length - 1];
+    if (last === toId) return p;
+    EDGES.filter(e => e.f === last).forEach(e => {
+      if (!seen.has(e.t)) { seen.add(e.t); q.push([...p, e.t]); }
+    });
+  }
+  return null;
+}
+
+function fmtNum(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
 
 // ═══════════════════════════════════════════════════════════
 // RENDER
@@ -813,8 +1185,8 @@ function renderLayerLabels() {
 function renderEdges() {
   const vn = new Set(visibleNodes().map(n => n.id));
   edgesSvg.setAttribute('width',   CANVAS_W);
-  edgesSvg.setAttribute('height',  CANVAS_H + 200);
-  edgesSvg.setAttribute('viewBox', `0 0 ${CANVAS_W} ${CANVAS_H + 200}`);
+  edgesSvg.setAttribute('height',  DRAW_H);
+  edgesSvg.setAttribute('viewBox', `0 0 ${CANVAS_W} ${DRAW_H}`);
 
   let paths = '';
   EDGES.forEach(e => {
@@ -865,16 +1237,6 @@ function renderNodes() {
     const exp   = S.expanded.has(n.id);
     const h     = nodeH(n);
     const color = layerColor(n.layer);
-    const moreCount = n.cols.length - COLS_DEF;
-
-    const colRows = exp ? n.cols.slice(0, COLS_DEF).map(col => {
-      const colKey = n.id + '.' + col.n;
-      return `<div class="node-col-row" data-colkey="${colKey}">
-        <span class="ncol-icon" style="${col.k ? 'color:var(--amber)' : ''}">${col.k ? '⚿' : '·'}</span>
-        <span class="ncol-name">${col.n}</span>
-        <span class="ncol-type">${col.t}</span>
-      </div>`;
-    }).join('') : '';
 
     const el = document.createElement('div');
     el.className = `node${exp ? ' expanded' : ''}`;
@@ -892,49 +1254,84 @@ function renderNodes() {
         <span class="node-tag" style="${!n.fresh ? 'color:var(--amber)' : ''}">${n.updated}</span>
         <span class="node-freshness" style="background:${n.fresh ? 'var(--green)' : 'var(--amber)'}"></span>
       </div>
-      ${exp ? `<div class="node-sep"></div><div class="node-cols">${colRows}${moreCount > 0 ? `<div class="node-more">+${moreCount} more columns</div>` : ''}</div>` : ''}
+      ${exp ? nodeExpandedHTML(n) : ''}
     `;
 
-    // Click: select — just update classes, no DOM rebuild
+    // Click on the node body: expand inline + select for path trace.
+    // Does NOT open the sidebar (per design: drill-in is a 2nd-level action).
     el.addEventListener('click', evt => {
       evt.stopPropagation();
-      if (S.selNode === n.id) {
-        S.selNode = null;
-        closeDetail();
+      if (S.expanded.has(n.id)) {
+        S.expanded.delete(n.id);
+        if (S.selNode === n.id) S.selNode = null;
       } else {
+        S.expanded.add(n.id);
         S.selNode = n.id;
-        openDetail(n);
       }
-      applyFocusState();
-      updateLeftPanelActive();
-    });
-
-    // Chevron: expand/collapse — structural change, needs full render
-    el.querySelector('.node-chevron').addEventListener('click', evt => {
-      evt.stopPropagation();
-      S.expanded.has(n.id) ? S.expanded.delete(n.id) : S.expanded.add(n.id);
       render();
+      updateLeftPanelActive();
     });
 
     // Hover: path trace — class toggle only, no DOM rebuild
     el.addEventListener('mouseenter', () => { S.hoverNode = n.id; applyFocusState(); });
     el.addEventListener('mouseleave', () => { S.hoverNode = null; applyFocusState(); });
 
-    // Column hover: lineage highlight — class toggle + col-edge paths only
-    el.querySelectorAll('.node-col-row').forEach(crow => {
-      crow.addEventListener('mouseenter', evt => {
+    // Inline cards / explore button: 2nd-level action → open the detail panel
+    // to the matching view.
+    el.querySelectorAll('[data-view]').forEach(card => {
+      card.addEventListener('click', evt => {
         evt.stopPropagation();
-        S.hoverCol = crow.dataset.colkey;
-        applyColHighlight();
-      });
-      crow.addEventListener('mouseleave', () => {
-        S.hoverCol = null;
-        applyColHighlight();
+        S.selNode = n.id;
+        openDetail(n, card.dataset.view);
+        applyFocusState();
+        updateLeftPanelActive();
       });
     });
 
     canvas.appendChild(el);
   });
+}
+
+// Inline summary shown when a node is expanded in the graph.
+function nodeExpandedHTML(n) {
+  const m   = nodeMeta(n);
+  const sc  = scopeOf(n);
+  const migSev   = severityForCount(sc.down.size);
+  const blastSev = blastSeverity(sc.reports.length);
+  return `
+    <div class="node-sep"></div>
+    <div class="node-detail">
+      <div class="nd-card" data-view="details" title="Open status & details">
+        <div class="nd-card-head">
+          <span class="nd-card-title">Status</span>
+          <span class="nd-sev" style="color:${stateColor(m.state)}">● ${stateLabel(m.state)}</span>
+          <span class="nd-card-arrow">›</span>
+        </div>
+        <div class="nd-line">${m.tests.passed}/${m.tests.total} tests · ${m.runtime}${sparkHTML(m.runs)}</div>
+      </div>
+
+      <div class="nd-card" data-view="migration" title="Open migration impact">
+        <div class="nd-card-head">
+          <span class="nd-card-title">Migration Impact</span>
+          <span class="nd-sev" style="background:${migSev.bg};color:${migSev.color}">${migSev.icon} ${migSev.label}</span>
+          <span class="nd-card-arrow">›</span>
+        </div>
+        <div class="nd-line">${sc.down.size} downstream · ${sc.reports.length} dashboards<span class="nd-conf">${m.migConf}%</span></div>
+        <div class="nd-line" style="margin-top:3px"><span class="nd-conf-bar"><i style="width:${m.migConf}%;background:${migSev.color}"></i></span><span class="nd-conf-cap">confidence</span></div>
+      </div>
+
+      <div class="nd-card" data-view="blast" title="Open blast radius">
+        <div class="nd-card-head">
+          <span class="nd-card-title">Blast Radius</span>
+          <span class="nd-sev" style="background:${blastSev.bg};color:${blastSev.color}">${blastSev.icon} ${blastSev.label}</span>
+          <span class="nd-card-arrow">›</span>
+        </div>
+        <div class="nd-line">${sc.reports.length} reports · ${sc.teams.length} teams<span class="nd-conf">${m.blastConf}%</span></div>
+        <div class="nd-line" style="margin-top:3px"><span class="nd-conf-bar"><i style="width:${m.blastConf}%;background:${blastSev.color}"></i></span><span class="nd-conf-cap">confidence</span></div>
+      </div>
+
+      <div class="nd-explore" data-view="details">⤢ Explore in detail panel</div>
+    </div>`;
 }
 
 // ── MINIMAP ──────────────────────────────────────────────
@@ -949,7 +1346,7 @@ function renderMinimap() {
   ctx.clearRect(0, 0, mw, mh);
 
   const scaleX = mw / CANVAS_W;
-  const scaleY = mh / (CANVAS_H + 200);
+  const scaleY = mh / DRAW_H;
   const sc     = Math.min(scaleX, scaleY) * 0.9;
 
   // Draw edges
@@ -986,18 +1383,29 @@ function renderMinimap() {
 // DETAIL PANEL
 // ═══════════════════════════════════════════════════════════
 
-function openDetail(n) {
+function openDetail(n, view) {
+  view = view || S.detailView || 'details';
+  S.detailView = view;
+  S.detailNode = n.id;
+  S.selNode    = n.id;
+
   const panel = document.getElementById('detail');
   const inner = document.getElementById('detail-inner');
   panel.classList.add('open');
 
   const color = layerColor(n.layer);
-  const up    = upstream(n.id);
-  const dn    = downstream(n.id);
-  const parents   = EDGES.filter(e => e.t === n.id);
-  const consumers = EDGES.filter(e => e.f === n.id);
 
-  inner.innerHTML = `
+  const VIEWS = [
+    ['details',   'Details',   '▣'],
+    ['migration', 'Migration', '⇄'],
+    ['blast',     'Blast',     '◎'],
+  ];
+  const toggle = `<div class="det-toggle">
+    ${VIEWS.map(([v, l, i]) =>
+      `<button class="det-toggle-btn ${view === v ? 'on' : ''}" data-detview="${v}"><span class="dt-ico">${i}</span>${l}</button>`).join('')}
+  </div>`;
+
+  const header = `
     <button class="det-close" id="det-close">×</button>
     <div class="det-heading">${n.label}</div>
     <div class="det-sub">${n.db} · ${n.schema} · ${n.type}</div>
@@ -1005,6 +1413,66 @@ function openDetail(n) {
       <span class="det-badge" style="background:${color}20;color:${color}">${LAYERS[n.layer].label}</span>
       ${n.rows ? `<span class="det-badge" style="background:var(--surface-2);color:var(--text-muted)">${n.rows} rows</span>` : ''}
       <span class="det-badge" style="background:${n.fresh ? 'var(--green)18' : 'var(--amber)18'};color:${n.fresh ? 'var(--green)' : 'var(--amber)'}">${n.fresh ? '● Fresh' : '⚠ Stale'}</span>
+    </div>`;
+
+  const body = view === 'migration' ? migrationViewHTML(n)
+             : view === 'blast'     ? blastViewHTML(n)
+             :                        detailsViewHTML(n);
+
+  inner.innerHTML = header + toggle + body;
+
+  // close
+  document.getElementById('det-close').addEventListener('click', () => {
+    S.selNode = null;
+    S.detailNode = null;
+    closeDetail();
+    applyFocusState();
+    updateLeftPanelActive();
+  });
+
+  // view toggle
+  inner.querySelectorAll('[data-detview]').forEach(btn => {
+    btn.addEventListener('click', () => openDetail(n, btn.dataset.detview));
+  });
+
+  // jump to another node
+  inner.querySelectorAll('[data-goto]').forEach(el => {
+    el.addEventListener('click', () => {
+      const tn = nodeById[el.dataset.goto];
+      S.selNode = tn.id;
+      if (!S.expanded.has(tn.id)) S.expanded.add(tn.id);
+      render();
+      openDetail(tn, S.detailView);
+      panToNode(tn);
+      updateLeftPanelActive();
+    });
+  });
+
+  // column → bottom data panel
+  inner.querySelectorAll('.det-col[data-colkey]').forEach(el => {
+    el.addEventListener('click', () => {
+      const [nodeId, colName] = el.dataset.colkey.split('.');
+      openBottomPanel(nodeId, colName);
+    });
+  });
+}
+
+// ── DETAILS VIEW (status + graph position + lineage + columns) ──
+function detailsViewHTML(n) {
+  const m  = nodeMeta(n);
+  const up = upstream(n.id);
+  const dn = downstream(n.id);
+  const parents   = EDGES.filter(e => e.t === n.id);
+  const consumers = EDGES.filter(e => e.f === n.id);
+
+  return `
+    <div class="det-section">
+      <div class="det-section-title">Status</div>
+      <div class="det-stat"><span class="k">Pipeline state</span><span class="v" style="color:${stateColor(m.state)}">● ${stateLabel(m.state)}</span></div>
+      <div class="det-stat"><span class="k">Last run</span><span class="v">${n.updated} · ${m.runtime}</span></div>
+      <div class="det-stat"><span class="k">Tests</span><span class="v">${m.tests.passed}/${m.tests.total} passing</span></div>
+      <div class="det-stat"><span class="k">Recent runs</span><span class="v">${sparkHTML(m.runs)}</span></div>
+      <div class="det-stat"><span class="k">Owner</span><span class="v">${m.team}</span></div>
     </div>
 
     <div class="det-section">
@@ -1013,33 +1481,18 @@ function openDetail(n) {
       <div class="det-stat"><span class="k">Total downstream</span><span class="v">${dn.size}</span></div>
       <div class="det-stat"><span class="k">Direct parents</span><span class="v">${parents.length}</span></div>
       <div class="det-stat"><span class="k">Direct consumers</span><span class="v">${consumers.length}</span></div>
-      <div class="det-stat"><span class="k">Last updated</span><span class="v">${n.updated}</span></div>
     </div>
 
     ${parents.length ? `
     <div class="det-section">
       <div class="det-section-title">Parents (${parents.length})</div>
-      ${parents.map(e => {
-        const pn = nodeById[e.f];
-        return `<div class="det-lineage-node" data-goto="${pn.id}">
-          <div style="width:6px;height:6px;border-radius:1px;background:${layerColor(pn.layer)};flex-shrink:0"></div>
-          <span style="font-family:monospace;font-size:12px">${pn.label}</span>
-          <span style="margin-left:auto;font-size:11px;color:var(--text-dim)">${LAYERS[pn.layer].label}</span>
-        </div>`;
-      }).join('')}
+      ${parents.map(e => lineageRow(nodeById[e.f])).join('')}
     </div>` : ''}
 
     ${consumers.length ? `
     <div class="det-section">
       <div class="det-section-title">Consumers (${consumers.length})</div>
-      ${consumers.map(e => {
-        const cn = nodeById[e.t];
-        return `<div class="det-lineage-node" data-goto="${cn.id}">
-          <div style="width:6px;height:6px;border-radius:1px;background:${layerColor(cn.layer)};flex-shrink:0"></div>
-          <span style="font-family:monospace;font-size:12px">${cn.label}</span>
-          <span style="margin-left:auto;font-size:11px;color:var(--text-dim)">${LAYERS[cn.layer].label}</span>
-        </div>`;
-      }).join('')}
+      ${consumers.map(e => lineageRow(nodeById[e.t])).join('')}
     </div>` : ''}
 
     <div class="det-section">
@@ -1056,33 +1509,138 @@ function openDetail(n) {
           <span class="bp-col-tag">⬇ View</span>
         </div>`;
       }).join('')}
+    </div>`;
+}
+
+function lineageRow(node) {
+  return `<div class="det-lineage-node" data-goto="${node.id}">
+    <div style="width:6px;height:6px;border-radius:1px;background:${layerColor(node.layer)};flex-shrink:0"></div>
+    <span style="font-family:monospace;font-size:12px">${node.label}</span>
+    <span style="margin-left:auto;font-size:11px;color:var(--text-dim)">${LAYERS[node.layer].label}</span>
+  </div>`;
+}
+
+// ── MIGRATION IMPACT VIEW ──
+function migrationViewHTML(n) {
+  const m   = nodeMeta(n);
+  const sc  = scopeOf(n);
+  const sev = severityForCount(sc.down.size);
+  const consumers = EDGES.filter(e => e.f === n.id).map(e => nodeById[e.t]);
+
+  // A consumer is "breaking" if it has a column-level dependency on this node.
+  const breakingSet = new Set(
+    COL_EDGES.filter(ce => ce.f.split('.')[0] === n.id).map(ce => ce.t.split('.')[0])
+  );
+
+  return `
+    <div class="sev-banner" style="background:${sev.bg};color:${sev.color}">
+      <span style="font-size:17px">${sev.icon}</span>
+      <div>${sev.label} migration impact
+        <div style="font-size:10px;font-weight:400;color:var(--text-muted);margin-top:1px">Schema changes here ripple to ${sc.down.size} downstream object${sc.down.size === 1 ? '' : 's'}</div>
+      </div>
     </div>
-  `;
 
-  document.getElementById('det-close').addEventListener('click', () => {
-    S.selNode = null;
-    closeDetail();
-    applyFocusState();
-    updateLeftPanelActive();
-  });
+    ${gaugeHTML(m.migConf, sev.color === 'var(--text-dim)' ? 'var(--blue)' : sev.color,
+      'Impact confidence', 'Derived from column-lineage coverage & test history')}
 
-  inner.querySelectorAll('[data-goto]').forEach(el => {
-    el.addEventListener('click', () => {
-      const id = el.dataset.goto;
-      S.selNode = id;
-      openDetail(nodeById[id]);
-      panToNode(nodeById[id]);
-      applyFocusState();
-      updateLeftPanelActive();
-    });
-  });
+    <div class="det-section-title">Scope of Impact</div>
+    <div class="scope-grid">
+      <div class="scope-cell"><div class="sc-num">${sc.down.size}</div><div class="sc-lbl">downstream models</div></div>
+      <div class="scope-cell"><div class="sc-num">${sc.reports.length}</div><div class="sc-lbl">dashboards / reports</div></div>
+      <div class="scope-cell"><div class="sc-num">${sc.teams.length}</div><div class="sc-lbl">teams impacted</div></div>
+      <div class="scope-cell"><div class="sc-num">${consumers.length}</div><div class="sc-lbl">direct consumers</div></div>
+    </div>
 
-  inner.querySelectorAll('.det-col[data-colkey]').forEach(el => {
-    el.addEventListener('click', () => {
-      const [nodeId, colName] = el.dataset.colkey.split('.');
-      openBottomPanel(nodeId, colName);
-    });
-  });
+    <div class="det-section">
+      <div class="det-section-title">Spread by Layer</div>
+      ${spreadBars(sc.byLyr)}
+    </div>
+
+    ${consumers.length ? `
+    <div class="det-section">
+      <div class="det-section-title">Direct Consumers at Risk (${consumers.length})</div>
+      ${consumers.map(c => {
+        const breaking = breakingSet.has(c.id);
+        return `<div class="impact-item" data-goto="${c.id}" style="cursor:pointer">
+          <div style="width:6px;height:6px;border-radius:1px;background:${layerColor(c.layer)};flex-shrink:0"></div>
+          <span class="ii-name">${c.label}</span>
+          <span class="risk-tag" style="background:${breaking ? 'rgba(248,81,73,.16)' : 'rgba(227,179,65,.16)'};color:${breaking ? 'var(--red)' : 'var(--amber)'}">${breaking ? 'BREAKING' : 'REVIEW'}</span>
+        </div>`;
+      }).join('')}
+    </div>` : ''}
+
+    <div class="det-section">
+      <div class="det-section-title">Recommended Migration Steps</div>
+      <div class="det-step"><span class="ds-num">1</span><span>Run an impact scan across the ${sc.down.size} downstream model${sc.down.size === 1 ? '' : 's'} listed above.</span></div>
+      <div class="det-step"><span class="ds-num">2</span><span>Add a deprecation alias for any renamed columns to keep ${breakingSet.size} breaking consumer${breakingSet.size === 1 ? '' : 's'} green.</span></div>
+      <div class="det-step"><span class="ds-num">3</span><span>Stage the change behind a feature flag and backfill in a shadow table.</span></div>
+      <div class="det-step"><span class="ds-num">4</span><span>Notify ${sc.teams.length} owning team${sc.teams.length === 1 ? '' : 's'} and ship during the next low-traffic window.</span></div>
+    </div>`;
+}
+
+// ── BLAST RADIUS VIEW ──
+function blastViewHTML(n) {
+  const m   = nodeMeta(n);
+  const sc  = scopeOf(n);
+  const sev = blastSeverity(sc.reports.length);
+  const reports = sc.reports.map(id => nodeById[id]);
+
+  // Critical paths: shortest path to each downstream report (top 3 by depth).
+  const paths = reports
+    .map(r => pathTo(n.id, r.id))
+    .filter(Boolean)
+    .sort((a, b) => b.length - a.length)
+    .slice(0, 3);
+  const maxDepth = paths.length ? paths[0].length - 1 : 0;
+  const usersAffected = sc.reports.length * 120 + sc.down.size * 15;
+
+  return `
+    <div class="sev-banner" style="background:${sev.bg};color:${sev.color}">
+      <span style="font-size:17px">${sev.icon}</span>
+      <div>${sev.label} blast radius
+        <div style="font-size:10px;font-weight:400;color:var(--text-muted);margin-top:1px">If this fails, ${sc.reports.length} report${sc.reports.length === 1 ? '' : 's'} go${sc.reports.length === 1 ? 'es' : ''} dark</div>
+      </div>
+    </div>
+
+    ${gaugeHTML(m.blastConf, sev.color === 'var(--text-dim)' ? 'var(--blue)' : sev.color,
+      'Detection confidence', 'Based on freshness SLAs & downstream test coverage')}
+
+    <div class="det-section-title">If this breaks…</div>
+    <div class="scope-grid">
+      <div class="scope-cell"><div class="sc-num">${sc.reports.length}</div><div class="sc-lbl">reports go stale</div></div>
+      <div class="scope-cell"><div class="sc-num">~${fmtNum(usersAffected)}</div><div class="sc-lbl">users affected</div></div>
+      <div class="scope-cell"><div class="sc-num">${sc.teams.length}</div><div class="sc-lbl">teams paged</div></div>
+      <div class="scope-cell"><div class="sc-num">${maxDepth}</div><div class="sc-lbl">hops to surface</div></div>
+    </div>
+
+    <div class="det-section">
+      <div class="det-section-title">Downstream Spread</div>
+      ${spreadBars(sc.byLyr)}
+    </div>
+
+    ${paths.length ? `
+    <div class="det-section">
+      <div class="det-section-title">Critical Paths to Reporting</div>
+      ${paths.map(p => `<div class="path-chip">${p.map((id, i) =>
+        `${i ? '<span class="pc-arrow">▸</span>' : ''}<span class="pc-node ${i === p.length - 1 ? 'pc-end' : ''}">${nodeById[id].label}</span>`
+      ).join('')}</div>`).join('')}
+    </div>` : `
+    <div class="det-section">
+      <div class="det-note">No downstream reports — failures here stay contained within the modeling layers.</div>
+    </div>`}
+
+    ${sc.teams.length ? `
+    <div class="det-section">
+      <div class="det-section-title">Teams to Notify (${sc.teams.length})</div>
+      <div>${sc.teams.map(t => `<span class="det-team">👥 ${t}</span>`).join('')}</div>
+    </div>` : ''}
+
+    <div class="det-section">
+      <div class="det-section-title">SLA Impact</div>
+      <div class="det-stat"><span class="k">Freshness SLA</span><span class="v" style="color:${n.fresh ? 'var(--green)' : 'var(--amber)'}">${n.fresh ? 'Within SLA' : 'SLA breached'}</span></div>
+      <div class="det-stat"><span class="k">Est. time-to-detect</span><span class="v">${maxDepth ? maxDepth * 15 + 'm' : '< 5m'}</span></div>
+      <div class="det-stat"><span class="k">On-call owner</span><span class="v">${m.team}</span></div>
+    </div>`;
 }
 
 function closeDetail() {
@@ -1115,6 +1673,34 @@ function closeBottomPanel() {
   document.getElementById('bottom-panel').classList.remove('open');
 }
 
+// Synthesize a small, deterministic preview for nodes without authored MOCK_DATA.
+function synthPreview(n) {
+  if (n._preview) return n._preview;
+  const cols = n.cols.map(c => c.n);
+  const cell = (col, r) => {
+    const h = hashStr(n.id + col.n + r);
+    const name = col.n.toLowerCase();
+    if (col.k || name.endsWith('_id') || name.endsWith('_key'))
+      return col.n.split('_')[0].slice(0, 3) + '_' + (h % 100000).toString(36).toUpperCase();
+    switch (col.t) {
+      case 'BOOLEAN':   return (h % 2) ? 'true' : 'false';
+      case 'INTEGER':   return (h % 1000).toString();
+      case 'NUMERIC':   return ((h % 50000) / 100).toFixed(2);
+      case 'MEASURE':   return ((h % 90000) / 100).toFixed(2);
+      case 'TIMESTAMP': return '2024-03-' + (10 + (h % 18)) + ' ' + (h % 24).toString().padStart(2, '0') + ':' + (h % 60).toString().padStart(2, '0');
+      case 'DATE':      return '2024-03-' + (10 + (h % 18));
+      default: {
+        const words = ['active','pending','web','mobile','US','EU','pro','starter','high','low','stripe','email'];
+        return words[h % words.length];
+      }
+    }
+  };
+  const rows = [];
+  for (let r = 0; r < 5; r++) rows.push(n.cols.map(c => cell(c, r)));
+  n._preview = { cols, rows };
+  return n._preview;
+}
+
 function renderBottomPanel() {
   const body = document.getElementById('bp-body');
   if (!S.selCol) { body.innerHTML = ''; return; }
@@ -1122,11 +1708,7 @@ function renderBottomPanel() {
   const n = nodeById[nodeId];
 
   if (S.bottomTab === 'preview') {
-    const mock = MOCK_DATA[nodeId];
-    if (!mock) {
-      body.innerHTML = `<div style="padding:28px;color:var(--text-dim);text-align:center;font-size:13px">No preview data available for <b style="color:var(--text)">${n.label}</b></div>`;
-      return;
-    }
+    const mock = MOCK_DATA[nodeId] || synthPreview(n);
     const colIdx = mock.cols.indexOf(colName);
     body.innerHTML = `<table class="bp-table">
       <thead><tr>${mock.cols.map((c, i) => `<th style="${i === colIdx ? 'color:var(--blue)' : ''}">${c}</th>`).join('')}</tr></thead>
@@ -1299,17 +1881,12 @@ function activateSearchResult(id, col) {
   searchInput.value = '';
   searchResults.classList.remove('open');
   const n = nodeById[id];
-  if (col && !S.expanded.has(id)) {
-    S.expanded.add(id);
-    panToNode(n);
-    openDetail(n);
-    render(); // expansion changes node height — structural render needed
-  } else {
-    panToNode(n);
-    openDetail(n);
-    applyFocusState();
-    updateLeftPanelActive();
-  }
+  S.expanded.add(id);          // expand the inline summary on arrival
+  render();                    // expansion changes node height — structural
+  openDetail(n, S.detailView); // explicit navigation → open the detail panel
+  panToNode(n);
+  updateLeftPanelActive();
+  if (col) openBottomPanel(id, col);
 }
 
 searchInput.addEventListener('keydown', evt => {
@@ -1394,9 +1971,9 @@ document.getElementById('minimap').addEventListener('click', e => {
   const rect = document.getElementById('minimap').getBoundingClientRect();
   const mx   = (e.clientX - rect.left) / rect.width;
   const my   = (e.clientY - rect.top)  / rect.height;
-  const sc   = Math.min(148 / CANVAS_W, 80 / (CANVAS_H + 200)) * 0.9;
+  const sc   = Math.min(148 / CANVAS_W, 80 / DRAW_H) * 0.9;
   S.ox = -(mx * CANVAS_W - graphArea.offsetWidth / 2) * S.scale;
-  S.oy = -(my * (CANVAS_H + 200) - graphArea.offsetHeight / 2) * S.scale;
+  S.oy = -(my * DRAW_H - graphArea.offsetHeight / 2) * S.scale;
   applyTransform();
   renderMinimap();
 });
@@ -1471,9 +2048,10 @@ function renderLeftPanel() {
     el.addEventListener('click', () => {
       const n = nodeById[el.dataset.id];
       S.selNode = n.id;
+      S.expanded.add(n.id);        // expand inline summary
+      render();
+      openDetail(n, S.detailView); // explicit navigation → open detail panel
       panToNode(n);
-      openDetail(n);
-      applyFocusState();
       updateLeftPanelActive();
     });
   });
@@ -1505,12 +2083,14 @@ function hideTip() { tip.classList.remove('vis'); }
 render();
 renderLeftPanel();
 
-// Auto-open fct_orders to show the detail panel on load
+// On load: select + expand fct_orders inline (status / migration / blast cards)
+// but DON'T auto-open the sidebar — drilling in is a deliberate 2nd-level action.
 setTimeout(() => {
   S.selNode = 'fct_orders';
   S.expanded.add('fct_orders');
-  openDetail(nodeById['fct_orders']);
   render(); // structural: fct_orders is now expanded
+  panToNode(nodeById['fct_orders']);
+  updateLeftPanelActive();
 }, 200);
 </script>
 </body>
