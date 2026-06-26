@@ -97,7 +97,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .node:hover{border-color:#484F58;box-shadow:0 2px 12px rgba(0,0,0,.4)}
 .node.sel{border-color:var(--blue)!important;box-shadow:0 0 0 1px var(--blue),0 4px 20px rgba(56,139,253,.25)!important;z-index:10}
 .node.hl{border-color:rgba(255,255,255,.2);box-shadow:0 2px 16px rgba(0,0,0,.5);z-index:5}
-.node.dim{opacity:.2;pointer-events:none}
+.node.dim{opacity:.2}
 
 .node-head{padding:10px 10px 8px;display:flex;align-items:center;gap:7px}
 .node-badge{width:8px;height:8px;border-radius:2px;flex-shrink:0}
@@ -172,6 +172,34 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 
 /* ── COLUMN LINEAGE LINES (drawn in SVG layer) ── */
 .col-edge{fill:none;stroke:rgba(56,139,253,.5);stroke-width:1;stroke-dasharray:4 3;pointer-events:none}
+
+/* ── BOTTOM PANEL ── */
+#bottom-panel{position:absolute;bottom:0;left:0;right:0;height:280px;background:var(--surface);border-top:1px solid var(--border);display:flex;flex-direction:column;transform:translateY(100%);transition:transform .22s cubic-bezier(.4,0,.2,1);z-index:60}
+#bottom-panel.open{transform:translateY(0)}
+#bp-resize{height:5px;background:transparent;cursor:ns-resize;flex-shrink:0;border-top:2px solid var(--border-light);transition:border-color .15s}
+#bp-resize:hover{border-top-color:var(--blue)}
+#bp-header{display:flex;align-items:center;padding:0 12px;height:38px;border-bottom:1px solid var(--border);flex-shrink:0;gap:0}
+#bp-title{font-size:12px;font-weight:600;color:var(--text-muted);flex:1;font-family:monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bp-tab{padding:0 12px;height:38px;display:flex;align-items:center;font-size:12px;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.bp-tab:hover{color:var(--text)}
+.bp-tab.on{color:var(--blue);border-bottom-color:var(--blue)}
+#bp-close{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:20px;line-height:1;padding:0 0 0 8px}
+#bp-close:hover{color:var(--text)}
+#bp-body{flex:1;overflow:auto;padding:0}
+.bp-table{width:100%;border-collapse:collapse;font-size:12px}
+.bp-table th{position:sticky;top:0;background:var(--surface-2);padding:6px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-dim);border-bottom:1px solid var(--border);white-space:nowrap}
+.bp-table td{padding:6px 12px;border-bottom:1px solid var(--border-light);color:var(--text-muted);white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis}
+.bp-table tr:hover td{background:var(--surface-2);color:var(--text)}
+.bp-lineage-row{display:flex;align-items:center;gap:10px;padding:7px 12px;border-bottom:1px solid var(--border-light);font-size:12px}
+.bp-lineage-row:hover{background:var(--surface-2)}
+.bp-lineage-badge{font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600;flex-shrink:0;min-width:72px;text-align:center}
+.bp-lineage-table{font-family:monospace;color:var(--text);flex-shrink:0;min-width:140px}
+.bp-lineage-col{font-family:monospace;color:var(--blue);flex-shrink:0;min-width:140px}
+.bp-lineage-xform{font-size:11px;color:var(--text-dim);font-family:monospace;flex:1}
+.det-col{cursor:pointer;transition:background .1s}
+.det-col:hover{background:var(--surface-2)}
+.bp-col-tag{display:inline-flex;align-items:center;gap:4px;padding:1px 6px;background:rgba(56,139,253,.1);border:1px solid rgba(56,139,253,.2);border-radius:4px;font-size:10px;color:var(--blue);transition:background .1s;flex-shrink:0;margin-top:2px}
+.det-col:hover .bp-col-tag{background:rgba(56,139,253,.22)}
 </style>
 </head>
 <body>
@@ -219,6 +247,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
       <div class="z-btn" id="z-reset" title="Reset view" style="font-size:11px">⊡</div>
     </div>
     <div id="minimap"><canvas id="mm-canvas"></canvas></div>
+    <div id="bottom-panel">
+      <div id="bp-resize"></div>
+      <div id="bp-header">
+        <span id="bp-title">—</span>
+        <div class="bp-tab on" data-tab="preview">Data Preview</div>
+        <div class="bp-tab" data-tab="lineage">Column Lineage</div>
+        <button id="bp-close">×</button>
+      </div>
+      <div id="bp-body"></div>
+    </div>
   </div>
   <div id="detail"><div id="detail-inner"></div></div>
 </div>
@@ -340,6 +378,202 @@ const COL_EDGES = [
 ];
 
 // ═══════════════════════════════════════════════════════════
+// MOCK PREVIEW DATA
+// ═══════════════════════════════════════════════════════════
+
+const MOCK_DATA = {
+  raw_orders: {
+    cols: ['order_id','customer_id','created_at','status','amount','currency','channel'],
+    rows: [
+      ['ord_A1B2C3','cus_X9Y8Z7','2024-03-15 09:23:11','completed','149.99','USD','web'],
+      ['ord_D4E5F6','cus_M3N2O1','2024-03-15 10:01:44','pending','89.00','EUR','mobile'],
+      ['ord_G7H8I9','cus_P5Q6R7','2024-03-14 22:17:03','returned','34.50','USD','web'],
+      ['ord_J0K1L2','cus_S8T9U0','2024-03-14 18:55:29','completed','212.75','GBP','email'],
+      ['ord_M3N4O5','cus_V1W2X3','2024-03-14 15:40:01','completed','67.25','USD','mobile'],
+    ]
+  },
+  raw_customers: {
+    cols: ['customer_id','email','full_name','created_at','country','plan'],
+    rows: [
+      ['cus_X9Y8Z7','alice@example.com','Alice Thornton','2022-08-12','US','pro'],
+      ['cus_M3N2O1','bob@example.io','Bob Müller','2023-01-05','DE','starter'],
+      ['cus_P5Q6R7','carol@example.co','Carol Nakamura','2021-11-30','JP','enterprise'],
+      ['cus_S8T9U0','dan@example.net','Dan O\'Brien','2023-06-20','GB','pro'],
+      ['cus_V1W2X3','eva@example.org','Eva Santos','2024-01-14','BR','starter'],
+    ]
+  },
+  raw_payments: {
+    cols: ['payment_id','order_id','amount','status','gateway','created_at'],
+    rows: [
+      ['pay_AA1111','ord_A1B2C3','149.99','succeeded','stripe','2024-03-15 09:23:45'],
+      ['pay_BB2222','ord_D4E5F6','89.00','pending','stripe','2024-03-15 10:02:01'],
+      ['pay_CC3333','ord_G7H8I9','34.50','refunded','paypal','2024-03-14 22:18:00'],
+      ['pay_DD4444','ord_J0K1L2','212.75','succeeded','stripe','2024-03-14 18:56:10'],
+      ['pay_EE5555','ord_M3N4O5','67.25','succeeded','braintree','2024-03-14 15:40:30'],
+    ]
+  },
+  raw_products: {
+    cols: ['product_id','name','category','price','sku'],
+    rows: [
+      ['prd_001','Wireless Headphones','Electronics','79.99','WH-PRO-BLK'],
+      ['prd_002','Running Shoes','Apparel','119.00','RS-MNS-10'],
+      ['prd_003','Coffee Maker','Kitchen','49.50','CM-DRP-SLV'],
+      ['prd_004','Yoga Mat','Fitness','34.99','YM-PRO-PRP'],
+      ['prd_005','Desk Lamp','Office','29.95','DL-LED-WHT'],
+    ]
+  },
+  raw_accounts: {
+    cols: ['account_id','name','type','arr','csm_id'],
+    rows: [
+      ['acc_001','Acme Corp','enterprise','120000','csm_A1'],
+      ['acc_002','Beta LLC','startup','24000','csm_B2'],
+      ['acc_003','Gamma Inc','mid-market','60000','csm_A1'],
+      ['acc_004','Delta Co','enterprise','240000','csm_C3'],
+      ['acc_005','Epsilon Ltd','startup','12000','csm_B2'],
+    ]
+  },
+  stg_orders: {
+    cols: ['order_id','customer_id','created_at','status','amount_usd','channel'],
+    rows: [
+      ['ord_A1B2C3','cus_X9Y8Z7','2024-03-15 09:23:11','completed','149.99','web'],
+      ['ord_D4E5F6','cus_M3N2O1','2024-03-15 10:01:44','pending','96.63','mobile'],
+      ['ord_G7H8I9','cus_P5Q6R7','2024-03-14 22:17:03','returned','34.50','web'],
+      ['ord_J0K1L2','cus_S8T9U0','2024-03-14 18:55:29','completed','268.92','email'],
+      ['ord_M3N4O5','cus_V1W2X3','2024-03-14 15:40:01','completed','67.25','mobile'],
+    ]
+  },
+  stg_customers: {
+    cols: ['customer_id','email','full_name','country_code','plan'],
+    rows: [
+      ['cus_X9Y8Z7','alice@example.com','Alice Thornton','US','pro'],
+      ['cus_M3N2O1','bob@example.io','Bob Müller','DE','starter'],
+      ['cus_P5Q6R7','carol@example.co','Carol Nakamura','JP','enterprise'],
+      ['cus_S8T9U0','dan@example.net','Dan O\'Brien','GB','pro'],
+      ['cus_V1W2X3','eva@example.org','Eva Santos','BR','starter'],
+    ]
+  },
+  stg_payments: {
+    cols: ['payment_id','order_id','amount_usd','is_paid','gateway'],
+    rows: [
+      ['pay_AA1111','ord_A1B2C3','149.99','true','stripe'],
+      ['pay_BB2222','ord_D4E5F6','89.00','false','stripe'],
+      ['pay_CC3333','ord_G7H8I9','34.50','false','paypal'],
+      ['pay_DD4444','ord_J0K1L2','212.75','true','stripe'],
+      ['pay_EE5555','ord_M3N4O5','67.25','true','braintree'],
+    ]
+  },
+  stg_products: {
+    cols: ['product_id','name','category','price_usd'],
+    rows: [
+      ['prd_001','Wireless Headphones','Electronics','79.99'],
+      ['prd_002','Running Shoes','Apparel','119.00'],
+      ['prd_003','Coffee Maker','Kitchen','49.50'],
+      ['prd_004','Yoga Mat','Fitness','34.99'],
+      ['prd_005','Desk Lamp','Office','29.95'],
+    ]
+  },
+  stg_accounts: {
+    cols: ['account_id','account_name','arr','account_type'],
+    rows: [
+      ['acc_001','Acme Corp','120000','enterprise'],
+      ['acc_002','Beta LLC','24000','startup'],
+      ['acc_003','Gamma Inc','60000','mid-market'],
+      ['acc_004','Delta Co','240000','enterprise'],
+      ['acc_005','Epsilon Ltd','12000','startup'],
+    ]
+  },
+  int_order_items: {
+    cols: ['order_item_id','order_id','product_id','quantity','unit_price_usd','line_total_usd'],
+    rows: [
+      ['oi_AA001','ord_A1B2C3','prd_001','1','79.99','79.99'],
+      ['oi_AA002','ord_A1B2C3','prd_004','2','34.99','69.98'],
+      ['oi_BB001','ord_D4E5F6','prd_002','1','96.63','96.63'],
+      ['oi_CC001','ord_G7H8I9','prd_003','1','34.50','34.50'],
+      ['oi_DD001','ord_J0K1L2','prd_001','2','79.99','159.98'],
+    ]
+  },
+  int_customer_orders: {
+    cols: ['customer_id','lifetime_value','order_count','first_order_at','last_order_at','avg_order_value'],
+    rows: [
+      ['cus_X9Y8Z7','1842.50','12','2022-09-01','2024-03-15','153.54'],
+      ['cus_M3N2O1','96.63','1','2024-03-15','2024-03-15','96.63'],
+      ['cus_P5Q6R7','12480.00','48','2021-12-10','2024-02-28','260.00'],
+      ['cus_S8T9U0','1103.75','6','2023-07-04','2024-03-14','183.96'],
+      ['cus_V1W2X3','67.25','1','2024-03-14','2024-03-14','67.25'],
+    ]
+  },
+  int_payment_enriched: {
+    cols: ['payment_id','order_id','customer_id','amount_usd','is_paid','gateway'],
+    rows: [
+      ['pay_AA1111','ord_A1B2C3','cus_X9Y8Z7','149.99','true','stripe'],
+      ['pay_BB2222','ord_D4E5F6','cus_M3N2O1','89.00','false','stripe'],
+      ['pay_CC3333','ord_G7H8I9','cus_P5Q6R7','34.50','false','paypal'],
+      ['pay_DD4444','ord_J0K1L2','cus_S8T9U0','212.75','true','stripe'],
+      ['pay_EE5555','ord_M3N4O5','cus_V1W2X3','67.25','true','braintree'],
+    ]
+  },
+  fct_orders: {
+    cols: ['order_id','customer_id','order_date','status','gmv_usd','is_returned','channel'],
+    rows: [
+      ['ord_A1B2C3','cus_X9Y8Z7','2024-03-15','completed','149.99','false','web'],
+      ['ord_D4E5F6','cus_M3N2O1','2024-03-15','pending','96.63','false','mobile'],
+      ['ord_G7H8I9','cus_P5Q6R7','2024-03-14','returned','34.50','true','web'],
+      ['ord_J0K1L2','cus_S8T9U0','2024-03-14','completed','268.92','false','email'],
+      ['ord_M3N4O5','cus_V1W2X3','2024-03-14','completed','67.25','false','mobile'],
+    ]
+  },
+  dim_customers: {
+    cols: ['customer_id','email','segment','ltv_usd','country','plan','is_churned'],
+    rows: [
+      ['cus_X9Y8Z7','alice@example.com','high-value','1842.50','US','pro','false'],
+      ['cus_M3N2O1','bob@example.io','at-risk','96.63','DE','starter','false'],
+      ['cus_P5Q6R7','carol@example.co','enterprise','12480.00','JP','enterprise','false'],
+      ['cus_S8T9U0','dan@example.net','high-value','1103.75','GB','pro','false'],
+      ['cus_V1W2X3','eva@example.org','churned','67.25','BR','starter','true'],
+    ]
+  },
+  dim_products: {
+    cols: ['product_id','name','category','price_tier','brand'],
+    rows: [
+      ['prd_001','Wireless Headphones','Electronics','mid','SoundBrand'],
+      ['prd_002','Running Shoes','Apparel','premium','RunFast'],
+      ['prd_003','Coffee Maker','Kitchen','value','BrewCo'],
+      ['prd_004','Yoga Mat','Fitness','value','FlexGear'],
+      ['prd_005','Desk Lamp','Office','value','LightUp'],
+    ]
+  },
+  revenue_dash: {
+    cols: ['date','channel','gmv','order_count','aov'],
+    rows: [
+      ['2024-03-15','web','149.99','1','149.99'],
+      ['2024-03-15','mobile','96.63','1','96.63'],
+      ['2024-03-14','web','34.50','1','34.50'],
+      ['2024-03-14','email','268.92','1','268.92'],
+      ['2024-03-14','mobile','67.25','1','67.25'],
+    ]
+  },
+  customer_360: {
+    cols: ['segment','customer_count','ltv_avg','churn_rate'],
+    rows: [
+      ['high-value','2','1473.13','0.00%'],
+      ['enterprise','1','12480.00','0.00%'],
+      ['at-risk','1','96.63','0.00%'],
+      ['churned','1','67.25','100.00%'],
+    ]
+  },
+  product_report: {
+    cols: ['product_name','category','revenue','units_sold'],
+    rows: [
+      ['Wireless Headphones','Electronics','389.97','3'],
+      ['Running Shoes','Apparel','96.63','1'],
+      ['Coffee Maker','Kitchen','34.50','1'],
+      ['Yoga Mat','Fitness','69.98','2'],
+      ['Desk Lamp','Office','0.00','0'],
+    ]
+  },
+};
+
+// ═══════════════════════════════════════════════════════════
 // LAYOUT
 // ═══════════════════════════════════════════════════════════
 
@@ -382,16 +616,19 @@ const CANVAS_H = 800;
 // ═══════════════════════════════════════════════════════════
 
 const S = {
-  expanded:     new Set(),
-  selNode:      null,
-  hoverNode:    null,
-  hoverEdge:    null,
-  hoverCol:     null,   // 'nodeId.colName'
-  filter:       'all',
-  query:        '',
-  scale:        1,
-  ox:           50,
-  oy:           30,
+  expanded:        new Set(),
+  selNode:         null,
+  hoverNode:       null,
+  hoverEdge:       null,
+  hoverCol:        null,   // 'nodeId.colName'
+  selCol:          null,   // 'nodeId.colName'
+  bottomPanelOpen: false,
+  bottomTab:       'preview',
+  filter:          'all',
+  query:           '',
+  scale:           1,
+  ox:              50,
+  oy:              30,
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -806,16 +1043,17 @@ function openDetail(n) {
     </div>` : ''}
 
     <div class="det-section">
-      <div class="det-section-title">Columns (${n.cols.length})</div>
+      <div class="det-section-title">Columns (${n.cols.length}) <span style="font-size:9px;font-weight:400;color:var(--text-dim);text-transform:none;letter-spacing:0">— click to explore</span></div>
       ${n.cols.map(col => {
         const colKey  = n.id + '.' + col.n;
         const colSrcs = COL_EDGES.filter(ce => ce.t === colKey);
-        return `<div class="det-col">
+        return `<div class="det-col" data-colkey="${colKey}" title="View data preview & column lineage">
           <div class="det-col-info">
             <div class="det-col-name">${col.k ? '⚿ ' : ''}${col.n}</div>
             <div class="det-col-type">${col.t}</div>
             ${colSrcs.length ? `<div class="det-col-src">← <span>${colSrcs.map(ce => ce.f).join(', ')}</span></div>` : ''}
           </div>
+          <span class="bp-col-tag">⬇ View</span>
         </div>`;
       }).join('')}
     </div>
@@ -838,6 +1076,13 @@ function openDetail(n) {
       updateLeftPanelActive();
     });
   });
+
+  inner.querySelectorAll('.det-col[data-colkey]').forEach(el => {
+    el.addEventListener('click', () => {
+      const [nodeId, colName] = el.dataset.colkey.split('.');
+      openBottomPanel(nodeId, colName);
+    });
+  });
 }
 
 function closeDetail() {
@@ -851,6 +1096,127 @@ function panToNode(n) {
   S.oy = gaH / 2 - n.y * S.scale - nodeH(n) * S.scale / 2;
   applyTransform();
 }
+
+// ═══════════════════════════════════════════════════════════
+// BOTTOM PANEL
+// ═══════════════════════════════════════════════════════════
+
+function openBottomPanel(nodeId, colName) {
+  S.selCol = nodeId + '.' + colName;
+  S.bottomPanelOpen = true;
+  document.getElementById('bottom-panel').classList.add('open');
+  document.getElementById('bp-title').textContent = nodeById[nodeId].label + ' · ' + colName;
+  renderBottomPanel();
+}
+
+function closeBottomPanel() {
+  S.selCol = null;
+  S.bottomPanelOpen = false;
+  document.getElementById('bottom-panel').classList.remove('open');
+}
+
+function renderBottomPanel() {
+  const body = document.getElementById('bp-body');
+  if (!S.selCol) { body.innerHTML = ''; return; }
+  const [nodeId, colName] = S.selCol.split('.');
+  const n = nodeById[nodeId];
+
+  if (S.bottomTab === 'preview') {
+    const mock = MOCK_DATA[nodeId];
+    if (!mock) {
+      body.innerHTML = `<div style="padding:28px;color:var(--text-dim);text-align:center;font-size:13px">No preview data available for <b style="color:var(--text)">${n.label}</b></div>`;
+      return;
+    }
+    const colIdx = mock.cols.indexOf(colName);
+    body.innerHTML = `<table class="bp-table">
+      <thead><tr>${mock.cols.map((c, i) => `<th style="${i === colIdx ? 'color:var(--blue)' : ''}">${c}</th>`).join('')}</tr></thead>
+      <tbody>${mock.rows.map(row => `<tr>${row.map((v, i) => `<td style="${i === colIdx ? 'color:var(--blue);font-family:monospace;font-weight:600' : ''}">${v}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table>`;
+  } else {
+    const path = traceColumnLineage(S.selCol);
+    if (!path.length) {
+      body.innerHTML = `<div style="padding:28px;color:var(--text-dim);text-align:center;font-size:13px">No column-level lineage mapped for <b style="color:var(--text)">${colName}</b></div>`;
+      return;
+    }
+    const header = `<div class="bp-lineage-row" style="background:var(--surface-2);border-bottom:1px solid var(--border);position:sticky;top:0">
+      <span class="bp-lineage-badge" style="color:var(--text-dim);background:transparent">Layer</span>
+      <span class="bp-lineage-table" style="color:var(--text-dim)">Table</span>
+      <span class="bp-lineage-col" style="color:var(--text-dim)">Column</span>
+      <span class="bp-lineage-xform" style="color:var(--text-dim)">Transform</span>
+    </div>`;
+    const rows = path.map(step => {
+      const sn = nodeById[step.nodeId];
+      const color = layerColor(sn.layer);
+      const isCurrent = step.nodeId === nodeId && step.col === colName;
+      return `<div class="bp-lineage-row" style="${isCurrent ? 'background:rgba(56,139,253,.07);' : ''}">
+        <span class="bp-lineage-badge" style="background:${color}20;color:${color}">${LAYERS[sn.layer].id}</span>
+        <span class="bp-lineage-table">${sn.label}</span>
+        <span class="bp-lineage-col" style="${isCurrent ? 'font-weight:700' : ''}">${step.col}</span>
+        <span class="bp-lineage-xform">${step.note || '—'}</span>
+      </div>`;
+    });
+    body.innerHTML = header + rows.join('');
+  }
+}
+
+function traceColumnLineage(colKey) {
+  const result = [];
+  const seen = new Set();
+
+  function walkUp(key) {
+    if (seen.has(key)) return;
+    seen.add(key);
+    const parents = COL_EDGES.filter(ce => ce.t === key);
+    parents.forEach(ce => walkUp(ce.f));
+    const [nodeId, col] = key.split('.');
+    const note = COL_EDGES.find(ce => ce.t === key)?.note || null;
+    result.push({nodeId, col, note});
+  }
+
+  function walkDown(key) {
+    const children = COL_EDGES.filter(ce => ce.f === key);
+    children.forEach(ce => {
+      if (!seen.has(ce.t)) {
+        seen.add(ce.t);
+        const [nodeId, col] = ce.t.split('.');
+        result.push({nodeId, col, note: ce.note || null});
+        walkDown(ce.t);
+      }
+    });
+  }
+
+  walkUp(colKey);
+  walkDown(colKey);
+  return result;
+}
+
+// Bottom panel tab switching
+document.getElementById('bottom-panel').addEventListener('click', e => {
+  const tab = e.target.closest('.bp-tab');
+  if (tab) {
+    S.bottomTab = tab.dataset.tab;
+    document.querySelectorAll('.bp-tab').forEach(t => t.classList.toggle('on', t.dataset.tab === S.bottomTab));
+    renderBottomPanel();
+  }
+});
+
+document.getElementById('bp-close').addEventListener('click', closeBottomPanel);
+
+// Bottom panel resize handle
+let bpResizing = false, bpStartY = 0, bpStartH = 0;
+document.getElementById('bp-resize').addEventListener('mousedown', e => {
+  bpResizing = true;
+  bpStartY = e.clientY;
+  bpStartH = document.getElementById('bottom-panel').offsetHeight;
+  e.preventDefault();
+});
+document.addEventListener('mousemove', e => {
+  if (!bpResizing) return;
+  const delta = bpStartY - e.clientY;
+  const newH = Math.max(120, Math.min(520, bpStartH + delta));
+  document.getElementById('bottom-panel').style.height = newH + 'px';
+});
+document.addEventListener('mouseup', () => { bpResizing = false; });
 
 // ═══════════════════════════════════════════════════════════
 // SEARCH
