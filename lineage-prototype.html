@@ -453,17 +453,103 @@ const canvas       = document.getElementById('canvas');
 const edgesSvg     = document.getElementById('edges-svg');
 const graphArea    = document.getElementById('graph-area');
 
+// Full structural render — only for expand/collapse, filter changes, and init.
+// Never call this from hover handlers.
 function render() {
   computeY();
   renderEdges();
   renderLayerLabels();
   renderNodes();
+  applyFocusState();   // restore visual state on newly-created elements
+  applyColHighlight(); // restore col highlight on newly-created elements
   renderMinimap();
   applyTransform();
 }
 
 function applyTransform() {
   canvas.style.transform = `translate(${S.ox}px,${S.oy}px) scale(${S.scale})`;
+}
+
+// ── FOCUS STATE (hover / selection) ──────────────────────
+// Toggles CSS classes on *existing* DOM elements — no rebuild.
+// Safe to call from mouseenter/mouseleave.
+function applyFocusState() {
+  const focusId = S.hoverNode || S.selNode;
+  const relSet  = focusId ? related(focusId) : null;
+  const query   = S.query.trim().toLowerCase();
+
+  canvas.querySelectorAll('.node').forEach(el => {
+    const id = el.dataset.id;
+    if (!id) return;
+    const n      = nodeById[id];
+    const isSel  = id === S.selNode;
+    const isRel  = !!(relSet && relSet.has(id));
+    const pathDim = !!(relSet && !relSet.has(id));
+    const qDim   = !!(query && !n.label.toLowerCase().includes(query)
+                   && !n.schema.toLowerCase().includes(query)
+                   && !n.cols.some(c => c.n.toLowerCase().includes(query)));
+    el.classList.toggle('sel', isSel);
+    el.classList.toggle('hl',  isRel && !isSel);
+    el.classList.toggle('dim', pathDim || qDim);
+  });
+
+  edgesSvg.querySelectorAll('.edge-g').forEach(g => {
+    const f   = g.dataset.f, t = g.dataset.t, key = g.dataset.key;
+    const isHl  = !!(relSet && relSet.has(f) && relSet.has(t)) || S.hoverEdge === key;
+    const isDim = !!(relSet && (!relSet.has(f) || !relSet.has(t))) && S.hoverEdge !== key;
+    const vis = g.querySelector('.e-visual');
+    if (!vis) return;
+    vis.classList.toggle('e-hl',  isHl);
+    vis.classList.toggle('e-dim', isDim);
+    vis.setAttribute('marker-end', `url(#${isHl ? 'arr-hl' : 'arr'})`);
+  });
+}
+
+// ── COL HIGHLIGHT ─────────────────────────────────────────
+// Toggles col-hl classes and updates col-edge SVG paths in place.
+function applyColHighlight() {
+  const colKey = S.hoverCol;
+
+  canvas.querySelectorAll('.node-col-row').forEach(el => {
+    const key    = el.dataset.colkey;
+    const isHl   = key === colKey;
+    const isRel  = !!(colKey && COL_EDGES.some(
+      ce => (ce.f === key && ce.t === colKey) || (ce.t === key && ce.f === colKey)
+    ));
+    el.classList.toggle('col-hl', isHl || isRel);
+  });
+
+  // Remove old col-edge paths then re-draw if needed
+  edgesSvg.querySelectorAll('.col-edge').forEach(el => el.remove());
+  if (!colKey) return;
+
+  COL_EDGES.filter(ce => ce.f === colKey || ce.t === colKey).forEach(ce => {
+    const [fn2, fc] = ce.f.split('.');
+    const [tn2, tc] = ce.t.split('.');
+    const fromNode  = nodeById[fn2], toNode = nodeById[tn2];
+    if (!fromNode || !toNode) return;
+    if (!S.expanded.has(fn2) || !S.expanded.has(tn2)) return;
+    const fIdx = fromNode.cols.findIndex(c => c.n === fc);
+    const tIdx = toNode.cols.findIndex(c => c.n === tc);
+    if (fIdx < 0 || fIdx >= COLS_DEF || tIdx < 0 || tIdx >= COLS_DEF) return;
+    const x1 = fromNode.x + NODE_W / 2;
+    const y1 = fromNode.y + NODE_H + 5 + fIdx * COL_H + COL_H / 2;
+    const x2 = toNode.x  - NODE_W / 2;
+    const y2 = toNode.y  + NODE_H + 5 + tIdx * COL_H + COL_H / 2;
+    const mx = (x1 + x2) / 2;
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('class', 'col-edge');
+    path.setAttribute('d', `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`);
+    edgesSvg.appendChild(path);
+  });
+}
+
+// ── LEFT PANEL ACTIVE UPDATE ──────────────────────────────
+// Toggles .active on tree items without rebuilding the panel.
+function updateLeftPanelActive() {
+  document.querySelectorAll('#left-panel .lp-table-node').forEach(el => {
+    el.classList.toggle('active', el.dataset.id === S.selNode);
+  });
 }
 
 // ── LAYER LABELS ─────────────────────────────────────────
@@ -485,37 +571,18 @@ function renderLayerLabels() {
 }
 
 // ── EDGES ────────────────────────────────────────────────
+// Builds SVG in neutral state. applyFocusState() stamps classes afterwards.
 
 function renderEdges() {
-  // Determine highlight/dim state
-  let hlSet = null, dimSet = null;
-  const focusId = S.hoverNode || S.selNode;
-  if (focusId) {
-    const rel = related(focusId);
-    hlSet  = new Set(EDGES.filter(e => rel.has(e.f) && rel.has(e.t)).map(edgeKey));
-    dimSet = new Set(EDGES.filter(e => !rel.has(e.f) || !rel.has(e.t)).map(edgeKey));
-  }
-
   const vn = new Set(visibleNodes().map(n => n.id));
-  edgesSvg.setAttribute('width', CANVAS_W);
-  edgesSvg.setAttribute('height', CANVAS_H + 200);
+  edgesSvg.setAttribute('width',   CANVAS_W);
+  edgesSvg.setAttribute('height',  CANVAS_H + 200);
   edgesSvg.setAttribute('viewBox', `0 0 ${CANVAS_W} ${CANVAS_H + 200}`);
 
-  let defs = `<defs>
-    <marker id="arr" markerWidth="6" markerHeight="6" refX="5.5" refY="3" orient="auto">
-      <path d="M0,0 L6,3 L0,6 Z" fill="#484F58"/>
-    </marker>
-    <marker id="arr-hl" markerWidth="6" markerHeight="6" refX="5.5" refY="3" orient="auto">
-      <path d="M0,0 L6,3 L0,6 Z" fill="#388BFD"/>
-    </marker>
-  </defs>`;
-
   let paths = '';
-
   EDGES.forEach(e => {
     if (!vn.has(e.f) || !vn.has(e.t)) return;
-    const fn = nodeById[e.f];
-    const tn = nodeById[e.t];
+    const fn = nodeById[e.f], tn = nodeById[e.t];
     const x1 = fn.x + NODE_W / 2 + 2;
     const y1 = fn.y + nodeH(fn) / 2;
     const x2 = tn.x - NODE_W / 2 - 2;
@@ -523,103 +590,57 @@ function renderEdges() {
     const mx = (x1 + x2) / 2;
     const d  = `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`;
     const key = edgeKey(e);
-    const isHl = hlSet && hlSet.has(key);
-    const isDim = dimSet && dimSet.has(key);
-    const isHover = S.hoverEdge === key;
-    const vclass = `e-visual${isHl || isHover ? ' e-hl' : ''}${isDim ? ' e-dim' : ''}`;
-    paths += `
-      <g class="edge-g" data-key="${key}" data-f="${e.f}" data-t="${e.t}">
-        <path class="e-hit" d="${d}"/>
-        <path class="${vclass}" d="${d}" marker-end="url(#${isHl || isHover ? 'arr-hl' : 'arr'})"/>
-      </g>`;
+    paths += `<g class="edge-g" data-key="${key}" data-f="${e.f}" data-t="${e.t}">
+      <path class="e-hit" d="${d}"/>
+      <path class="e-visual" d="${d}" marker-end="url(#arr)"/>
+    </g>`;
   });
 
-  // Column-level lineage lines (when both endpoints are expanded and same pair)
-  let colPaths = '';
-  if (S.hoverCol) {
-    const [hcNode, hcCol] = S.hoverCol.split('.');
-    const hcFull = S.hoverCol;
-    // upstream col edges ending at hovered col
-    COL_EDGES.filter(ce => ce.t === hcFull || ce.f === hcFull).forEach(ce => {
-      const [fn2, fc] = ce.f.split('.');
-      const [tn2, tc] = ce.t.split('.');
-      const fromNode = nodeById[fn2];
-      const toNode   = nodeById[tn2];
-      if (!fromNode || !toNode) return;
-      if (!S.expanded.has(fn2) || !S.expanded.has(tn2)) return;
+  edgesSvg.innerHTML = `<defs>
+    <marker id="arr"    markerWidth="6" markerHeight="6" refX="5.5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#484F58"/></marker>
+    <marker id="arr-hl" markerWidth="6" markerHeight="6" refX="5.5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#388BFD"/></marker>
+  </defs>${paths}`;
 
-      const fColIdx = fromNode.cols.findIndex(c => c.n === fc);
-      const tColIdx = toNode.cols.findIndex(c => c.n === tc);
-      if (fColIdx < 0 || fColIdx >= COLS_DEF || tColIdx < 0 || tColIdx >= COLS_DEF) return;
-
-      const x1 = fromNode.x + NODE_W / 2;
-      const y1 = fromNode.y + NODE_H + 5 + fColIdx * COL_H + COL_H / 2;
-      const x2 = toNode.x - NODE_W / 2;
-      const y2 = toNode.y + NODE_H + 5 + tColIdx * COL_H + COL_H / 2;
-      const mx = (x1 + x2) / 2;
-      colPaths += `<path class="col-edge" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}"/>`;
-    });
-  }
-
-  edgesSvg.innerHTML = defs + paths + colPaths;
-
-  // Attach edge hover events
+  // Edge hover: toggle class on the group directly, no DOM rebuild
   edgesSvg.querySelectorAll('.edge-g').forEach(g => {
     const hit = g.querySelector('.e-hit');
     hit.addEventListener('mouseenter', evt => {
       S.hoverEdge = g.dataset.key;
       showTip(evt, `<b>${nodeById[g.dataset.f].label}</b> → <b>${nodeById[g.dataset.t].label}</b>`);
-      render();
+      applyFocusState();
     });
     hit.addEventListener('mousemove', moveTip);
     hit.addEventListener('mouseleave', () => {
       S.hoverEdge = null;
       hideTip();
-      render();
+      applyFocusState();
     });
   });
 }
 
 // ── NODES ────────────────────────────────────────────────
+// Builds node DOM in neutral state. applyFocusState() stamps visual classes.
 
 function renderNodes() {
   canvas.querySelectorAll('.node').forEach(el => el.remove());
 
-  const focusId = S.hoverNode || S.selNode;
-  let relSet = focusId ? related(focusId) : null;
-
-  const query = S.query.trim().toLowerCase();
-
   visibleNodes().forEach(n => {
-    const exp  = S.expanded.has(n.id);
-    const isSel = S.selNode === n.id;
-    const isHl  = relSet && relSet.has(n.id) && !isSel;
-    const isDim = (relSet && !relSet.has(n.id)) || (query && !n.label.toLowerCase().includes(query) && !n.schema.toLowerCase().includes(query) && !n.cols.some(c => c.n.toLowerCase().includes(query)));
+    const exp   = S.expanded.has(n.id);
     const h     = nodeH(n);
     const color = layerColor(n.layer);
+    const moreCount = n.cols.length - COLS_DEF;
 
-    let cls = 'node';
-    if (isSel) cls += ' sel';
-    else if (isHl) cls += ' hl';
-    if (isDim) cls += ' dim';
-    if (exp) cls += ' expanded';
-
-    const colRows = exp ? n.cols.slice(0, COLS_DEF).map((col, ci) => {
+    const colRows = exp ? n.cols.slice(0, COLS_DEF).map(col => {
       const colKey = n.id + '.' + col.n;
-      const isColHl = S.hoverCol === colKey;
-      const isColRelated = S.hoverCol && COL_EDGES.some(ce => (ce.f === colKey && ce.t === S.hoverCol) || (ce.t === colKey && ce.f === S.hoverCol));
-      const cCls = `node-col-row${isColHl || isColRelated ? ' col-hl' : ''}`;
-      return `<div class="${cCls}" data-colkey="${colKey}">
+      return `<div class="node-col-row" data-colkey="${colKey}">
         <span class="ncol-icon" style="${col.k ? 'color:var(--amber)' : ''}">${col.k ? '⚿' : '·'}</span>
         <span class="ncol-name">${col.n}</span>
         <span class="ncol-type">${col.t}</span>
       </div>`;
     }).join('') : '';
 
-    const moreCount = n.cols.length - COLS_DEF;
-
     const el = document.createElement('div');
-    el.className = cls;
+    el.className = `node${exp ? ' expanded' : ''}`;
     el.dataset.id = n.id;
     el.style.cssText = `left:${n.x}px;top:${n.y}px;height:${h}px`;
     el.innerHTML = `
@@ -637,7 +658,7 @@ function renderNodes() {
       ${exp ? `<div class="node-sep"></div><div class="node-cols">${colRows}${moreCount > 0 ? `<div class="node-more">+${moreCount} more columns</div>` : ''}</div>` : ''}
     `;
 
-    // Click: select + detail panel
+    // Click: select — just update classes, no DOM rebuild
     el.addEventListener('click', evt => {
       evt.stopPropagation();
       if (S.selNode === n.id) {
@@ -647,31 +668,31 @@ function renderNodes() {
         S.selNode = n.id;
         openDetail(n);
       }
-      render();
-      renderLeftPanel();
+      applyFocusState();
+      updateLeftPanelActive();
     });
 
-    // Chevron: expand/collapse columns
+    // Chevron: expand/collapse — structural change, needs full render
     el.querySelector('.node-chevron').addEventListener('click', evt => {
       evt.stopPropagation();
       S.expanded.has(n.id) ? S.expanded.delete(n.id) : S.expanded.add(n.id);
       render();
     });
 
-    // Node hover: path trace
-    el.addEventListener('mouseenter', () => { S.hoverNode = n.id; render(); });
-    el.addEventListener('mouseleave', () => { S.hoverNode = null; render(); });
+    // Hover: path trace — class toggle only, no DOM rebuild
+    el.addEventListener('mouseenter', () => { S.hoverNode = n.id; applyFocusState(); });
+    el.addEventListener('mouseleave', () => { S.hoverNode = null; applyFocusState(); });
 
-    // Column hover: col lineage
+    // Column hover: lineage highlight — class toggle + col-edge paths only
     el.querySelectorAll('.node-col-row').forEach(crow => {
       crow.addEventListener('mouseenter', evt => {
         evt.stopPropagation();
         S.hoverCol = crow.dataset.colkey;
-        render();
+        applyColHighlight();
       });
       crow.addEventListener('mouseleave', () => {
         S.hoverCol = null;
-        render();
+        applyColHighlight();
       });
     });
 
@@ -801,10 +822,10 @@ function openDetail(n) {
   `;
 
   document.getElementById('det-close').addEventListener('click', () => {
-    closeDetail();
     S.selNode = null;
-    render();
-    renderLeftPanel();
+    closeDetail();
+    applyFocusState();
+    updateLeftPanelActive();
   });
 
   inner.querySelectorAll('[data-goto]').forEach(el => {
@@ -813,8 +834,8 @@ function openDetail(n) {
       S.selNode = id;
       openDetail(nodeById[id]);
       panToNode(nodeById[id]);
-      render();
-      renderLeftPanel();
+      applyFocusState();
+      updateLeftPanelActive();
     });
   });
 }
@@ -842,8 +863,8 @@ let srFocused = 0, srItems = [];
 searchInput.addEventListener('input', () => {
   S.query = searchInput.value;
   const q = S.query.trim().toLowerCase();
-  if (!q) { searchResults.classList.remove('open'); searchResults.innerHTML = ''; render(); return; }
-  render();
+  if (!q) { searchResults.classList.remove('open'); searchResults.innerHTML = ''; applyFocusState(); return; }
+  applyFocusState(); // dim non-matching nodes without rebuilding DOM
 
   // Build results grouped: table matches, then column matches
   const tableMatches = NODES.filter(n =>
@@ -912,11 +933,17 @@ function activateSearchResult(id, col) {
   searchInput.value = '';
   searchResults.classList.remove('open');
   const n = nodeById[id];
-  if (col) { S.expanded.add(id); }
-  panToNode(n);
-  openDetail(n);
-  render();
-  renderLeftPanel();
+  if (col && !S.expanded.has(id)) {
+    S.expanded.add(id);
+    panToNode(n);
+    openDetail(n);
+    render(); // expansion changes node height — structural render needed
+  } else {
+    panToNode(n);
+    openDetail(n);
+    applyFocusState();
+    updateLeftPanelActive();
+  }
 }
 
 searchInput.addEventListener('keydown', evt => {
@@ -925,7 +952,7 @@ searchInput.addEventListener('keydown', evt => {
   if (evt.key === 'ArrowDown') { evt.preventDefault(); srFocused = (srFocused + 1) % items.length; items.forEach((el, i) => el.classList.toggle('focused', i === srFocused)); }
   if (evt.key === 'ArrowUp')   { evt.preventDefault(); srFocused = (srFocused - 1 + items.length) % items.length; items.forEach((el, i) => el.classList.toggle('focused', i === srFocused)); }
   if (evt.key === 'Enter')     { const fi = items[srFocused]; if (fi) activateSearchResult(fi.dataset.id, fi.dataset.col); }
-  if (evt.key === 'Escape')    { searchResults.classList.remove('open'); searchInput.blur(); S.query=''; render(); }
+  if (evt.key === 'Escape')    { searchResults.classList.remove('open'); searchInput.blur(); S.query=''; applyFocusState(); }
 });
 
 searchInput.addEventListener('focus', () => { if (S.query) searchResults.classList.add('open'); });
@@ -935,7 +962,7 @@ document.addEventListener('click', e => { if (!e.target.closest('#search-wrap'))
 document.addEventListener('keydown', e => {
   if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); searchInput.focus(); searchInput.select(); }
   if (e.key === 'Escape' && !searchResults.classList.contains('open')) {
-    S.selNode = null; closeDetail(); render(); renderLeftPanel();
+    S.selNode = null; closeDetail(); applyFocusState(); updateLeftPanelActive();
   }
 });
 
@@ -988,7 +1015,7 @@ graphArea.addEventListener('wheel', e => {
 
 graphArea.addEventListener('click', e => {
   if (!e.target.closest('.node') && !e.target.closest('.e-hit')) {
-    S.selNode = null; closeDetail(); render(); renderLeftPanel();
+    S.selNode = null; closeDetail(); applyFocusState(); updateLeftPanelActive();
   }
 });
 
@@ -1080,8 +1107,8 @@ function renderLeftPanel() {
       S.selNode = n.id;
       panToNode(n);
       openDetail(n);
-      render();
-      renderLeftPanel();
+      applyFocusState();
+      updateLeftPanelActive();
     });
   });
 
@@ -1112,13 +1139,12 @@ function hideTip() { tip.classList.remove('vis'); }
 render();
 renderLeftPanel();
 
-// Auto-open a starter node to demo the detail panel
+// Auto-open fct_orders to show the detail panel on load
 setTimeout(() => {
   S.selNode = 'fct_orders';
   S.expanded.add('fct_orders');
   openDetail(nodeById['fct_orders']);
-  render();
-  renderLeftPanel();
+  render(); // structural: fct_orders is now expanded
 }, 200);
 </script>
 </body>
