@@ -120,14 +120,14 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);height:
 .node.hl{border-color:var(--ring-strong);box-shadow:var(--shadow-amb),var(--hl-top);z-index:5}
 .node.dim{opacity:.18}
 
-.node-head{padding:10px 10px 8px;display:flex;align-items:center;gap:7px}
+.node-head{padding:11px 10px 8px;display:flex;align-items:center;gap:8px}
 .node-badge{width:8px;height:8px;border-radius:2px;flex-shrink:0}
 .node-name{font-size:12px;font-weight:600;color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--font-mono);letter-spacing:-.01em}
 .node-chevron{font-size:10px;color:var(--text-dim);padding:2px;transition:transform .2s;flex-shrink:0}
 .node.expanded .node-chevron{transform:rotate(180deg)}
 
-.node-meta{padding:0 10px 9px;display:flex;align-items:center;flex-wrap:wrap;gap:4px}
-.node-tag{font-size:10px;color:var(--text-dim);background:var(--surface-2);padding:2px 5px;border-radius:4px;white-space:nowrap}
+.node-meta{padding:0 10px 11px;display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+.node-tag{font-size:10px;color:var(--text-dim);background:var(--surface-2);padding:2px 6px;border-radius:4px;white-space:nowrap;line-height:1.45}
 .node-freshness{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 
 .node-sep{height:1px;background:var(--border-light);margin:0 0}
@@ -224,7 +224,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);height:
 .det-col:hover .bp-col-tag{background:rgba(56,139,253,.22)}
 
 /* ── INLINE NODE DETAIL (expanded node) ── */
-.node-detail{padding:7px 8px 9px;display:flex;flex-direction:column;gap:5px}
+.node-detail{padding:9px 8px 12px;display:flex;flex-direction:column;gap:6px}
 .nd-card{background:linear-gradient(180deg,rgba(255,255,255,.02),transparent 60%),var(--surface-2);border:1px solid var(--ring);border-radius:11px;padding:8px 9px;cursor:pointer;box-shadow:var(--hl-top);transition:all .4s var(--ease)}
 .nd-card:hover{border-color:rgba(76,154,255,.4);background:rgba(76,154,255,.06);transform:translateY(-1px)}
 .nd-card-head{display:flex;align-items:center;gap:6px;margin-bottom:5px}
@@ -853,8 +853,8 @@ const MOCK_DATA = {
 const NODE_W    = 204;
 const LAYER_W   = 270;   // gap between layer centers
 const LAYER_X0  = 180;   // first layer center x
-const NODE_H    = 66;    // collapsed node height
-const EXPAND_H  = 250;   // extra height when a node is expanded inline
+const NODE_H    = 80;    // collapsed node height (fits 2-line meta + breathing)
+const EXPAND_H  = 252;   // extra height when a node is expanded inline
 const COL_H     = 24;    // height per column row
 const COLS_DEF  = 4;     // columns shown when expanded (before "more")
 const ROW_GAP   = 16;    // gap between nodes vertically
@@ -922,6 +922,9 @@ const S = {
 // ═══════════════════════════════════════════════════════════
 
 function layerColor(l) { return LAYERS[l].color; }
+
+// Only one node may be expanded in the graph at a time.
+function expandOnly(id) { S.expanded.clear(); if (id) S.expanded.add(id); }
 
 function nodeH(n) {
   return S.expanded.has(n.id) ? NODE_H + EXPAND_H : NODE_H;
@@ -1274,7 +1277,7 @@ function renderNodes() {
         <span class="node-chevron">▾</span>
       </div>
       <div class="node-meta">
-        <span class="node-tag">${n.db}.${n.schema}</span>
+        <span class="node-tag" title="${n.db}.${n.schema}">${n.schema}</span>
         ${n.rows ? `<span class="node-tag">${n.rows}</span>` : ''}
         <span class="node-tag" style="${!n.fresh ? 'color:var(--amber)' : ''}">${n.updated}</span>
         <span class="node-freshness" style="background:${n.fresh ? 'var(--green)' : 'var(--amber)'}"></span>
@@ -1290,7 +1293,7 @@ function renderNodes() {
         S.expanded.delete(n.id);
         if (S.selNode === n.id) S.selNode = null;
       } else {
-        S.expanded.add(n.id);
+        expandOnly(n.id);   // only one node expanded at a time
         S.selNode = n.id;
       }
       render();
@@ -1465,7 +1468,7 @@ function openDetail(n, view) {
     el.addEventListener('click', () => {
       const tn = nodeById[el.dataset.goto];
       S.selNode = tn.id;
-      if (!S.expanded.has(tn.id)) S.expanded.add(tn.id);
+      expandOnly(tn.id);   // only one node expanded at a time
       render();
       openDetail(tn, S.detailView);
       panToNode(tn);
@@ -1906,7 +1909,7 @@ function activateSearchResult(id, col) {
   searchInput.value = '';
   searchResults.classList.remove('open');
   const n = nodeById[id];
-  S.expanded.add(id);          // expand the inline summary on arrival
+  expandOnly(id);              // expand the inline summary on arrival (single)
   render();                    // expansion changes node height — structural
   openDetail(n, S.detailView); // explicit navigation → open the detail panel
   panToNode(n);
@@ -2073,7 +2076,7 @@ function renderLeftPanel() {
     el.addEventListener('click', () => {
       const n = nodeById[el.dataset.id];
       S.selNode = n.id;
-      S.expanded.add(n.id);        // expand inline summary
+      expandOnly(n.id);            // expand inline summary (single)
       render();
       openDetail(n, S.detailView); // explicit navigation → open detail panel
       panToNode(n);
@@ -2112,7 +2115,7 @@ renderLeftPanel();
 // but DON'T auto-open the sidebar — drilling in is a deliberate 2nd-level action.
 setTimeout(() => {
   S.selNode = 'fct_orders';
-  S.expanded.add('fct_orders');
+  expandOnly('fct_orders');
   render(); // structural: fct_orders is now expanded
   panToNode(nodeById['fct_orders']);
   updateLeftPanelActive();
