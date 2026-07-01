@@ -176,6 +176,15 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);height:
 .e-visual.e-dim{opacity:.22}
 .e-hit:hover ~ .e-visual,.e-hit.hover ~ .e-visual{stroke:rgba(47,111,237,.6);stroke-width:2}
 
+/* ── CLEAR FOCUS / SHOW FULL GRAPH ── */
+#clear-focus{position:absolute;top:14px;left:14px;z-index:45;display:none;align-items:center;gap:8px;height:34px;padding:0 13px 0 10px;border-radius:18px;background:rgba(255,255,255,.82);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);border:1px solid var(--ring-strong);color:var(--text);font-size:12px;font-weight:600;font-family:var(--font-sans);cursor:pointer;box-shadow:var(--shadow-soft),var(--hl-top);transition:all .35s var(--ease)}
+#clear-focus.show{display:inline-flex;animation:cfIn .35s var(--ease) both}
+@keyframes cfIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+#clear-focus:hover{border-color:rgba(47,111,237,.5);color:var(--blue)}
+#clear-focus:active{transform:scale(.97)}
+#clear-focus .cf-x{width:19px;height:19px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1;transition:background .35s var(--ease)}
+#clear-focus:hover .cf-x{background:rgba(47,111,237,.14)}
+
 /* ── CORNER CONTROLS ── */
 #zoom-btns{position:absolute;bottom:16px;right:16px;display:flex;flex-direction:column;gap:2px;z-index:50}
 .z-btn{width:32px;height:32px;background:var(--surface);border:1px solid var(--ring);border-radius:9px;color:var(--text-muted);font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .4s var(--ease);user-select:none;box-shadow:var(--shadow-soft),var(--hl-top)}
@@ -323,6 +332,9 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);height:
     <div id="canvas">
       <svg id="edges-svg"></svg>
     </div>
+    <button id="clear-focus" title="Clear selection & fit the whole graph (Esc)">
+      <span class="cf-x">✕</span> Show full graph
+    </button>
     <div id="zoom-btns">
       <div class="z-btn" id="z-in" title="Zoom in">+</div>
       <div class="z-btn" id="z-out" title="Zoom out">−</div>
@@ -1113,7 +1125,9 @@ function applyTransform() {
 // Toggles CSS classes on *existing* DOM elements — no rebuild.
 // Safe to call from mouseenter/mouseleave.
 function applyFocusState() {
-  const focusId = S.hoverNode || S.selNode;
+  // Selection wins over hover: once a node is selected its full lineage tree
+  // stays highlighted even while the cursor moves across other nodes.
+  const focusId = S.selNode || S.hoverNode;
   const relSet  = focusId ? related(focusId) : null;
   const query   = S.query.trim().toLowerCase();
 
@@ -1142,6 +1156,10 @@ function applyFocusState() {
     vis.classList.toggle('e-dim', isDim);
     vis.setAttribute('marker-end', `url(#${isHl ? 'arr-hl' : 'arr'})`);
   });
+
+  // Show the "Show full graph" control whenever a node is focused.
+  const cf = document.getElementById('clear-focus');
+  if (cf) cf.classList.toggle('show', !!S.selNode);
 }
 
 // ── COL HIGHLIGHT ─────────────────────────────────────────
@@ -1685,6 +1703,31 @@ function panToNode(n) {
   applyTransform();
 }
 
+// Zoom/pan so the entire (collapsed) graph fits in the viewport.
+function fitView() {
+  const gaW = graphArea.offsetWidth;
+  const gaH = graphArea.offsetHeight;
+  const pad = 56;
+  const sc  = Math.min((gaW - pad) / CANVAS_W, (gaH - pad) / CANVAS_H);
+  S.scale = Math.max(0.25, Math.min(1, sc));
+  S.ox = (gaW - CANVAS_W * S.scale) / 2;
+  S.oy = Math.max(12, (gaH - CANVAS_H * S.scale) / 2);
+  applyTransform();
+  renderMinimap();
+}
+
+// Clear the current selection/expansion and return to the whole-graph view.
+function clearFocus() {
+  S.selNode = null;
+  S.detailNode = null;
+  S.hoverNode = null;
+  S.expanded.clear();
+  closeDetail();
+  render();              // structural: collapse + un-dim
+  updateLeftPanelActive();
+  fitView();
+}
+
 // ═══════════════════════════════════════════════════════════
 // BOTTOM PANEL
 // ═══════════════════════════════════════════════════════════
@@ -1935,7 +1978,7 @@ document.addEventListener('click', e => { if (!e.target.closest('#search-wrap'))
 document.addEventListener('keydown', e => {
   if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); searchInput.focus(); searchInput.select(); }
   if (e.key === 'Escape' && !searchResults.classList.contains('open')) {
-    S.selNode = null; closeDetail(); applyFocusState(); updateLeftPanelActive();
+    if (S.selNode || S.expanded.size) clearFocus();
   }
 });
 
@@ -1995,6 +2038,9 @@ graphArea.addEventListener('click', e => {
 document.getElementById('z-in').addEventListener('click', () => { S.scale = Math.min(2.5, S.scale * 1.2); applyTransform(); renderMinimap(); });
 document.getElementById('z-out').addEventListener('click', () => { S.scale = Math.max(0.25, S.scale / 1.2); applyTransform(); renderMinimap(); });
 document.getElementById('z-reset').addEventListener('click', () => { S.scale = 1; S.ox = 50; S.oy = 30; applyTransform(); renderMinimap(); });
+
+// Clear-focus / show-full-graph button
+document.getElementById('clear-focus').addEventListener('click', clearFocus);
 
 // Minimap click: pan
 document.getElementById('minimap').addEventListener('click', e => {
