@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clabb — Prototype</title>
+</head>
+<body>
+<style>
+  /* ============ page tokens (outer stage adapts to viewer theme) ============ */
+  :root{
+    --stage-bg:#ECE9E2;
+    --stage-ink:#24211B;
+    --stage-muted:#6E675C;
+    --stage-card:#F6F4EF;
+    --stage-line:#DDD8CE;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --stage-bg:#161A18;
+      --stage-ink:#EDEAE3;
+      --stage-muted:#9AA39D;
+      --stage-card:#1E2421;
+      --stage-line:#2C332F;
+    }
+  }
+  :root[data-theme="dark"]{
+    --stage-bg:#161A18; --stage-ink:#EDEAE3; --stage-muted:#9AA39D;
+    --stage-card:#1E2421; --stage-line:#2C332F;
+  }
+  :root[data-theme="light"]{
+    --stage-bg:#ECE9E2; --stage-ink:#24211B; --stage-muted:#6E675C;
+    --stage-card:#F6F4EF; --stage-line:#DDD8CE;
+  }
+
+  /* ============ app tokens (the phone commits to one "studio daylight" look) ============ */
+  :root{
+    --pine:#22574A;
+    --pine-deep:#1A443A;
+    --pine-soft:#E3ECE7;
+    --marigold:#E8A33D;
+    --clay:#C4643B;
+    --porcelain:#F6F4EF;
+    --paper:#FFFFFF;
+    --ink:#24211B;
+    --muted:#6E675C;
+    --line:#E6E1D7;
+    --good:#2E7D4F;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    /* craft hues */
+    --c-wood:#8A5A33; --c-paint:#3E6FA3; --c-ceramics:#B0563A; --c-fiber:#7A5EA6;
+    --c-print:#2E7D6B; --c-jewelry:#A9822C; --c-photo:#556270; --c-leather:#6B4F3A;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:var(--sans);
+    background:var(--stage-bg);
+    color:var(--stage-ink);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ============ stage layout ============ */
+  .stage{
+    min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    gap:56px; padding:32px 24px;
+  }
+  .rail{
+    max-width:300px; display:flex; flex-direction:column; gap:20px;
+  }
+  @media (max-width:900px){ .rail{display:none;} }
+  .rail .wordmark{
+    font-family:var(--serif); font-size:44px; font-weight:600; letter-spacing:-0.02em;
+  }
+  .rail .tagline{
+    font-family:var(--serif); font-style:italic; font-size:17px; color:var(--stage-muted);
+    margin-top:-10px;
+  }
+  .rail .railnote{ font-size:13px; line-height:1.55; color:var(--stage-muted); }
+  .rail .flows{ display:flex; flex-direction:column; gap:8px; }
+  .rail .flows button{
+    text-align:left; font:inherit; font-size:13.5px; color:var(--stage-ink);
+    background:var(--stage-card); border:1px solid var(--stage-line);
+    border-radius:10px; padding:10px 14px; cursor:pointer;
+  }
+  .rail .flows button:hover{ border-color:var(--pine); }
+  .rail .flows button b{ display:block; font-size:13.5px; }
+  .rail .flows button span{ display:block; color:var(--stage-muted); font-size:12px; margin-top:2px; }
+  .rail .eyebrow{
+    font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--stage-muted);
+  }
+
+  /* ============ phone frame ============ */
+  .phone{
+    width:390px; height:812px; max-height:calc(100vh - 40px);
+    background:var(--porcelain); color:var(--ink);
+    border-radius:44px; border:10px solid #17201D;
+    box-shadow:0 30px 80px rgba(0,0,0,0.35);
+    overflow:hidden; position:relative;
+    display:flex; flex-direction:column;
+    flex-shrink:0;
+  }
+  .statusbar{
+    height:44px; flex:none; display:flex; align-items:center; justify-content:space-between;
+    padding:0 24px; font-size:13px; font-weight:600; background:var(--porcelain);
+  }
+  .screenhold{ flex:1; overflow:hidden; position:relative; }
+  .screen{
+    position:absolute; inset:0; overflow-y:auto; overscroll-behavior:contain;
+    padding:0 0 24px; animation:slidein .22s ease;
+    scrollbar-width:none;
+  }
+  .screen::-webkit-scrollbar{display:none;}
+  @keyframes slidein{ from{transform:translateX(24px); opacity:0;} to{transform:none; opacity:1;} }
+  @media (prefers-reduced-motion: reduce){
+    .screen{animation:none;} .sheet{animation:none;} *{transition:none !important;}
+  }
+
+  /* ============ tab bar ============ */
+  .tabbar{
+    flex:none; display:grid; grid-template-columns:repeat(5,1fr);
+    border-top:1px solid var(--line); background:var(--paper);
+    padding:8px 6px 20px;
+  }
+  .tabbar button{
+    font:inherit; background:none; border:0; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    font-size:10px; font-weight:600; letter-spacing:0.02em; color:var(--muted);
+  }
+  .tabbar button svg{ width:23px; height:23px; stroke:var(--muted); fill:none; stroke-width:1.7; }
+  .tabbar button.on{ color:var(--pine); }
+  .tabbar button.on svg{ stroke:var(--pine); }
+  .tabbar .fab{
+    margin-top:-22px; width:52px; height:52px; border-radius:50%;
+    background:var(--pine); display:flex; align-items:center; justify-content:center;
+    align-self:center; justify-self:center; box-shadow:0 6px 16px rgba(34,87,74,.35);
+  }
+  .tabbar .fab svg{ stroke:#fff; width:24px; height:24px; }
+
+  /* ============ shared app pieces ============ */
+  .apphead{
+    padding:14px 20px 10px; display:flex; align-items:center; gap:12px;
+  }
+  .apphead h1{ font-family:var(--serif); font-size:26px; font-weight:600; letter-spacing:-0.01em; }
+  .apphead .wordsm{ font-family:var(--serif); font-size:24px; font-weight:700; color:var(--pine); }
+  .backbtn{
+    width:34px; height:34px; border-radius:50%; border:1px solid var(--line);
+    background:var(--paper); cursor:pointer; flex:none;
+    display:flex; align-items:center; justify-content:center; font-size:16px; color:var(--ink);
+  }
+  .eyebrow{
+    font-size:10.5px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted);
+  }
+  .pad{ padding:0 20px; }
+  .btn{
+    font:inherit; font-weight:600; font-size:15px; cursor:pointer;
+    border-radius:12px; padding:14px 18px; border:0; width:100%;
+    background:var(--pine); color:#fff;
+  }
+  .btn:active{ background:var(--pine-deep); }
+  .btn:disabled{ opacity:.45; cursor:default; }
+  .btn.ghost{ background:var(--paper); color:var(--pine); border:1.5px solid var(--pine); }
+  .btn.sm{ width:auto; padding:9px 16px; font-size:13.5px; border-radius:10px; }
+  .chip{
+    font:inherit; font-size:12.5px; font-weight:600; cursor:pointer;
+    padding:7px 13px; border-radius:999px; border:1px solid var(--line);
+    background:var(--paper); color:var(--ink); white-space:nowrap;
+  }
+  .chip.on{ background:var(--pine); border-color:var(--pine); color:#fff; }
+  .chiprow{ display:flex; gap:8px; overflow-x:auto; padding:10px 20px; scrollbar-width:none; }
+  .chiprow::-webkit-scrollbar{display:none;}
+  .chipwrap{ display:flex; gap:8px; flex-wrap:wrap; }
+
+  .searchbar{
+    margin:4px 20px 0; display:flex; align-items:center; gap:9px;
+    background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:11px 14px;
+  }
+  .searchbar svg{ width:17px; height:17px; stroke:var(--muted); fill:none; stroke-width:2; flex:none; }
+  .searchbar input{
+    font:inherit; font-size:14.5px; border:0; outline:none; background:none; width:100%; color:var(--ink);
+  }
+  .searchbar input::placeholder{ color:var(--muted); }
+  .filterbtn{
+    flex:none; font:inherit; font-size:12.5px; font-weight:700; color:var(--pine);
+    background:var(--pine-soft); border:0; border-radius:8px; padding:6px 11px; cursor:pointer;
+  }
+
+  /* cards */
+  .card{
+    background:var(--paper); border:1px solid var(--line); border-radius:16px;
+    margin:0 20px 14px; overflow:hidden; cursor:pointer;
+  }
+  .card .tile{ height:120px; position:relative; }
+  .card .body{ padding:13px 15px 15px; }
+  .card h3{ font-size:15.5px; font-weight:700; line-height:1.3; margin:6px 0 3px; }
+  .meta{ font-size:12.5px; color:var(--muted); line-height:1.5; }
+  .cardtop{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .pricetag{
+    font-size:12px; font-weight:700; padding:3px 9px; border-radius:999px; white-space:nowrap;
+  }
+  .pricetag.free{ background:var(--pine-soft); color:var(--pine); }
+  .pricetag.paid{ background:#F7E4D6; color:var(--clay); }
+  .kindtag{
+    position:absolute; left:10px; top:10px; font-size:10.5px; font-weight:700;
+    letter-spacing:0.08em; text-transform:uppercase; color:#fff;
+    background:rgba(23,32,29,.55); padding:4px 9px; border-radius:999px; backdrop-filter:blur(4px);
+  }
+  .spots{ position:absolute; right:10px; bottom:10px; font-size:11px; font-weight:700; color:#fff;
+    background:rgba(23,32,29,.55); padding:4px 9px; border-radius:999px; }
+
+  /* craft tiles (photo placeholders) */
+  .tile{ display:flex; align-items:center; justify-content:center; }
+  .tile svg.glyph{ width:44px; height:44px; stroke:rgba(255,255,255,.9); fill:none; stroke-width:1.5; }
+  .t-wood{ background:linear-gradient(135deg,#8A5A33,#5C3A1E); }
+  .t-paint{ background:linear-gradient(135deg,#3E6FA3,#274C74); }
+  .t-ceramics{ background:linear-gradient(135deg,#B0563A,#7E3B26); }
+  .t-fiber{ background:linear-gradient(135deg,#7A5EA6,#553F79); }
+  .t-print{ background:linear-gradient(135deg,#2E7D6B,#1D554A); }
+  .t-jewelry{ background:linear-gradient(135deg,#A9822C,#77591B); }
+  .t-photo{ background:linear-gradient(135deg,#556270,#38434E); }
+  .t-leather{ background:linear-gradient(135deg,#6B4F3A,#453222); }
+  .tile::after{
+    content:""; position:absolute; inset:0;
+    background:repeating-linear-gradient(45deg,transparent 0 14px,rgba(255,255,255,.045) 14px 15px);
+  }
+
+  .avatar{
+    width:44px; height:44px; border-radius:50%; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-weight:700; font-size:15px;
+  }
+  .avatar.lg{ width:64px; height:64px; font-size:21px; }
+  .avatar.sm{ width:32px; height:32px; font-size:12px; }
+
+  .stars{ color:var(--marigold); font-size:13px; letter-spacing:1px; }
+  .ratingnum{ font-weight:700; font-size:13px; }
+  .verified{
+    display:inline-flex; align-items:center; gap:3px;
+    font-size:10.5px; font-weight:700; color:var(--pine);
+    background:var(--pine-soft); padding:2.5px 8px; border-radius:999px;
+  }
+
+  .seg{
+    display:flex; gap:4px; margin:12px 20px 2px; background:var(--paper);
+    border:1px solid var(--line); border-radius:11px; padding:4px;
+  }
+  .seg button{
+    flex:1; font:inherit; font-size:12.5px; font-weight:600; padding:7px 4px;
+    border:0; border-radius:8px; background:none; color:var(--muted); cursor:pointer;
+  }
+  .seg button.on{ background:var(--pine); color:#fff; }
+
+  .listrow{
+    display:flex; gap:12px; align-items:center; background:var(--paper);
+    border:1px solid var(--line); border-radius:14px; margin:0 20px 11px;
+    padding:13px 14px; cursor:pointer;
+  }
+  .listrow .grow{ flex:1; min-width:0; }
+  .listrow h3{ font-size:14.5px; font-weight:700; }
+
+  .sectionh{
+    display:flex; align-items:baseline; justify-content:space-between;
+    padding:18px 20px 10px;
+  }
+  .sectionh h2{ font-family:var(--serif); font-size:19px; font-weight:600; }
+  .sectionh a{ font-size:12.5px; font-weight:700; color:var(--pine); text-decoration:none; cursor:pointer; }
+
+  /* detail screens */
+  .hero{ height:190px; position:relative; }
+  .hero .backbtn{ position:absolute; left:16px; top:14px; border:0; background:rgba(255,255,255,.92); z-index:2; }
+  .hero .kindtag{ left:60px; top:20px; }
+  .detailhead{ padding:16px 20px 6px; }
+  .detailhead h1{ font-family:var(--serif); font-size:23px; line-height:1.2; font-weight:600; margin:6px 0 8px; }
+  .factrow{
+    display:flex; gap:11px; align-items:flex-start; padding:11px 20px;
+  }
+  .factrow svg{ width:18px; height:18px; stroke:var(--pine); fill:none; stroke-width:1.8; flex:none; margin-top:1px; }
+  .factrow b{ font-size:13.5px; display:block; }
+  .factrow span{ font-size:12.5px; color:var(--muted); }
+  .divider{ height:1px; background:var(--line); margin:10px 20px; }
+  .prose{ font-size:13.5px; line-height:1.65; color:#443F36; padding:4px 20px; }
+  .stickycta{
+    position:sticky; bottom:0; background:linear-gradient(to top,var(--porcelain) 75%,transparent);
+    padding:14px 20px 6px; display:flex; gap:10px; align-items:center;
+  }
+  .stickycta .price{ flex:none; }
+  .stickycta .price b{ font-family:var(--serif); font-size:21px; }
+  .stickycta .price span{ display:block; font-size:11px; color:var(--muted); }
+
+  .hostrow{ display:flex; align-items:center; gap:11px; padding:12px 20px; cursor:pointer; }
+  .hostrow .grow{flex:1;}
+  .hostrow b{ font-size:14px; display:block; }
+  .hostrow span{ font-size:12px; color:var(--muted); display:block; }
+
+  /* forms */
+  .field{ padding:9px 20px; }
+  .field label{ display:block; font-size:12px; font-weight:700; margin-bottom:6px; color:var(--ink); }
+  .field input[type=text], .field input[type=number], .field textarea, .field select{
+    width:100%; font:inherit; font-size:14.5px; color:var(--ink);
+    background:var(--paper); border:1px solid var(--line); border-radius:11px; padding:12px 13px;
+    outline:none;
+  }
+  .field textarea{ min-height:84px; resize:none; }
+  .field input:focus, .field textarea:focus, .field select:focus{ border-color:var(--pine); }
+  .hint{ font-size:11.5px; color:var(--muted); margin-top:5px; }
+  .switchrow{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:13px 20px;
+  }
+  .switchrow b{ font-size:14px; display:block; }
+  .switchrow span{ font-size:12px; color:var(--muted); display:block; margin-top:2px; }
+  .switch{
+    width:46px; height:27px; border-radius:999px; background:#D5D0C6; position:relative;
+    cursor:pointer; flex:none; border:0; transition:background .15s;
+  }
+  .switch::after{
+    content:""; position:absolute; width:21px; height:21px; border-radius:50%;
+    background:#fff; top:3px; left:3px; transition:left .15s; box-shadow:0 1px 3px rgba(0,0,0,.25);
+  }
+  .switch.on{ background:var(--pine); }
+  .switch.on::after{ left:22px; }
+
+  .typecard{
+    display:flex; gap:13px; align-items:flex-start; background:var(--paper);
+    border:1.5px solid var(--line); border-radius:15px; margin:0 20px 12px;
+    padding:15px; cursor:pointer;
+  }
+  .typecard.on{ border-color:var(--pine); background:var(--pine-soft); }
+  .typecard .ic{
+    width:40px; height:40px; border-radius:11px; flex:none;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .typecard .ic svg{ width:21px; height:21px; stroke:#fff; fill:none; stroke-width:1.8; }
+  .typecard b{ font-size:14.5px; display:block; }
+  .typecard span{ font-size:12.5px; color:var(--muted); line-height:1.45; display:block; margin-top:3px; }
+
+  /* sheets */
+  .scrim{
+    position:absolute; inset:0; background:rgba(23,32,29,.45); z-index:40;
+    display:flex; align-items:flex-end; animation:fade .18s ease;
+  }
+  @keyframes fade{ from{opacity:0;} to{opacity:1;} }
+  .sheet{
+    background:var(--porcelain); width:100%; border-radius:22px 22px 0 0;
+    max-height:88%; overflow-y:auto; padding-bottom:26px; animation:up .22s ease;
+    scrollbar-width:none;
+  }
+  .sheet::-webkit-scrollbar{display:none;}
+  @keyframes up{ from{transform:translateY(40px); opacity:.4;} to{transform:none; opacity:1;} }
+  .sheethead{
+    display:flex; align-items:center; justify-content:space-between; padding:18px 20px 8px;
+  }
+  .sheethead h2{ font-family:var(--serif); font-size:20px; font-weight:600; }
+  .sheethead button{ font:inherit; background:none; border:0; font-size:13px; font-weight:700; color:var(--pine); cursor:pointer; }
+  .grabber{ width:38px; height:4px; border-radius:2px; background:#D5D0C6; margin:10px auto 0; }
+
+  .payrow{ display:flex; justify-content:space-between; font-size:13.5px; padding:7px 20px; color:#443F36; }
+  .payrow.total{ font-weight:700; color:var(--ink); font-size:15px; }
+  .payrow.total b{ font-family:var(--serif); font-size:18px; }
+  .qty{ display:flex; align-items:center; gap:14px; }
+  .qty button{
+    width:32px; height:32px; border-radius:50%; border:1.5px solid var(--pine);
+    background:none; color:var(--pine); font-size:17px; font-weight:700; cursor:pointer;
+  }
+  .qty b{ font-size:16px; min-width:18px; text-align:center; }
+  .cardfield{
+    display:flex; gap:10px; align-items:center; margin:8px 20px;
+    background:var(--paper); border:1px solid var(--line); border-radius:11px; padding:12px 13px;
+    font-size:14px; color:var(--muted);
+  }
+
+  /* success */
+  .success{ text-align:center; padding:64px 32px 0; }
+  .success .bigcheck{
+    width:74px; height:74px; border-radius:50%; background:var(--pine-soft);
+    display:flex; align-items:center; justify-content:center; margin:0 auto 20px;
+  }
+  .success .bigcheck svg{ width:34px; height:34px; stroke:var(--pine); stroke-width:2.4; fill:none; }
+  .success h1{ font-family:var(--serif); font-size:25px; font-weight:600; margin-bottom:10px; }
+  .success p{ font-size:13.5px; color:var(--muted); line-height:1.6; margin-bottom:26px; }
+
+  /* mentor profile */
+  .mentortop{ text-align:center; padding:8px 20px 4px; }
+  .mentortop .avatar{ margin:0 auto 10px; }
+  .mentortop h1{ font-family:var(--serif); font-size:23px; font-weight:600; }
+  .mentortop .meta{ margin-top:3px; }
+  .statgrid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:9px; padding:14px 20px 4px;
+  }
+  .stat{
+    background:var(--paper); border:1px solid var(--line); border-radius:13px;
+    text-align:center; padding:12px 6px;
+  }
+  .stat b{ font-family:var(--serif); font-size:19px; display:block; }
+  .stat span{ font-size:10.5px; color:var(--muted); font-weight:600; letter-spacing:.04em; text-transform:uppercase; }
+  .portgrid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:4px 20px;
+  }
+  .portgrid .tile{ height:104px; border-radius:11px; overflow:hidden; position:relative; }
+  .portgrid .tile svg.glyph{ width:26px; height:26px; }
+  .portgrid .tile em{
+    position:absolute; left:7px; right:7px; bottom:6px; font-style:normal;
+    font-size:9.5px; font-weight:700; color:#fff; line-height:1.25;
+    text-shadow:0 1px 3px rgba(0,0,0,.5);
+  }
+  .rbar{ display:flex; align-items:center; gap:9px; padding:3px 20px; font-size:12px; color:var(--muted); }
+  .rbar .track{ flex:1; height:6px; border-radius:3px; background:var(--line); overflow:hidden; }
+  .rbar .fill{ height:100%; background:var(--marigold); border-radius:3px; }
+  .review{
+    background:var(--paper); border:1px solid var(--line); border-radius:14px;
+    margin:0 20px 11px; padding:13px 15px;
+  }
+  .review .rhead{ display:flex; align-items:center; gap:10px; margin-bottom:7px; }
+  .review .rhead b{ font-size:13px; display:block; }
+  .review .rhead span{ font-size:11px; color:var(--muted); }
+  .review p{ font-size:13px; line-height:1.55; color:#443F36; }
+  .projtag{
+    display:inline-block; margin-top:8px; font-size:10.5px; font-weight:700;
+    color:var(--pine); background:var(--pine-soft); border-radius:999px; padding:3px 9px;
+  }
+
+  /* messages */
+  .msgrow{ display:flex; gap:12px; align-items:center; padding:13px 20px; cursor:pointer; border-bottom:1px solid var(--line); }
+  .msgrow .grow{ flex:1; min-width:0; }
+  .msgrow b{ font-size:14px; }
+  .msgrow p{ font-size:12.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .msgrow time{ font-size:11px; color:var(--muted); flex:none; }
+  .unread{ width:9px; height:9px; border-radius:50%; background:var(--clay); flex:none; }
+
+  /* onboarding */
+  .ob{ position:absolute; inset:0; background:var(--porcelain); z-index:60; display:flex; flex-direction:column; overflow-y:auto; }
+  .ob .obinner{ flex:1; display:flex; flex-direction:column; padding:26px 26px 26px; }
+  .ob .steps{ display:flex; gap:6px; margin-bottom:26px; }
+  .ob .steps i{ height:4px; flex:1; border-radius:2px; background:var(--line); }
+  .ob .steps i.on{ background:var(--pine); }
+  .ob h1{ font-family:var(--serif); font-size:27px; font-weight:600; line-height:1.18; text-wrap:balance; margin-bottom:9px; }
+  .ob .sub{ font-size:14px; color:var(--muted); line-height:1.6; margin-bottom:22px; }
+  .obwelcome{ flex:1; display:flex; flex-direction:column; justify-content:center; text-align:center; padding:0 30px; }
+  .obwelcome .mark{ font-family:var(--serif); font-size:64px; font-weight:700; color:var(--pine); letter-spacing:-0.02em; }
+  .obwelcome .tag{ font-family:var(--serif); font-style:italic; font-size:19px; color:var(--clay); margin:8px 0 34px; }
+  .obwelcome p{ font-size:14px; color:var(--muted); line-height:1.65; margin-bottom:34px; }
+  .skiplink{ text-align:center; padding:14px; font-size:13px; font-weight:600; color:var(--muted); cursor:pointer; background:none; border:0; font-family:inherit; }
+
+  .interest{
+    display:flex; align-items:center; gap:10px; font:inherit;
+    font-size:13.5px; font-weight:600; padding:11px 14px; cursor:pointer;
+    border-radius:12px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink);
+  }
+  .interest .dot{ width:10px; height:10px; border-radius:50%; flex:none; }
+  .interest.on{ border-color:var(--pine); background:var(--pine-soft); }
+  .igrid{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+
+  #toast{
+    position:fixed; left:50%; bottom:34px; transform:translateX(-50%) translateY(20px);
+    background:#17201D; color:#fff; font-size:13.5px; font-weight:600;
+    padding:12px 20px; border-radius:999px; opacity:0; pointer-events:none;
+    transition:all .25s ease; z-index:99; max-width:80vw; text-align:center;
+  }
+  #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  .empty{ text-align:center; padding:44px 40px; color:var(--muted); font-size:13.5px; line-height:1.6; }
+  .empty b{ display:block; font-family:var(--serif); font-size:17px; color:var(--ink); margin-bottom:6px; }
+</style>
+
+<div class="stage">
+  <aside class="rail">
+    <div>
+      <div class="wordmark">Clabb</div>
+      <p class="tagline">creative collaboration feeds the soul</p>
+    </div>
+    <p class="railnote">Interactive prototype of the Clabb mobile app — a social network where creatives find classes, collaboration sessions, project help, and mentors. Everything in the phone is tappable, with sample data.</p>
+    <div>
+      <p class="eyebrow" style="margin-bottom:10px">Jump to a flow</p>
+      <div class="flows">
+        <button onclick="jump('discover')"><b>Browse &amp; search</b><span>Events, classes, collabs, project asks — with craft / date / price filters</span></button>
+        <button onclick="jump('mentors')"><b>Find a mentor</b><span>Verified profiles, past projects, ratings &amp; reviews, session requests</span></button>
+        <button onclick="jump('create')"><b>Create something</b><span>Post a class, a free collab session, or a one-on-one project ask</span></button>
+        <button onclick="jump('profile')"><b>Profile &amp; preferences</b><span>Interests, mentor availability, hourly / per-project rates</span></button>
+        <button onclick="restartOnboarding()"><b>Replay onboarding</b><span>First-run interests &amp; mentoring setup</span></button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="phone">
+    <div class="statusbar"><span>9:41</span><span>Clabb</span><span>&#9679;&#9679;&#9679;</span></div>
+    <div class="screenhold" id="screenhold"></div>
+    <nav class="tabbar" id="tabbar"></nav>
+  </div>
+</div>
+<div id="toast" role="status"></div>
+
+<script>
+/* =================== data =================== */
+const CRAFTS = [
+  {id:'wood',     name:'Woodworking',  hue:'var(--c-wood)'},
+  {id:'paint',    name:'Painting',     hue:'var(--c-paint)'},
+  {id:'ceramics', name:'Ceramics',     hue:'var(--c-ceramics)'},
+  {id:'fiber',    name:'Fiber Arts',   hue:'var(--c-fiber)'},
+  {id:'print',    name:'Printmaking',  hue:'var(--c-print)'},
+  {id:'jewelry',  name:'Jewelry',      hue:'var(--c-jewelry)'},
+  {id:'photo',    name:'Photography',  hue:'var(--c-photo)'},
+  {id:'leather',  name:'Leathercraft', hue:'var(--c-leather)'},
+];
+const craft = id => CRAFTS.find(c=>c.id===id);
+
+const GLYPHS = {
+  wood:'<path d="M4 16 14 6l4 4-10 10H4v-4z"/><path d="M12 8l4 4"/><path d="M17 3l4 4"/>',
+  paint:'<path d="M12 3C7 3 3 6.6 3 11c0 4.4 4 8 9 8 .9 0 1.6-.7 1.6-1.6 0-.5-.2-.8-.4-1.1-.2-.3-.4-.6-.4-1.1 0-.9.7-1.6 1.6-1.6H16c2.8 0 5-2.2 5-5C21 5.6 17 3 12 3z"/><circle cx="7.5" cy="10" r="1"/><circle cx="11" cy="7" r="1"/><circle cx="15.5" cy="8.5" r="1"/>',
+  ceramics:'<path d="M8 3h8c0 3-1 4.5-1 7s2 4 2 7c0 2.5-2.5 4-5 4s-5-1.5-5-4c0-3 2-4.5 2-7S8 6 8 3z"/><path d="M8 3h8"/>',
+  fiber:'<circle cx="12" cy="12" r="8"/><path d="M4.5 9.5c5-2 10-2 15 0M4.5 14.5c5 2 10 2 15 0M12 4c-3 5-3 11 0 16M12 4c3 5 3 11 0 16"/>',
+  print:'<rect x="5" y="4" width="14" height="7" rx="1"/><rect x="7" y="14" width="10" height="6" rx="1"/><path d="M5 11v3h2M19 11v3h-2"/>',
+  jewelry:'<path d="M7 4h10l3 5-8 11L4 9l3-5z"/><path d="M4 9h16M9.5 9L12 20 14.5 9M7 4l2.5 5L12 4l2.5 5L17 4"/>',
+  photo:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7l1.5-3h5L16 7"/><circle cx="12" cy="13" r="3.5"/>',
+  leather:'<path d="M5 4h14v16H5z"/><path d="M5 8h14M8 4v4M16 4v4"/><circle cx="12" cy="14" r="2.5"/>',
+};
+const glyph = id => '<svg class="glyph" viewBox="0 0 24 24" aria-hidden="true">'+(GLYPHS[id]||GLYPHS.paint)+'</svg>';
+
+const MENTORS = [
+  {id:'m1', name:'Sam Okafor', craftIds:['wood'], verified:true, rating:4.9, reviews:87, sessions:112,
+   rate:'$45/hr', rateNote:'or fixed per project', avail:'Weeknights & Sat',
+   bio:'Furniture maker for 14 years. I love helping newer woodworkers get confident with jigs, joinery, and shop safety. Bring a project — we’ll build it together in my shop or yours.',
+   projects:[['Crosscut sled build','wood'],['Dovetail keepsake box','wood'],['Live-edge console','wood'],['Router jig set','wood'],['Shaker side table','wood'],['Bandsaw box','wood']],
+   breakdown:[76,9,2,0,0],
+   revs:[
+     {who:'Corey P.', when:'2 weeks ago', stars:5, text:'Sam walked me through building three shop jigs I’d been putting off for a year. Patient, safety-first, and my cuts are dead square now.', proj:'Router jig set'},
+     {who:'Alicia M.', when:'1 month ago', stars:5, text:'Booked a per-project session for a dovetail box. He let me make the mistakes, then showed me why. Learned more in 3 hours than in months of videos.', proj:'Dovetail keepsake box'},
+     {who:'Devon T.', when:'2 months ago', stars:4, text:'Great session on milling rough lumber. Only wish we’d had more time.', proj:'Shaker side table'},
+   ]},
+  {id:'m2', name:'Priya Natarajan', craftIds:['ceramics'], verified:true, rating:4.8, reviews:54, sessions:78,
+   rate:'$60/hr', rateNote:'studio & materials included', avail:'Tue, Thu, Sun',
+   bio:'Studio potter and teacher at Kilnhouse. One-on-one wheel sessions from absolute beginner to refining your throwing. Glaze chemistry nerd.',
+   projects:[['First cylinder set','ceramics'],['Glaze test tiles','ceramics'],['Nesting bowls','ceramics'],['Hand-built teapot','ceramics'],['Raku firing night','ceramics'],['Mug commission run','ceramics']],
+   breakdown:[44,8,2,0,0],
+   revs:[
+     {who:'Jonah W.', when:'3 weeks ago', stars:5, text:'Centered clay for the first time ever. Priya has a gift for explaining what your hands should feel.', proj:'First cylinder set'},
+     {who:'Bea L.', when:'1 month ago', stars:5, text:'The glaze deep-dive was worth every penny. Left with a full set of test tiles and actual understanding.', proj:'Glaze test tiles'},
+   ]},
+  {id:'m3', name:'Maya Reyes', craftIds:['paint'], verified:false, rating:5.0, reviews:32, sessions:41,
+   rate:'Free', rateNote:'pay-what-you-can donations welcome', avail:'Weekends',
+   bio:'Acrylic pour artist and community organizer. I host free pour socials and love mentoring beginners — art should be accessible to everyone.',
+   projects:[['Pour painting social','paint'],['Color theory walk','paint'],['Big canvas collab','paint'],['Mini canvas series','paint'],['Community mural day','paint'],['Palette knife basics','paint']],
+   breakdown:[32,0,0,0,0],
+   revs:[
+     {who:'Ruth S.', when:'1 week ago', stars:5, text:'Maya’s pour social was my first Clabb event and now I’m hooked. Zero gatekeeping, all encouragement.', proj:'Pour painting social'},
+     {who:'Kim H.', when:'1 month ago', stars:5, text:'She spent an hour helping me mix a palette for my living room piece. For free. Legend.', proj:'Color theory walk'},
+   ]},
+  {id:'m4', name:'Dana Kowalski', craftIds:['fiber'], verified:true, rating:4.7, reviews:41, sessions:63,
+   rate:'$35/hr', rateNote:'first 30 min free', avail:'Mon–Fri evenings',
+   bio:'Weaver and visible-mending evangelist. Sashiko, darning, floor loom basics. I’ll help you rescue that sweater.',
+   projects:[['Sashiko denim rescue','fiber'],['First scarf on the loom','fiber'],['Darning workshop','fiber'],['Tapestry sampler','fiber'],['Natural dye batch','fiber'],['Mending circle kit','fiber']],
+   breakdown:[31,7,3,0,0],
+   revs:[
+     {who:'Theo B.', when:'2 weeks ago', stars:5, text:'Fixed my favorite jacket and learned a skill for life. Dana is endlessly patient.', proj:'Sashiko denim rescue'},
+     {who:'Ana G.', when:'6 weeks ago', stars:4, text:'Loom session was great, scheduling took a couple tries.', proj:'First scarf on the loom'},
+   ]},
+  {id:'m5', name:'Leo Martins', craftIds:['print'], verified:true, rating:4.9, reviews:23, sessions:29,
+   rate:'$50/project', rateNote:'flat rate, includes materials', avail:'Sat & Sun',
+   bio:'Linocut and letterpress printer. Per-project sessions: you leave with a finished edition of prints and the skills to do it again.',
+   projects:[['Two-color linocut edition','print'],['Holiday card press run','print'],['Poster typesetting','print'],['Reduction print demo','print'],['Zine binding day','print'],['Monotype experiments','print']],
+   breakdown:[21,2,0,0,0],
+   revs:[
+     {who:'Farah N.', when:'3 weeks ago', stars:5, text:'Went from sketch to a 20-print edition in one afternoon. The flat rate made it easy to say yes.', proj:'Two-color linocut edition'},
+   ]},
+];
+const mentor = id => MENTORS.find(m=>m.id===id);
+
+const EVENTS = [
+  {id:'e2', kind:'class', title:'Intro to Wheel Throwing', craftId:'ceramics',
+   host:'Kilnhouse Studio', hostType:'studio', hostMentor:'m2', price:48, supplies:true,
+   when:'Thu, Jul 23 · 6:30–8:30 PM', where:'Kilnhouse Studio, 412 Foundry Ave', spots:3, cap:8,
+   desc:'A beginner-friendly two-hour session at the wheel. All clay, tools, and aprons provided — just bring short nails and clothes that can get messy. Your pieces are fired and glazed for pickup two weeks later. Ticket includes 25 lb of studio clay and firing fees.'},
+  {id:'e1', kind:'collab', title:'Pour Painting Social', craftId:'paint',
+   host:'Maya Reyes', hostType:'person', hostMentor:'m3', price:0, supplies:false,
+   when:'Sat, Jul 25 · 2:00–5:00 PM', where:'Riverside Community Room', spots:5, cap:12,
+   desc:'Casual acrylic pour hangout — all levels welcome. Bring your own canvas and paints (a supply list is pinned in the event chat); extra cups, gloves, and tarps provided. We’ll swap techniques, make a mess, and trade minis at the end.'},
+  {id:'e3', kind:'ask', title:'Help me build a crosscut sled + two shop jigs', craftId:'wood',
+   host:'Corey P.', hostType:'person', hostMentor:null, price:null, supplies:false,
+   when:'Flexible · next 2 weeks', where:'My garage shop, Maple District', spots:1, cap:1,
+   budget:'Open to hourly or per-project rates', budgetShort:'Rates open',
+   desc:'I have a table saw, a router, and a pile of Baltic birch — but not the confidence to build accurate jigs on my own. Looking for an experienced woodworker to spend an afternoon building a crosscut sled, a thin-rip jig, and a router dado jig with me. I want to learn the why, not just watch.'},
+  {id:'e4', kind:'collab', title:'Watercolor in the Park', craftId:'paint',
+   host:'Elliot Fung', hostType:'person', hostMentor:null, price:0, supplies:false,
+   when:'Sun, Jul 26 · 9:00–11:30 AM', where:'Hollis Park, north lawn', spots:9, cap:15,
+   desc:'Slow morning of plein-air watercolor. Bring your own kit and a folding chair. We sketch, we paint, we get coffee after. Beginners very welcome — a few of us will bring spare supplies.'},
+  {id:'e6', kind:'class', title:'Linocut Printing Workshop', craftId:'print',
+   host:'Press & Pull Print Shop', hostType:'studio', hostMentor:'m5', price:35, supplies:true,
+   when:'Sat, Aug 1 · 10:00 AM–1:00 PM', where:'Press & Pull, 88 Dockside Rd', spots:6, cap:10,
+   desc:'Carve and print your first linocut edition. Blocks, tools, ink, and paper included — you leave with 10 hand-pulled prints. Hosted by Press & Pull; taught by Leo Martins.'},
+  {id:'e5', kind:'collab', title:'Sashiko Mending Circle', craftId:'fiber',
+   host:'Dana Kowalski', hostType:'person', hostMentor:'m4', price:0, supplies:false,
+   when:'Wed, Jul 29 · 7:00–9:00 PM', where:'Thread Collective loft', spots:4, cap:10,
+   desc:'Bring garments that need love. Needles, thread, and patches to share; tea provided. First-timers get a quick sashiko primer at 7 sharp.'},
+  {id:'e7', kind:'ask', title:'Finish a live-edge coffee table with me', craftId:'wood',
+   host:'Nadia Osei', hostType:'person', hostMentor:null, price:null, supplies:false,
+   when:'Flexible · weekends', where:'Shared makerspace, Old Mill', spots:1, cap:1,
+   budget:'Up to $150 for the project', budgetShort:'≤ $150',
+   desc:'Slab is flattened and legs are welded — I need help with the final steps: filling checks with epoxy, finish sanding, and choosing/applying a finish. Would love someone who’s done live-edge work to co-pilot one or two sessions.'},
+  {id:'e8', kind:'class', title:'Silver Ring Basics', craftId:'jewelry',
+   host:'Bench & Flame', hostType:'studio', hostMentor:null, price:65, supplies:true,
+   when:'Fri, Jul 31 · 6:00–9:00 PM', where:'Bench & Flame Studio, 2nd floor', spots:2, cap:6,
+   desc:'Saw, form, solder, and polish a sterling silver stacking ring in one evening. All silver, tools, and torch time included in the ticket. Ages 16+.'},
+];
+const eventById = id => EVENTS.find(e=>e.id===id);
+
+const KIND_LABEL = {class:'Class', collab:'Collab session', ask:'Project ask'};
+
+const MSGS = [
+  {who:'Sam Okafor', mid:'m1', text:'Sounds good — Saturday 1pm works. I’ll bring my sled plans and we can adapt them to your saw.', when:'2h', unread:true},
+  {who:'Pour Painting Social', mid:'m3', text:'Maya: Supply list is pinned! Extra canvases if anyone needs.', when:'5h', unread:true},
+  {who:'Kilnhouse Studio', mid:'m2', text:'Your seat for Thu is confirmed. Doors open 15 min early.', when:'1d', unread:false},
+  {who:'Nadia Osei', mid:null, text:'Thanks for the offer! What weekend works for the epoxy pour?', when:'3d', unread:false},
+];
+
+/* =================== state =================== */
+const S = {
+  tab:'discover',
+  stacks:{ discover:[{n:'discover'}], mentors:[{n:'mentors'}], create:[{n:'create'}], messages:[{n:'messages'}], profile:[{n:'profile'}] },
+  filters:{ q:'', craft:null, date:'any', price:'any', kind:'all' },
+  mentorCraft:null,
+  onboarding:{ step:0, done:false, interests:['wood','paint'], skill:'Curious beginner', mentorOn:false, rateType:'hourly', rate:'40' },
+  me:{ name:'You', mentorOn:false, rateType:'hourly', rate:'40' },
+  create:{ type:null, price:'free' },
+  registered:{}, offers:{},
+  qty:1, sheet:null,
+};
+
+/* =================== helpers =================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+function stars(n){
+  const full = Math.round(n);
+  return '<span class="stars" aria-label="'+n+' out of 5 stars">'+'★'.repeat(full)+'☆'.repeat(5-full)+'</span>';
+}
+function initials(name){ return name.split(' ').map(w=>w[0]).slice(0,2).join(''); }
+function avatarHtml(name, hue, cls){
+  return '<div class="avatar '+(cls||'')+'" style="background:'+hue+'">'+esc(initials(name))+'</div>';
+}
+function topScreen(){ const st=S.stacks[S.tab]; return st[st.length-1]; }
+function go(n, arg){ S.stacks[S.tab].push({n, arg}); S.sheet=null; render(); }
+function back(){ const st=S.stacks[S.tab]; if(st.length>1) st.pop(); S.sheet=null; render(); }
+function setTab(t){ S.tab=t; S.sheet=null; render(); }
+function resetTab(t){ S.stacks[t]=[{n:t}]; setTab(t); }
+function jump(t){ S.onboarding.done = true; resetTab(t); }
+function restartOnboarding(){ S.onboarding = {...S.onboarding, step:0, done:false}; render(); }
+function openSheet(name, arg){ S.sheet={name, arg}; S.qty=1; render(); }
+function closeSheet(){ S.sheet=null; render(); }
+
+const ICONS = {
+  search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+  cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/>',
+  pin:'<path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.5 3.2-5.5 6.5-5.5s5.9 2 6.5 5.5"/><circle cx="17" cy="9" r="2.6"/><path d="M16 14.7c2.6.3 4.6 2 5.2 4.8"/>',
+  tag:'<path d="M3 11V4h7l11 11-7 7L3 11z"/><circle cx="8" cy="9" r="1.6"/>',
+  box:'<path d="M3 8l9-5 9 5v8l-9 5-9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+  check:'<path d="M4 12.5l5.5 5.5L20 7"/>',
+  compass:'<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5 5-2z"/>',
+  award:'<circle cx="12" cy="9" r="6"/><path d="M8.5 14l-2 7 5.5-3 5.5 3-2-7"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  chat:'<path d="M21 12a8 8 0 0 1-8 8H5l-2 2V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4.5 21c.8-4 4-6.2 7.5-6.2s6.7 2.2 7.5 6.2"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+  hand:'<path d="M8 12V5.5a1.5 1.5 0 0 1 3 0V11m0-6.5a1.5 1.5 0 0 1 3 0V11m0-5a1.5 1.5 0 0 1 3 0v7.5c0 4-2.5 7-6.5 7-3.5 0-5-2-6.8-5.8-.6-1.3-.2-2.3.7-2.7.9-.4 1.9 0 2.6 1V12"/>',
+};
+const icon = (n,extra) => '<svg viewBox="0 0 24 24" aria-hidden="true" '+(extra||'')+'>'+ICONS[n]+'</svg>';
+
+/* =================== filtering =================== */
+function filteredEvents(){
+  const f = S.filters;
+  return EVENTS.filter(e=>{
+    if(f.kind!=='all' && e.kind!==f.kind) return false;
+    if(f.craft && e.craftId!==f.craft) return false;
+    if(f.price==='free' && !(e.price===0 || e.kind==='ask')) return false;
+    if(f.price==='paid' && !(e.price>0)) return false;
+    if(f.date==='week' && e.when.includes('Aug')) return false;
+    if(f.date==='weekend' && !(e.when.startsWith('Sat')||e.when.startsWith('Sun')||e.when.includes('weekends'))) return false;
+    if(f.q){
+      const hay = (e.title+' '+craft(e.craftId).name+' '+e.host).toLowerCase();
+      if(!hay.includes(f.q.toLowerCase())) return false;
+    }
+    return true;
+  });
+}
+function activeFilterCount(){
+  const f=S.filters; let n=0;
+  if(f.craft)n++; if(f.date!=='any')n++; if(f.price!=='any')n++;
+  return n;
+}
+
+/* =================== screens =================== */
+function eventCard(e){
+  const c = craft(e.craftId);
+  const priceHtml = e.kind==='ask'
+    ? '<span class="pricetag paid">'+esc(e.budgetShort||'Rates open')+'</span>'
+    : (e.price>0 ? '<span class="pricetag paid">$'+e.price+'</span>' : '<span class="pricetag free">Free</span>');
+  const spots = e.kind==='ask' ? '1-on-1' : e.spots+' spots left';
+  return '<div class="card" onclick="go(\'eventDetail\',\''+e.id+'\')">'
+    +'<div class="tile t-'+e.craftId+'"><span class="kindtag">'+KIND_LABEL[e.kind]+'</span>'+glyph(e.craftId)
+    +'<span class="spots">'+spots+'</span></div>'
+    +'<div class="body"><div class="cardtop"><span class="eyebrow" style="color:'+c.hue+'">'+c.name+'</span>'+priceHtml+'</div>'
+    +'<h3>'+esc(e.title)+'</h3>'
+    +'<p class="meta">'+esc(e.when)+'<br>'+esc(e.host)+(e.hostType==='studio'?' · Studio partner':'')+'</p>'
+    +'</div></div>';
+}
+
+function scrDiscover(){
+  const f = S.filters;
+  const list = filteredEvents();
+  const fc = activeFilterCount();
+  const kinds = [['all','All'],['class','Classes'],['collab','Collabs'],['ask','Project asks']];
+  return '<div class="apphead" style="justify-content:space-between">'
+    +'<span class="wordsm">Clabb</span>'
+    +'<span class="eyebrow">Portland, OR</span></div>'
+    +'<div class="searchbar">'+icon('search')
+    +'<input id="q" type="text" placeholder="Search crafts, events, people…" value="'+esc(f.q)+'" oninput="S.filters.q=this.value; rerenderList()">'
+    +'<button class="filterbtn" onclick="openSheet(\'filters\')">Filters'+(fc?' · '+fc:'')+'</button></div>'
+    +'<div class="seg">'+kinds.map(k=>'<button class="'+(f.kind===k[0]?'on':'')+'" onclick="S.filters.kind=\''+k[0]+'\';render()">'+k[1]+'</button>').join('')+'</div>'
+    +'<div class="chiprow">'
+    +CRAFTS.slice(0,6).map(c=>'<button class="chip '+(f.craft===c.id?'on':'')+'" onclick="S.filters.craft='+(f.craft===c.id?'null':'\''+c.id+'\'')+';render()">'+c.name+'</button>').join('')
+    +'</div>'
+    +'<div id="cardlist">'+cardListHtml(list)+'</div>';
+}
+function cardListHtml(list){
+  if(!list.length) return '<div class="empty"><b>Nothing matches yet</b>Try widening your filters — or be the one who starts it: post a new event or project ask.</div>';
+  return list.map(eventCard).join('');
+}
+function rerenderList(){
+  const el = document.getElementById('cardlist');
+  if(el) el.innerHTML = cardListHtml(filteredEvents());
+}
+
+function scrEventDetail(id){
+  const e = eventById(id); const c = craft(e.craftId);
+  const isAsk = e.kind==='ask';
+  const m = e.hostMentor ? mentor(e.hostMentor) : null;
+  const registered = S.registered[e.id];
+  const offered = S.offers[e.id];
+  let cta;
+  if(isAsk){
+    cta = offered
+      ? '<button class="btn ghost" disabled style="opacity:.7">Offer sent — waiting on '+esc(e.host.split(' ')[0])+'</button>'
+      : '<button class="btn" onclick="openSheet(\'offer\',\''+e.id+'\')">Offer to help</button>';
+  } else if(registered){
+    cta = '<button class="btn ghost" disabled style="opacity:.7">You’re registered ✓</button>';
+  } else if(e.price>0){
+    cta = '<div class="price"><b>$'+e.price+'</b><span>per seat'+(e.supplies?' · supplies incl.':'')+'</span></div>'
+        +'<button class="btn" onclick="openSheet(\'pay\',\''+e.id+'\')">Register &amp; pay</button>';
+  } else {
+    cta = '<div class="price"><b>Free</b><span>'+e.spots+' spots left</span></div>'
+        +'<button class="btn" onclick="registerFree(\''+e.id+'\')">Register</button>';
+  }
+  return '<div class="hero tile t-'+e.craftId+'"><button class="backbtn" onclick="back()" aria-label="Back">&#8592;</button>'
+    +'<span class="kindtag">'+KIND_LABEL[e.kind]+'</span>'+glyph(e.craftId)+'</div>'
+    +'<div class="detailhead"><span class="eyebrow" style="color:'+c.hue+'">'+c.name+'</span>'
+    +'<h1>'+esc(e.title)+'</h1></div>'
+    +'<div class="factrow">'+icon('cal')+'<div><b>'+esc(e.when)+'</b><span>'+(isAsk?'Scheduling agreed in chat':'Add to calendar after registering')+'</span></div></div>'
+    +'<div class="factrow">'+icon('pin')+'<div><b>'+esc(e.where)+'</b><span>Exact address shared with attendees</span></div></div>'
+    +(isAsk
+      ? '<div class="factrow">'+icon('tag')+'<div><b>'+esc(e.budget)+'</b><span>Payment agreed before the session, held by Clabb</span></div></div>'
+      : '<div class="factrow">'+icon('users')+'<div><b>'+e.spots+' of '+e.cap+' spots left</b><span>'+(e.price>0?'Paid registration reserves your seat':'Free — just register to save your spot')+'</span></div></div>')
+    +(e.supplies ? '<div class="factrow">'+icon('box')+'<div><b>All supplies included</b><span>Materials, tools &amp; firing/finishing fees in the ticket</span></div></div>' : '')
+    +'<div class="divider"></div>'
+    +'<p class="prose">'+esc(e.desc)+'</p>'
+    +'<div class="divider"></div>'
+    +'<div class="hostrow" '+(m?'onclick="go(\'mentorProfile\',\''+m.id+'\')"':'')+'>'
+    +avatarHtml(e.host, c.hue, '')
+    +'<div class="grow"><b>'+esc(e.host)+'</b><span>'+(e.hostType==='studio'?'Studio partner · manages payments & reservations on Clabb': isAsk?'Looking for a collaborator':'Host')+'</span></div>'
+    +(m ? '<span class="ratingnum">★ '+m.rating+'</span>' : '')
+    +'</div>'
+    +'<div class="stickycta">'+cta+'</div>';
+}
+
+function registerFree(id){
+  S.registered[id]=true;
+  go('success', {title:'You’re in!', sub:'You’re registered for “'+eventById(id).title+'”. It’s free — nothing to pay. We added the event chat to your Messages.'});
+}
+
+function scrMentors(){
+  const mc = S.mentorCraft;
+  const list = MENTORS.filter(m=>!mc || m.craftIds.includes(mc));
+  return '<div class="apphead"><h1>Mentors &amp; teachers</h1></div>'
+    +'<p class="meta pad" style="margin-top:-6px">Verified makers open to one-on-one sessions — free or at their listed rate.</p>'
+    +'<div class="chiprow">'
+    +'<button class="chip '+(mc===null?'on':'')+'" onclick="S.mentorCraft=null;render()">All crafts</button>'
+    +CRAFTS.slice(0,6).map(c=>'<button class="chip '+(mc===c.id?'on':'')+'" onclick="S.mentorCraft=\''+c.id+'\';render()">'+c.name+'</button>').join('')
+    +'</div>'
+    +(list.length ? list.map(m=>{
+      const c = craft(m.craftIds[0]);
+      return '<div class="listrow" onclick="go(\'mentorProfile\',\''+m.id+'\')">'
+        +avatarHtml(m.name, c.hue)
+        +'<div class="grow"><h3>'+esc(m.name)+' '+(m.verified?'<span class="verified">✓ Verified</span>':'')+'</h3>'
+        +'<p class="meta">'+c.name+' · '+m.sessions+' sessions</p>'
+        +'<p class="meta">'+stars(m.rating)+' <span class="ratingnum">'+m.rating.toFixed(1)+'</span> ('+m.reviews+')</p></div>'
+        +'<div style="text-align:right;flex:none"><b style="font-size:13.5px">'+esc(m.rate)+'</b><p class="meta" style="font-size:10.5px">'+esc(m.avail)+'</p></div>'
+        +'</div>';
+    }).join('') : '<div class="empty"><b>No mentors in this craft yet</b>Check back soon, or post a project ask and we’ll notify you when someone matches.</div>');
+}
+
+function scrMentorProfile(id){
+  const m = mentor(id); const c = craft(m.craftIds[0]);
+  const total = m.breakdown.reduce((a,b)=>a+b,0);
+  return '<div class="apphead"><button class="backbtn" onclick="back()" aria-label="Back">&#8592;</button></div>'
+    +'<div class="mentortop">'+avatarHtml(m.name, c.hue, 'lg')
+    +'<h1>'+esc(m.name)+'</h1>'
+    +'<p class="meta">'+c.name+' · '+esc(m.avail)+'</p>'
+    +'<p style="margin-top:7px">'+(m.verified?'<span class="verified">✓ Verified expert</span> ':'')
+    +'<span class="verified" style="background:#F7E4D6;color:var(--clay)">Open to mentoring</span></p></div>'
+    +'<div class="statgrid">'
+    +'<div class="stat"><b>'+m.rating.toFixed(1)+'</b><span>Rating</span></div>'
+    +'<div class="stat"><b>'+m.sessions+'</b><span>Sessions</span></div>'
+    +'<div class="stat"><b>'+esc(m.rate)+'</b><span>Rate</span></div>'
+    +'</div>'
+    +'<p class="meta pad" style="text-align:center;margin-top:6px">'+esc(m.rateNote)+'</p>'
+    +'<div class="divider"></div>'
+    +'<p class="prose">'+esc(m.bio)+'</p>'
+    +'<div class="sectionh"><h2>Past projects on Clabb</h2></div>'
+    +'<div class="portgrid">'+m.projects.map(p=>'<div class="tile t-'+p[1]+'">'+glyph(p[1])+'<em>'+esc(p[0])+'</em></div>').join('')+'</div>'
+    +'<div class="sectionh"><h2>Reviews</h2><a>'+m.reviews+' total</a></div>'
+    +[5,4,3,2,1].map((s,i)=>'<div class="rbar"><span style="width:8px">'+s+'</span><div class="track"><div class="fill" style="width:'+(total?Math.round(m.breakdown[i]/total*100):0)+'%"></div></div><span style="width:26px;text-align:right">'+m.breakdown[i]+'</span></div>').join('')
+    +'<div style="height:12px"></div>'
+    +m.revs.map(r=>'<div class="review"><div class="rhead">'+avatarHtml(r.who,'#556270','sm')
+      +'<div><b>'+esc(r.who)+'</b><span>'+esc(r.when)+'</span></div>'
+      +'<span style="margin-left:auto">'+stars(r.stars)+'</span></div>'
+      +'<p>'+esc(r.text)+'</p><span class="projtag">'+esc(r.proj)+'</span></div>').join('')
+    +'<div class="stickycta">'
+    +'<button class="btn ghost sm" style="flex:none" onclick="toast(\'Message thread opened with '+esc(m.name.split(' ')[0])+'\')">Message</button>'
+    +'<button class="btn" onclick="openSheet(\'request\',\''+m.id+'\')">Request a session</button>'
+    +'</div>';
+}
+
+function scrCreate(){
+  const t = S.create.type;
+  const types = [
+    ['class','Event or class','Host a workshop or get-together. Set a ticket price if supplies are provided, or keep it free.', 'var(--c-ceramics)', 'cal'],
+    ['collab','Collab session','A free creative hangout — pour painting night, sketch walk, mending circle. Registration only, no payment.', 'var(--c-paint)', 'users'],
+    ['ask','Project ask','Describe a specific project you need help with, one-on-one. Get matched with verified mentors.', 'var(--c-wood)', 'hand'],
+  ];
+  return '<div class="apphead"><h1>Create</h1></div>'
+    +'<p class="meta pad" style="margin-top:-6px;margin-bottom:10px">What are you putting out into the world?</p>'
+    +types.map(x=>'<div class="typecard '+(t===x[0]?'on':'')+'" onclick="S.create.type=\''+x[0]+'\';render()">'
+      +'<div class="ic" style="background:'+x[3]+'">'+icon(x[4])+'</div>'
+      +'<div><b>'+x[1]+'</b><span>'+x[2]+'</span></div></div>').join('')
+    +'<div class="pad" style="margin-top:8px">'
+    +'<button class="btn" '+(t?'':'disabled')+' onclick="if(S.create.type)go(\'createForm\')">Continue</button></div>';
+}
+
+function scrCreateForm(){
+  const t = S.create.type;
+  const isAsk = t==='ask'; const isClass = t==='class';
+  const priceOn = S.create.price==='paid';
+  return '<div class="apphead"><button class="backbtn" onclick="back()" aria-label="Back">&#8592;</button>'
+    +'<h1>'+(isAsk?'New project ask':isClass?'New event / class':'New collab session')+'</h1></div>'
+    +'<div class="field"><label>'+(isAsk?'What do you need help with?':'Title')+'</label>'
+    +'<input type="text" placeholder="'+(isAsk?'e.g. Build a crosscut sled with me':isClass?'e.g. Intro to Wheel Throwing':'e.g. Pour Painting Social')+'"></div>'
+    +'<div class="field"><label>Craft</label><div class="chipwrap">'
+    +CRAFTS.map(c=>'<button class="chip" onclick="this.classList.toggle(\'on\')">'+c.name+'</button>').join('')+'</div></div>'
+    +'<div class="field"><label>'+(isAsk?'Describe the project':'Description')+'</label>'
+    +'<textarea placeholder="'+(isAsk?'What you’re making, what tools/space you have, and what kind of help you want…':'What happens, who it’s for, what to bring…')+'"></textarea>'
+    +(isAsk?'<p class="hint">Good asks mention your tools, your experience level, and whether you want to learn or just get it done.</p>':'')+'</div>'
+    +'<div class="field"><label>'+(isAsk?'Timing':'Date & time')+'</label>'
+    +'<input type="text" placeholder="'+(isAsk?'e.g. Flexible, weekends over the next month':'e.g. Sat, Aug 8 · 2:00–4:00 PM')+'"></div>'
+    +'<div class="field"><label>Location</label><input type="text" placeholder="'+(isAsk?'Your shop, a makerspace, or their studio':'Venue or neighborhood')+'"></div>'
+    +(!isAsk ? '<div class="field"><label>Capacity</label><input type="number" placeholder="'+(isClass?'8':'12')+'" min="1"></div>' : '')
+    +(isClass
+      ? '<div class="switchrow"><div><b>Paid ticket</b><span>Charge per seat — e.g. when supplies or studio time are included. Clabb handles payment &amp; reservations.</span></div>'
+        +'<button class="switch '+(priceOn?'on':'')+'" role="switch" aria-checked="'+priceOn+'" onclick="S.create.price=\''+(priceOn?'free':'paid')+'\';render()"></button></div>'
+        +(priceOn
+          ? '<div class="field"><label>Price per seat</label><input type="number" placeholder="45" min="0"><p class="hint">Attendees pay on registration. Payouts land 24h after the event. Clabb fee: 5%.</p></div>'
+          +'<div class="switchrow"><div><b>Supplies included</b><span>Shown as a badge on your listing</span></div><button class="switch on" role="switch" aria-checked="true" onclick="this.classList.toggle(\'on\')"></button></div>'
+          : '<p class="hint" style="padding:0 20px">Free events use registration only — attendees reserve a spot, no payment step.</p>')
+      : '')
+    +(t==='collab' ? '<p class="hint" style="padding:2px 20px 0">Collab sessions are always free — people just register so you know who’s coming.</p>' : '')
+    +(isAsk
+      ? '<div class="field"><label>Budget</label><div class="chipwrap">'
+        +['Free / skill swap','Open to hourly rates','Fixed project budget'].map((b,i)=>'<button class="chip'+(i===1?' on':'')+'" onclick="[...this.parentNode.children].forEach(x=>x.classList.remove(\'on\'));this.classList.add(\'on\')">'+b+'</button>').join('')
+        +'</div><p class="hint">You’ll agree on the final amount with your match before the session. Clabb holds payment until the session happens.</p></div>'
+      : '')
+    +'<div class="pad" style="margin-top:12px"><button class="btn" onclick="publishCreate()">'+(isAsk?'Post project ask':'Publish')+'</button></div>';
+}
+
+function publishCreate(){
+  const t = S.create.type;
+  const msgs = {
+    class:{title:'Published!', sub:'Your event is live on Clabb. You’ll get a notification for every registration, and payouts land 24 hours after the event wraps.'},
+    collab:{title:'Session is live!', sub:'Your collab session is up. It’s free to join — we’ll show you who’s registered and open a group chat for the session.'},
+    ask:{title:'Ask posted!', sub:'We’re matching your project with verified mentors in Woodworking. You’ll get offers with proposed rates in your Messages — usually within a day.'},
+  };
+  go('success', msgs[t]);
+}
+
+function scrMessages(){
+  return '<div class="apphead"><h1>Messages</h1></div>'
+    +MSGS.map(m=>{
+      const mm = m.mid ? mentor(m.mid) : null;
+      const hue = mm ? craft(mm.craftIds[0]).hue : '#556270';
+      return '<div class="msgrow" onclick="toast(\'Chat threads are outside this prototype’s scope\')">'
+        +avatarHtml(m.who, hue)
+        +'<div class="grow"><b>'+esc(m.who)+'</b><p>'+esc(m.text)+'</p></div>'
+        +'<time>'+m.when+'</time>'+(m.unread?'<span class="unread"></span>':'')
+        +'</div>';
+    }).join('');
+}
+
+function scrProfile(){
+  const ob = S.onboarding; const me = S.me;
+  return '<div class="apphead" style="justify-content:space-between"><h1>Profile</h1>'
+    +'<button class="filterbtn" onclick="toast(\'Settings are outside this prototype’s scope\')">Settings</button></div>'
+    +'<div class="hostrow" style="cursor:default">'+avatarHtml('Corey Putney','var(--pine)','lg')
+    +'<div class="grow"><b style="font-family:var(--serif);font-size:19px">Corey Putney</b>'
+    +'<span>Curious beginner · Portland, OR</span>'
+    +'<span>Member since July 2026</span></div></div>'
+    +'<div class="statgrid">'
+    +'<div class="stat"><b>'+(2+Object.keys(S.registered).length)+'</b><span>Events</span></div>'
+    +'<div class="stat"><b>1</b><span>Projects</span></div>'
+    +'<div class="stat"><b>3</b><span>Connections</span></div></div>'
+    +'<div class="sectionh"><h2>Interests</h2><a onclick="restartOnboarding()">Edit</a></div>'
+    +'<div class="pad"><div class="chipwrap">'
+    +ob.interests.map(id=>'<span class="chip on" style="cursor:default">'+craft(id).name+'</span>').join('')
+    +'<button class="chip" onclick="restartOnboarding()">+ Add</button></div></div>'
+    +'<div class="sectionh"><h2>Mentoring</h2></div>'
+    +'<div class="switchrow" style="padding-top:2px"><div><b>Available for mentoring</b><span>Appear in mentor search; get matched with project asks in your crafts</span></div>'
+    +'<button class="switch '+(me.mentorOn?'on':'')+'" role="switch" aria-checked="'+me.mentorOn+'" onclick="S.me.mentorOn=!S.me.mentorOn;render();toast(S.me.mentorOn?\'You’re now visible as a mentor\':\'Mentoring turned off\')"></button></div>'
+    +(me.mentorOn
+      ? '<div class="field"><label>Rate</label>'
+        +'<div class="chipwrap" style="margin-bottom:9px">'
+        +[['hourly','Hourly'],['project','Per project'],['free','Free / donations']].map(r=>'<button class="chip '+(me.rateType===r[0]?'on':'')+'" onclick="S.me.rateType=\''+r[0]+'\';render()">'+r[1]+'</button>').join('')+'</div>'
+        +(me.rateType!=='free'
+          ? '<input type="number" value="'+esc(me.rate)+'" min="0" oninput="S.me.rate=this.value">'
+            +'<p class="hint">'+(me.rateType==='hourly'?'Per hour, charged through Clabb after each session.':'Your default per-project rate — you can adjust it per offer.')+'</p>'
+          : '<p class="hint">You’ll show as a free mentor. Seekers can leave optional donations.</p>')
+        +'</div>'
+      : '')
+    +'<div class="sectionh"><h2>Your activity</h2></div>'
+    +'<div class="listrow" onclick="jump(\'discover\');go(\'eventDetail\',\'e3\')">'
+    +'<div class="avatar" style="background:var(--c-wood)">'+glyph('wood').replace('class="glyph"','class="glyph" style="width:20px;height:20px"')+'</div>'
+    +'<div class="grow"><h3>Crosscut sled + shop jigs</h3><p class="meta">Your project ask · 2 offers received</p></div>'
+    +'<span class="pricetag free">Active</span></div>'
+    +'<div class="listrow" onclick="jump(\'discover\');go(\'eventDetail\',\'e2\')">'
+    +'<div class="avatar" style="background:var(--c-ceramics)">'+glyph('ceramics').replace('class="glyph"','class="glyph" style="width:20px;height:20px"')+'</div>'
+    +'<div class="grow"><h3>Intro to Wheel Throwing</h3><p class="meta">Registered · Thu, Jul 23</p></div>'
+    +'<span class="pricetag paid">$48 paid</span></div>';
+}
+
+function scrSuccess(arg){
+  return '<div class="success"><div class="bigcheck">'+icon('check')+'</div>'
+    +'<h1>'+esc(arg.title)+'</h1><p>'+esc(arg.sub)+'</p>'
+    +'<button class="btn" onclick="resetTab(S.tab)">Done</button>'
+    +'</div>';
+}
+
+/* =================== sheets =================== */
+function sheetFilters(){
+  const f = S.filters;
+  return '<div class="sheethead"><h2>Filters</h2><button onclick="S.filters={q:S.filters.q,craft:null,date:\'any\',price:\'any\',kind:S.filters.kind};render()">Reset</button></div>'
+    +'<div class="field"><label>Craft</label><div class="chipwrap">'
+    +CRAFTS.map(c=>'<button class="chip '+(f.craft===c.id?'on':'')+'" onclick="S.filters.craft='+(f.craft===c.id?'null':'\''+c.id+'\'')+';render()">'+c.name+'</button>').join('')+'</div></div>'
+    +'<div class="field"><label>When</label><div class="chipwrap">'
+    +[['any','Any time'],['week','This week'],['weekend','This weekend']].map(d=>'<button class="chip '+(f.date===d[0]?'on':'')+'" onclick="S.filters.date=\''+d[0]+'\';render()">'+d[1]+'</button>').join('')+'</div></div>'
+    +'<div class="field"><label>Price</label><div class="chipwrap">'
+    +[['any','Any'],['free','Free'],['paid','Paid']].map(p=>'<button class="chip '+(f.price===p[0]?'on':'')+'" onclick="S.filters.price=\''+p[0]+'\';render()">'+p[1]+'</button>').join('')+'</div></div>'
+    +'<div class="pad" style="margin-top:10px"><button class="btn" onclick="closeSheet()">Show '+filteredEvents().length+' results</button></div>';
+}
+
+function sheetPay(id){
+  const e = eventById(id);
+  const sub = e.price*S.qty, fee = Math.round(sub*0.05*100)/100, tot = (sub+fee).toFixed(2);
+  return '<div class="sheethead"><h2>Register &amp; pay</h2><button onclick="closeSheet()">Close</button></div>'
+    +'<p class="meta pad">'+esc(e.title)+' · '+esc(e.when)+'</p>'
+    +'<div class="switchrow" style="padding-top:16px"><div><b>Seats</b><span>'+e.spots+' left</span></div>'
+    +'<div class="qty"><button onclick="S.qty=Math.max(1,S.qty-1);render()" aria-label="Fewer seats">−</button><b>'+S.qty+'</b><button onclick="S.qty=Math.min('+e.spots+',S.qty+1);render()" aria-label="More seats">+</button></div></div>'
+    +'<div class="divider"></div>'
+    +'<div class="payrow"><span>'+S.qty+' × seat'+(e.supplies?' (supplies included)':'')+'</span><span>$'+sub.toFixed(2)+'</span></div>'
+    +'<div class="payrow"><span>Booking fee</span><span>$'+fee.toFixed(2)+'</span></div>'
+    +'<div class="payrow total"><span>Total</span><b>$'+tot+'</b></div>'
+    +'<div class="divider"></div>'
+    +'<p class="eyebrow pad" style="margin-bottom:6px">Payment</p>'
+    +'<div class="cardfield">'+icon('tag','style="width:17px;height:17px;stroke:var(--muted);fill:none;stroke-width:1.8;flex:none"')+'<span>Visa ···· 4187</span><span style="margin-left:auto;color:var(--pine);font-weight:700;font-size:12.5px;cursor:pointer">Change</span></div>'
+    +'<p class="hint" style="padding:2px 20px 10px">Full refund up to 48 hours before the event. Hosted by '+esc(e.host)+'; payment processed by Clabb.</p>'
+    +'<div class="pad"><button class="btn" onclick="payNow(\''+e.id+'\')">Pay $'+tot+'</button></div>';
+}
+function payNow(id){
+  const e = eventById(id);
+  S.registered[id]=true; S.sheet=null;
+  go('success', {title:'Seat confirmed!', sub:'You’re booked for “'+e.title+'” — receipt sent to your email. Your ticket and the event chat are in Messages.'});
+}
+
+function sheetOffer(id){
+  const e = eventById(id);
+  return '<div class="sheethead"><h2>Offer to help</h2><button onclick="closeSheet()">Close</button></div>'
+    +'<p class="meta pad">'+esc(e.title)+' · posted by '+esc(e.host)+'</p>'
+    +'<div class="field" style="padding-top:16px"><label>Message to '+esc(e.host.split(' ')[0])+'</label>'
+    +'<textarea placeholder="Share your experience with this kind of project and how you’d approach the session…"></textarea></div>'
+    +'<div class="field"><label>Your rate for this project</label><div class="chipwrap">'
+    +['Free — happy to help','$45/hr','Fixed: $120 for the project'].map((r,i)=>'<button class="chip'+(i===1?' on':'')+'" onclick="[...this.parentNode.children].forEach(x=>x.classList.remove(\'on\'));this.classList.add(\'on\')">'+r+'</button>').join('')
+    +'</div><p class="hint">'+esc(e.host.split(' ')[0])+' sees your profile, reviews, and this rate. If they accept, Clabb holds payment until the session is done.</p></div>'
+    +'<div class="pad" style="margin-top:8px"><button class="btn" onclick="sendOffer(\''+e.id+'\')">Send offer</button></div>';
+}
+function sendOffer(id){
+  S.offers[id]=true; S.sheet=null;
+  go('success', {title:'Offer sent!', sub:'Your offer is with '+eventById(id).host+'. If they accept, you’ll agree on timing in chat and the session lands on both calendars.'});
+}
+
+function sheetRequest(id){
+  const m = mentor(id);
+  return '<div class="sheethead"><h2>Request a session</h2><button onclick="closeSheet()">Close</button></div>'
+    +'<p class="meta pad">with '+esc(m.name)+' · '+esc(m.rate)+' <span style="opacity:.8">('+esc(m.rateNote)+')</span></p>'
+    +'<div class="field" style="padding-top:16px"><label>What do you want to work on?</label>'
+    +'<textarea placeholder="Describe your project, your current skill level, and what a great session looks like for you…"></textarea></div>'
+    +'<div class="field"><label>Session type</label><div class="chipwrap">'
+    +['One-off session','Multi-session project','Just advice (30 min)'].map((r,i)=>'<button class="chip'+(i===0?' on':'')+'" onclick="[...this.parentNode.children].forEach(x=>x.classList.remove(\'on\'));this.classList.add(\'on\')">'+r+'</button>').join('')+'</div></div>'
+    +'<div class="field"><label>Preferred timing</label><input type="text" placeholder="e.g. Next two Saturdays, afternoons"><p class="hint">'+esc(m.name.split(' ')[0])+' is usually available: '+esc(m.avail)+'</p></div>'
+    +'<div class="pad" style="margin-top:8px"><button class="btn" onclick="sendRequest(\''+id+'\')">Send request</button></div>';
+}
+function sendRequest(id){
+  const m = mentor(id); S.sheet=null;
+  go('success', {title:'Request sent!', sub:m.name+' typically replies within a few hours. Once they accept, you’ll confirm timing and rate in chat — payment is only charged after the session.'});
+}
+
+/* =================== onboarding =================== */
+function obHtml(){
+  const ob = S.onboarding;
+  if(ob.step===0){
+    return '<div class="ob"><div class="obwelcome">'
+      +'<div class="mark">Clabb</div>'
+      +'<div class="tag">creative collaboration feeds the soul</div>'
+      +'<p>Find classes, collab sessions, and one-on-one project help from makers near you — or share what you know.</p>'
+      +'<button class="btn" onclick="S.onboarding.step=1;render()">Get started</button>'
+      +'<button class="skiplink" onclick="finishOb()">Skip for now</button>'
+      +'</div></div>';
+  }
+  if(ob.step===1){
+    return '<div class="ob"><div class="obinner">'
+      +'<div class="steps"><i class="on"></i><i></i></div>'
+      +'<h1>What do you love to make?</h1>'
+      +'<p class="sub">Pick a few crafts — we’ll use these to match you with events, collabs, and mentors.</p>'
+      +'<div class="igrid">'+CRAFTS.map(c=>'<button class="interest '+(ob.interests.includes(c.id)?'on':'')+'" onclick="toggleInterest(\''+c.id+'\')"><span class="dot" style="background:'+c.hue+'"></span>'+c.name+'</button>').join('')+'</div>'
+      +'<div class="field" style="padding:18px 0 0"><label>Where are you on the journey?</label>'
+      +'<div class="chipwrap">'+['Curious beginner','Confident hobbyist','Seasoned maker','Professional'].map(s=>'<button class="chip '+(ob.skill===s?'on':'')+'" onclick="S.onboarding.skill=\''+s+'\';render()">'+s+'</button>').join('')+'</div></div>'
+      +'<div style="flex:1"></div>'
+      +'<button class="btn" style="margin-top:18px" '+(ob.interests.length?'':'disabled')+' onclick="if(S.onboarding.interests.length){S.onboarding.step=2;render()}">Continue</button>'
+      +'</div></div>';
+  }
+  return '<div class="ob"><div class="obinner">'
+    +'<div class="steps"><i class="on"></i><i class="on"></i></div>'
+    +'<h1>Want to teach or mentor?</h1>'
+    +'<p class="sub">If you’re open to working one-on-one with other makers, we’ll match you with project asks in your crafts. You choose what to charge — including nothing.</p>'
+    +'<div class="switchrow" style="padding:4px 0 14px"><div><b>I’m available for mentoring</b><span>You can change this anytime in your profile</span></div>'
+    +'<button class="switch '+(ob.mentorOn?'on':'')+'" role="switch" aria-checked="'+ob.mentorOn+'" onclick="S.onboarding.mentorOn=!S.onboarding.mentorOn;render()"></button></div>'
+    +(ob.mentorOn
+      ? '<div class="field" style="padding:0 0 8px"><label>How do you want to charge?</label>'
+        +'<div class="chipwrap">'+[['hourly','Hourly rate'],['project','Per project'],['free','Free / donations']].map(r=>'<button class="chip '+(ob.rateType===r[0]?'on':'')+'" onclick="S.onboarding.rateType=\''+r[0]+'\';render()">'+r[1]+'</button>').join('')+'</div></div>'
+        +(ob.rateType!=='free'
+          ? '<div class="field" style="padding:0"><label>'+(ob.rateType==='hourly'?'Hourly rate (USD)':'Typical per-project rate (USD)')+'</label>'
+            +'<input type="number" value="'+esc(ob.rate)+'" min="0" oninput="S.onboarding.rate=this.value">'
+            +'<p class="hint">Shown on your mentor profile. You can adjust it for any individual offer.</p></div>'
+          : '<p class="hint">You’ll be listed as a free mentor — seekers can leave optional donations.</p>')
+      : '')
+    +'<div style="flex:1"></div>'
+    +'<button class="btn" style="margin-top:18px" onclick="finishOb()">Start exploring</button>'
+    +'</div></div>';
+}
+function toggleInterest(id){
+  const a = S.onboarding.interests;
+  const i = a.indexOf(id);
+  if(i>=0) a.splice(i,1); else a.push(id);
+  render();
+}
+function finishOb(){
+  const ob = S.onboarding;
+  ob.done = true;
+  S.me.mentorOn = ob.mentorOn; S.me.rateType = ob.rateType; S.me.rate = ob.rate;
+  render();
+  toast(ob.mentorOn ? 'Welcome to Clabb — you’re listed as a mentor' : 'Welcome to Clabb');
+}
+
+/* =================== render =================== */
+const SCREENS = {
+  discover: scrDiscover,
+  eventDetail: scrEventDetail,
+  mentors: scrMentors,
+  mentorProfile: scrMentorProfile,
+  create: scrCreate,
+  createForm: scrCreateForm,
+  messages: scrMessages,
+  profile: scrProfile,
+  success: scrSuccess,
+};
+const TABS = [
+  ['discover','Discover','compass'],
+  ['mentors','Mentors','award'],
+  ['create','','plus'],
+  ['messages','Messages','chat'],
+  ['profile','Profile','user'],
+];
+function render(){
+  const hold = $('#screenhold');
+  const t = topScreen();
+  let html = '<div class="screen" id="scr">'+SCREENS[t.n](t.arg)+'</div>';
+  if(S.sheet){
+    const sheets = {filters:sheetFilters, pay:sheetPay, offer:sheetOffer, request:sheetRequest};
+    html += '<div class="scrim" onclick="if(event.target===this)closeSheet()"><div class="sheet"><div class="grabber"></div>'+sheets[S.sheet.name](S.sheet.arg)+'</div></div>';
+  }
+  if(!S.onboarding.done) html += obHtml();
+  hold.innerHTML = html;
+
+  $('#tabbar').innerHTML = TABS.map(x=>{
+    if(x[0]==='create')
+      return '<button onclick="resetTab(\'create\')" aria-label="Create"><span class="fab">'+icon('plus')+'</span></button>';
+    return '<button class="'+(S.tab===x[0]?'on':'')+'" onclick="resetTab(\''+x[0]+'\')">'+icon(x[2])+x[1]+'</button>';
+  }).join('');
+
+  const q = document.getElementById('q');
+  if(q && S.filters.q){ q.focus(); q.setSelectionRange(q.value.length,q.value.length); }
+}
+render();
+</script>
+
+</body>
+</html>
