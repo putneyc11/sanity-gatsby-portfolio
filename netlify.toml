@@ -1,0 +1,15 @@
+# Netlify deployment for the Luminary Fusion Studios site.
+[build]
+  base = "web"
+  command = "npm run build"
+  publish = "public"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Stripe webhooks must reach the function unredirected.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200

@@ -1,38 +1,83 @@
-# sanity-gatsby-portfolio
+# Luminary Fusion Studios
 
-A portfolio using structured content and a static site builder.
+Website for **Luminary Fusion Studios**, a precision CNC woodworking shop —
+built with [Gatsby 5](https://gatsbyjs.com), deployed on
+[Netlify](https://netlify.com), with Stripe payments and automated
+invoice + shipping-label fulfillment.
 
-Deployed from [sanity.io/create](https://www.sanity.io/create/?template=sanity-io%2Fsanity-template-gatsby-portfolio).
+## Pages
 
-## What you have
+| Page | Route | What it does |
+| --- | --- | --- |
+| Home | `/` | Hero, featured products, process overview, custom-commission CTA |
+| About | `/about/` | Studio story, values, and team |
+| Shop | `/shop/` | Browse products; filter by search, category, wood, price band; sort by price/name/featured |
+| Product | `/shop/<slug>/` | Full details, personalization, quantity, add to cart |
+| Portfolio | `/portfolio/` | Selected commissions, filterable by category |
+| Contact Us | `/contact/` | Detailed custom-request form (project type, budget, timeline, wood, dimensions, delivery/installation, references) |
+| Cart | `/cart/` | Review order, adjust quantities, secure checkout |
+| Order Confirmed | `/order-confirmed/` | Post-payment landing page |
 
-- A blazing fast portfolio with [Gatsby.js](https://gatsbyjs.org)
-- Structured content using [Sanity.io](https://www.sanity.io)
-- Global deployment on [Netlify](https://netlify.com)
+## Ordering, payment & fulfillment pipeline
 
-## Quick start
+1. **Cart → checkout.** `/cart/` posts the cart (product ids + quantities only)
+   to the `create-checkout` Netlify function, which prices everything from the
+   server-side catalog and opens a Stripe Checkout Session with shipping
+   address + phone collection.
+2. **Invoice.** The session is created with `invoice_creation` enabled, so
+   Stripe automatically generates and emails the paid invoice when the charge
+   succeeds.
+3. **Shipping label.** A Stripe webhook (`checkout.session.completed`) hits the
+   `stripe-webhook` function, which verifies the signature, creates the
+   shipment in [Shippo](https://goshippo.com), buys the cheapest ground-rate
+   label, and writes the tracking number + label URL back onto the Stripe
+   PaymentIntent — so the full order record (payment, invoice, label,
+   tracking) lives in the Stripe dashboard.
 
-1. Clone this repository from your GitHub account
-2. `npm install` in the project root folder on local
-3. `npm run dev` to start the Studio and frontend locally
-   - Your Studio should be running on [http://localhost:3333](http://localhost:3333)
-   - Your frontend should be running on [http://localhost:8000](http://localhost:8000)
-4. `npm run build` to build to production locally
+### Environment variables
 
-## Enable real-time content preview in development
+Set these in Netlify (Site settings → Environment variables):
 
-1. Go to your [project’s API settings on manage.sanity.io](https://manage.sanity.io/projects/ndffsyr9/settings/api) and create a token with read rights.
-2. Copy `.env.development.template` to `.env.development` and paste in the token: `SANITY_READ_TOKEN="yourTokenHere"`.
-3. Restart the development server (`ctrl + C` and `npm run dev`).
+| Variable | Purpose |
+| --- | --- |
+| `STRIPE_SECRET_KEY` | Stripe secret key (required for checkout) |
+| `STRIPE_WEBHOOK_SECRET` | Signing secret for the `checkout.session.completed` webhook |
+| `SHIPPO_API_TOKEN` | Shippo API token (label creation) |
+| `SHIPPO_TEST_MODE` | Optional `true` to validate the pipeline without buying labels |
+| `SHIP_FROM_*` | Optional override of the studio ship-from address (`NAME`, `STREET`, `CITY`, `STATE`, `ZIP`) |
 
-If you want to disable the preview you can set `watchMode: false` in gatsby-config.js. If you just want to preview published changes you can set `overlayDrafts: false` in gatsby-config.js.
+Then point a Stripe webhook endpoint at
+`https://<your-site>/.netlify/functions/stripe-webhook` for the
+`checkout.session.completed` event.
 
-## Deploy changes
+The site builds and runs without any of these — checkout returns a friendly
+"payments not configured" message until the keys are added.
 
-Netlify automatically deploys new changes commited to the `master` branch on GitHub. If you want to change the deployment branch you may do so in [build & deploy settings on Netlify](https://www.netlify.com/docs/continuous-deployment/#branches-deploys).
+### Contact form
 
-## Get help
+The custom-request form on `/contact/` uses
+[Netlify Forms](https://docs.netlify.com/forms/setup/) (`data-netlify`), with a
+honeypot field for spam. Submissions appear under **Forms** in the Netlify
+dashboard, where email notifications can be enabled.
 
-[![Slack Community Button](https://slack.sanity.io/badge.svg)](https://slack.sanity.io/)
+## Development
 
-Join [Sanity’s developer community](https://slack.sanity.io) or ping us [on twitter](https://twitter.com/sanity_io).
+```sh
+npm run install-web   # install web dependencies
+npm run dev           # http://localhost:8000
+npm run build         # production build to web/public
+npm run serve         # serve the production build
+```
+
+## Content
+
+Products live in `web/src/data/products.js` and portfolio entries in
+`web/src/data/portfolio.js` — prices are stored in USD cents to match Stripe,
+and each product's `weightOz` feeds the shipping-label calculation. Product
+imagery is generated procedurally as SVG (`wood-art.js`); to use photography,
+add an image field to the data and swap the component.
+
+`studio/` contains the original Sanity Studio (v1) from the template this
+project started from, extended with a `product` schema mirroring the local
+data shape. It is **not** part of the build; migrate it to Sanity v3 and add
+`gatsby-source-sanity` if/when CMS-managed content is wanted.
