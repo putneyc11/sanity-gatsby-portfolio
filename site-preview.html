@@ -1,0 +1,858 @@
+<title>Luminary Fusion Studios — Interactive Preview</title>
+<style>
+  :root {
+    --wood-dark: #2b2118;
+    --wood: #5d4433;
+    --wood-light: #8a6a4f;
+    --amber: #c8873a;
+    --amber-bright: #e0a04e;
+    --cream: #faf6ef;
+    --cream-dark: #f1e9db;
+    --ink: #241c14;
+    --ink-soft: #6b5d4f;
+    --line: #e2d7c3;
+    --card: #ffffff;
+    --hero-grad-a: #2b2118;
+    --hero-grad-b: #3a2c1f;
+    --hero-text: #faf6ef;
+    --hero-sub: #d9cdbd;
+    --danger: #a33c2a;
+    --success: #3d6b3f;
+    --success-bg: #e8f1e6;
+    --success-line: #c4dbc2;
+    --info-bg: #f1e9db;
+    --radius: 10px;
+    --shadow: 0 2px 12px rgba(43, 33, 24, 0.08);
+    --shadow-lift: 0 10px 30px rgba(43, 33, 24, 0.16);
+    --display: Georgia, 'Times New Roman', serif;
+    --body-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --cream: #1a1310;
+      --cream-dark: #241b15;
+      --ink: #ede4d6;
+      --ink-soft: #b3a390;
+      --line: #3c2f24;
+      --card: #241b15;
+      --wood-dark: #ede4d6;
+      --wood: #cdb89e;
+      --info-bg: #241b15;
+      --success-bg: #1e2a1c;
+      --success: #9ec79b;
+      --success-line: #35502f;
+      --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+      --shadow-lift: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+  }
+  :root[data-theme="light"] {
+    --wood-dark: #2b2118; --wood: #5d4433; --wood-light: #8a6a4f;
+    --cream: #faf6ef; --cream-dark: #f1e9db; --ink: #241c14; --ink-soft: #6b5d4f;
+    --line: #e2d7c3; --card: #ffffff; --info-bg: #f1e9db;
+    --success: #3d6b3f; --success-bg: #e8f1e6; --success-line: #c4dbc2;
+    --shadow: 0 2px 12px rgba(43, 33, 24, 0.08);
+    --shadow-lift: 0 10px 30px rgba(43, 33, 24, 0.16);
+  }
+  :root[data-theme="dark"] {
+    --cream: #1a1310; --cream-dark: #241b15; --ink: #ede4d6; --ink-soft: #b3a390;
+    --line: #3c2f24; --card: #241b15; --wood-dark: #ede4d6; --wood: #cdb89e;
+    --info-bg: #241b15; --success: #9ec79b; --success-bg: #1e2a1c; --success-line: #35502f;
+    --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+    --shadow-lift: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--body-font);
+    color: var(--ink);
+    background: var(--cream);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: var(--display); line-height: 1.15; margin: 0 0 0.5em; color: var(--wood-dark); text-wrap: balance; }
+  h1 { font-size: clamp(1.75rem, 6vw, 2.8rem); }
+  h2 { font-size: clamp(1.4rem, 4.5vw, 2rem); }
+  h3 { font-size: 1.15rem; }
+  p { margin: 0 0 1em; }
+  a { color: var(--wood); text-decoration: none; }
+  svg { display: block; max-width: 100%; }
+
+  .container { max-width: 1060px; margin: 0 auto; padding: 0 1.1rem; }
+  .eyebrow {
+    display: inline-block; font-size: 0.74rem; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber);
+    margin-bottom: 0.7rem;
+  }
+  .muted { color: var(--ink-soft); }
+
+  .preview-note {
+    background: var(--wood-dark); color: var(--cream);
+    font-size: 0.8rem; text-align: center; padding: 0.5rem 1rem;
+  }
+  :root[data-theme="dark"] .preview-note, .dark-note { background: #3a2c1f; color: #ede4d6; }
+  @media (prefers-color-scheme: dark) { .preview-note { background: #3a2c1f; color: #ede4d6; } }
+  :root[data-theme="light"] .preview-note { background: #2b2118; color: #faf6ef; }
+
+  /* Header */
+  header.site {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--cream) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .head-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 0.75rem; padding: 0.7rem 1.1rem; max-width: 1060px; margin: 0 auto;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 0.55rem;
+    font-family: var(--display); font-weight: 700; font-size: 1rem;
+    color: var(--wood-dark); white-space: nowrap; cursor: pointer;
+  }
+  nav.pages { display: flex; gap: 0.15rem; overflow-x: auto; padding: 0 1.1rem 0.6rem; max-width: 1060px; margin: 0 auto; scrollbar-width: none; }
+  nav.pages::-webkit-scrollbar { display: none; }
+  nav.pages a {
+    font-size: 0.88rem; font-weight: 600; color: var(--ink);
+    padding: 0.3rem 0.8rem; border-radius: 999px; white-space: nowrap;
+  }
+  nav.pages a.active { background: var(--wood-dark); color: var(--cream); }
+  :root[data-theme="dark"] nav.pages a.active { background: #ede4d6; color: #1a1310; }
+  @media (prefers-color-scheme: dark) { nav.pages a.active { background: #ede4d6; color: #1a1310; } }
+  :root[data-theme="light"] nav.pages a.active { background: #2b2118; color: #faf6ef; }
+  .cart-btn {
+    position: relative; display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.88rem; font-weight: 600; color: var(--ink);
+    background: none; border: 1.5px solid var(--line); border-radius: 999px;
+    padding: 0.35rem 0.9rem; cursor: pointer; font-family: var(--body-font);
+  }
+  .cart-badge {
+    min-width: 1.2rem; height: 1.2rem; padding: 0 0.25rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 999px; background: var(--amber); color: #2b2118;
+    font-size: 0.68rem; font-weight: 700;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-block; border: 0; border-radius: 999px;
+    padding: 0.65rem 1.4rem; font-size: 0.92rem; font-weight: 600;
+    font-family: var(--body-font); cursor: pointer; text-align: center;
+    transition: transform 0.12s ease, background 0.12s ease;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: var(--wood-dark); color: var(--cream); }
+  :root[data-theme="dark"] .btn-primary { background: #ede4d6; color: #1a1310; }
+  @media (prefers-color-scheme: dark) { .btn-primary { background: #ede4d6; color: #1a1310; } }
+  :root[data-theme="light"] .btn-primary { background: #2b2118; color: #faf6ef; }
+  .btn-accent { background: var(--amber); color: #2b2118; }
+  .btn-accent:hover { background: var(--amber-bright); }
+  .btn-ghost { background: transparent; color: inherit; box-shadow: inset 0 0 0 1.5px currentColor; }
+  .btn-block { display: block; width: 100%; }
+  .btn-sm { padding: 0.45rem 1rem; font-size: 0.82rem; }
+  .btn:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--amber); outline-offset: 2px;
+  }
+
+  /* Hero */
+  .hero {
+    background:
+      radial-gradient(700px 360px at 85% -10%, rgba(200, 135, 58, 0.2), transparent 60%),
+      linear-gradient(180deg, var(--hero-grad-a) 0%, var(--hero-grad-b) 100%);
+    color: var(--hero-text); padding: 2.75rem 0 3rem;
+  }
+  .hero h1 { color: var(--hero-text); }
+  .hero p { color: var(--hero-sub); max-width: 34rem; }
+  .hero .eyebrow { color: var(--amber-bright); }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.25rem; }
+  .hero-art { margin-top: 1.75rem; border-radius: var(--radius); overflow: hidden; filter: drop-shadow(0 14px 30px rgba(0,0,0,0.35)); }
+  @media (min-width: 760px) {
+    .hero-inner { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 2.5rem; align-items: center; }
+    .hero-art { margin-top: 0; }
+  }
+
+  /* Sections & cards */
+  .section { padding: 2.5rem 0; }
+  .section-alt { background: var(--cream-dark); }
+  .section-head { max-width: 620px; margin-bottom: 1.5rem; }
+  .grid { display: grid; gap: 1.1rem; grid-template-columns: 1fr; }
+  @media (min-width: 560px) { .grid { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 900px) { .grid.cols-4 { grid-template-columns: repeat(4, 1fr); } .grid.cols-3 { grid-template-columns: repeat(3, 1fr); } }
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+    display: flex; flex-direction: column;
+  }
+  .card-media { aspect-ratio: 4 / 3; overflow: hidden; cursor: pointer; }
+  .card-media svg { width: 100%; height: 100%; }
+  .card-body { padding: 1rem 1.05rem 1.15rem; display: flex; flex-direction: column; flex: 1; gap: 0.4rem; }
+  .chips { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .chip {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    background: var(--cream-dark); color: var(--wood); border-radius: 999px; padding: 0.18rem 0.6rem;
+  }
+  .card h3 { margin: 0; font-size: 1.02rem; cursor: pointer; }
+  .card h3:hover { color: var(--amber); }
+  .card .lead { font-size: 0.87rem; color: var(--ink-soft); flex: 1; margin: 0; }
+  .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; margin-top: 0.4rem; }
+  .price { font-family: var(--display); font-weight: 700; font-size: 1.1rem; color: var(--wood-dark); font-variant-numeric: tabular-nums; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; margin-top: 1.5rem; }
+  @media (min-width: 700px) { .stat-row { grid-template-columns: repeat(4, 1fr); } }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; text-align: center; }
+  .stat strong { display: block; font-family: var(--display); font-size: 1.6rem; color: var(--wood-dark); }
+  .stat span { font-size: 0.8rem; color: var(--ink-soft); }
+
+  .step { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem; }
+  .step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem; border-radius: 999px;
+    background: var(--amber); color: #2b2118;
+    font-family: var(--display); font-weight: 700; margin-bottom: 0.6rem;
+  }
+
+  /* Page hero */
+  .page-hero { background: linear-gradient(180deg, var(--cream-dark), var(--cream)); border-bottom: 1px solid var(--line); padding: 2rem 0 1.75rem; }
+  .page-hero p { max-width: 620px; color: var(--ink-soft); margin-bottom: 0; }
+
+  /* Filters */
+  .filter-bar {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem;
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 0.9rem 1rem; margin: 1.25rem 0 1rem; box-shadow: var(--shadow);
+  }
+  .filter-bar .full { grid-column: 1 / -1; }
+  @media (min-width: 760px) { .filter-bar { grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr; } .filter-bar .full { grid-column: auto; } }
+  .field { display: flex; flex-direction: column; gap: 0.25rem; }
+  .field label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+  .field select, .field input, .field textarea {
+    font: inherit; font-size: 0.9rem; padding: 0.55rem 0.7rem;
+    border: 1px solid var(--line); border-radius: 8px;
+    background: var(--cream); color: var(--ink); width: 100%;
+  }
+  .count { font-size: 0.87rem; color: var(--ink-soft); margin: 0 0 1rem; }
+  .link-btn { background: none; border: 0; padding: 0; font: inherit; color: var(--wood); text-decoration: underline; cursor: pointer; }
+
+  .empty {
+    text-align: center; padding: 2.5rem 1rem; background: var(--card);
+    border: 1px dashed var(--line); border-radius: var(--radius); color: var(--ink-soft);
+  }
+
+  /* Product detail */
+  .detail { display: grid; gap: 1.5rem; padding: 1.5rem 0; }
+  @media (min-width: 760px) { .detail { grid-template-columns: 1fr 1fr; align-items: start; } }
+  .detail-media { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lift); }
+  .spec { list-style: none; margin: 1rem 0; padding: 0; border-top: 1px solid var(--line); font-size: 0.9rem; }
+  .spec li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--line); }
+  .spec li span:first-child { color: var(--ink-soft); }
+  .qty { display: inline-flex; align-items: center; border: 1.5px solid var(--ink); border-radius: 999px; }
+  .qty button { border: 0; background: none; width: 2.3rem; height: 2.3rem; font-size: 1.1rem; cursor: pointer; color: var(--ink); }
+  .qty span { min-width: 2rem; text-align: center; font-weight: 600; }
+  .buy-row { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; margin: 1rem 0; }
+
+  /* Cart */
+  .cart-line {
+    display: grid; grid-template-columns: 72px 1fr; gap: 0.8rem;
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 0.8rem; margin-bottom: 0.8rem; align-items: center;
+  }
+  .cart-line .thumb { width: 72px; height: 54px; border-radius: 6px; overflow: hidden; }
+  .cart-line .thumb svg { width: 100%; height: 100%; }
+  .cart-line h3 { font-size: 0.98rem; margin: 0; }
+  .cart-line .row2 { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; margin-top: 0.4rem; flex-wrap: wrap; }
+  .danger-link { background: none; border: 0; color: var(--danger); font-size: 0.8rem; cursor: pointer; text-decoration: underline; padding: 0; font-family: var(--body-font); }
+  .summary {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 1.25rem; box-shadow: var(--shadow); margin-top: 1.25rem;
+  }
+  .sum-row { display: flex; justify-content: space-between; padding: 0.35rem 0; font-size: 0.92rem; font-variant-numeric: tabular-nums; }
+  .sum-row.total { border-top: 1px solid var(--line); margin-top: 0.4rem; padding-top: 0.75rem; font-weight: 700; font-family: var(--display); font-size: 1.05rem; }
+  @media (min-width: 820px) {
+    .cart-wrap { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1.5rem; align-items: start; }
+    .summary { margin-top: 0; }
+  }
+
+  /* Notices */
+  .notice { border-radius: var(--radius); padding: 0.9rem 1.1rem; margin: 0.9rem 0; font-size: 0.9rem; }
+  .notice-info { background: var(--info-bg); border: 1px solid var(--line); color: var(--ink); }
+  .notice-success { background: var(--success-bg); border: 1px solid var(--success-line); color: var(--success); }
+
+  /* Pills */
+  .pills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.25rem 0; }
+  .pill {
+    border: 1.5px solid var(--line); background: var(--card); color: var(--ink-soft);
+    border-radius: 999px; padding: 0.4rem 1rem; font-size: 0.84rem; font-weight: 600;
+    cursor: pointer; font-family: var(--body-font);
+  }
+  .pill.active { background: var(--amber); border-color: var(--amber); color: #2b2118; }
+
+  /* Contact form */
+  .form-panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.4rem; box-shadow: var(--shadow); margin-top: 1.25rem; }
+  .form-grid { display: grid; grid-template-columns: 1fr; gap: 0.9rem; }
+  @media (min-width: 640px) { .form-grid { grid-template-columns: 1fr 1fr; } .form-grid .full { grid-column: 1 / -1; } }
+  .form-grid label { font-size: 0.8rem; font-weight: 700; color: var(--wood-dark); }
+  .req { color: var(--danger); }
+  .hint { font-size: 0.76rem; color: var(--ink-soft); }
+  textarea { resize: vertical; min-height: 110px; }
+
+  /* Footer */
+  footer.site {
+    background: var(--hero-grad-a); color: #cdbfae; margin-top: 2.5rem;
+    padding: 2rem 0 1.25rem; font-size: 0.88rem;
+  }
+  footer.site .container { display: grid; gap: 1.5rem; }
+  @media (min-width: 700px) { footer.site .container { grid-template-columns: 1.6fr 1fr 1.2fr; } }
+  footer.site h3 { color: #faf6ef; font-size: 0.98rem; }
+  footer.site a { color: #cdbfae; display: block; padding: 0.15rem 0; }
+  footer.site .fine { grid-column: 1 / -1; border-top: 1px solid rgba(250,246,239,0.14); padding-top: 1rem; text-align: center; font-size: 0.76rem; color: #9a8b78; }
+
+  .two-col { display: grid; gap: 1.5rem; }
+  @media (min-width: 760px) { .two-col { grid-template-columns: 1fr 1fr; align-items: center; } }
+  .framed { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lift); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<div class="preview-note">Interactive preview of the site on branch <strong>claude/luminary-fusion-website-xcl9ds</strong> — checkout &amp; form submissions are simulated here; they go live once deployed with Stripe/Shippo keys.</div>
+
+<header class="site">
+  <div class="head-inner">
+    <span class="brand" onclick="go('home')">
+      <svg width="30" height="30" viewBox="0 0 48 48" aria-hidden="true"><rect x="2" y="2" width="44" height="44" rx="10" fill="#2b2118"/><path d="M24 10 a14 14 0 1 0 14 14" fill="none" stroke="#e0a04e" stroke-width="3.5" stroke-linecap="round"/><path d="M24 17 a7 7 0 1 0 7 7" fill="none" stroke="#c8873a" stroke-width="3" stroke-linecap="round" stroke-opacity="0.8"/><circle cx="24" cy="24" r="2.6" fill="#faf6ef"/></svg>
+      Luminary Fusion Studios
+    </span>
+    <button class="cart-btn" onclick="go('cart')" aria-label="Open cart">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      Cart <span class="cart-badge" id="cart-badge">0</span>
+    </button>
+  </div>
+  <nav class="pages" id="main-nav">
+    <a href="#home" data-page="home">Home</a>
+    <a href="#about" data-page="about">About</a>
+    <a href="#shop" data-page="shop">Shop</a>
+    <a href="#portfolio" data-page="portfolio">Portfolio</a>
+    <a href="#contact" data-page="contact">Contact Us</a>
+  </nav>
+</header>
+
+<main id="app"></main>
+
+<footer class="site">
+  <div class="container">
+    <div>
+      <h3>Luminary Fusion Studios</h3>
+      <p>Precision CNC woodworking studio crafting signs, furniture, and heirloom pieces where digital fabrication meets hand finishing.</p>
+    </div>
+    <div>
+      <h3>Explore</h3>
+      <a href="#about">About</a>
+      <a href="#shop">Shop</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#contact">Contact Us</a>
+    </div>
+    <div>
+      <h3>Visit the Studio</h3>
+      <p>1427 Sawyer Avenue<br>Portland, OR 97211<br>Tue–Sat, 9am–5pm<br>(503) 555-0147<br>hello@luminaryfusionstudios.com</p>
+    </div>
+    <div class="fine">© 2026 Luminary Fusion Studios. All pieces machined and finished in Portland, Oregon.</div>
+  </div>
+</footer>
+
+<script>
+'use strict'
+
+// ---------- Data (mirrors web/src/data/products.js) ----------
+const PRODUCTS = [
+  {id:'lf-001',slug:'family-name-established-sign',name:'Family Name & Established Sign',category:'Signs',wood:'Walnut',price:14500,dimensions:'24" × 12" × 0.75"',lead:'V-carved family name sign with established date, finished in matte poly.',description:'Our most-requested housewarming piece. Your family name and established year are V-carved into solid walnut on our 3-axis CNC, then hand-sanded and sealed with a matte polyurethane that deepens the grain. Includes a keyhole slot for flush wall mounting.',tone:['#5d4433','#8a6a4f'],art:'sign',featured:true,personalizable:true},
+  {id:'lf-002',slug:'topographic-lake-map',name:'Topographic Lake Map',category:'Wall Art',wood:'Baltic Birch',price:21900,dimensions:'20" × 30" × 1.5"',lead:'Layered bathymetric map of your favorite lake, CNC-cut from Baltic birch.',description:'Each depth contour of your chosen lake is machined from a separate sheet of Baltic birch, stained in graduating blues, and laminated into a dimensional map. Tell us the lake at checkout — we generate the contours from survey bathymetry data.',tone:['#3d5a6c','#7fa8b8'],art:'topo',featured:true,personalizable:true},
+  {id:'lf-003',slug:'end-grain-cutting-board',name:'End-Grain Cutting Board',category:'Kitchen',wood:'Maple & Walnut',price:16800,dimensions:'18" × 12" × 1.75"',lead:'Checkerboard end-grain board with CNC-milled juice groove and handholds.',description:'A butcher-block style board built from alternating hard maple and black walnut. The juice groove, recessed handholds, and perfectly flat faces are milled on the CNC; the finish is food-safe mineral oil and beeswax. Kind to knife edges and built to be resurfaced for decades.',tone:['#7a5b3a','#c9a876'],art:'board',featured:true},
+  {id:'lf-004',slug:'geometric-walnut-clock',name:'Geometric Walnut Wall Clock',category:'Home Decor',wood:'Walnut',price:9800,dimensions:'14" diameter × 0.75"',lead:'Faceted low-poly clock face machined from a single walnut blank.',description:'Sixty facets machined into solid walnut catch the light differently every hour. Fitted with a silent quartz sweep movement and brass hands. Each clock is oiled, waxed, and numbered on the back.',tone:['#4e3b2a','#77593d'],art:'clock'},
+  {id:'lf-005',slug:'custom-logo-business-sign',name:'Custom Logo Business Sign',category:'Signs',wood:'White Oak',price:32500,dimensions:'36" × 18" × 1"',lead:'Your logo, vectorized and carved in relief for lobby or storefront.',description:'Send us your logo and we handle the rest: vector conversion, a machining proof for your approval, 2.5D relief carving in white oak, and a UV-resistant finish. Standoff mounting hardware included. For illuminated or oversized signage, use the custom request form.',tone:['#8a7048','#b3966a'],art:'sign',personalizable:true},
+  {id:'lf-006',slug:'live-edge-serving-tray',name:'Live-Edge Serving Tray',category:'Kitchen',wood:'Cherry',price:8900,dimensions:'22" × 11" × 1"',lead:'Cherry tray with CNC-milled recess and sculpted handles, natural edge intact.',description:'We flatten a live-edge cherry slab on the CNC, mill a shallow serving recess, and sculpt integral handles — leaving one natural edge untouched. Finished with food-safe hardwax oil. Grain and edge character vary board to board; no two trays match.',tone:['#8c4f36','#c07a54'],art:'board'},
+  {id:'lf-007',slug:'mid-century-record-console',name:'Mid-Century Record Console',category:'Furniture',wood:'Walnut & Steel',price:189000,dimensions:'48" × 18" × 24"',lead:'CNC-joined walnut console with record storage and cable management.',description:'Flat-pack precision meets heirloom hardwood: every joint in this console is CNC-cut for a dead-square, glue-optional assembly. Holds 200+ LPs with a turntable isolation top, milled cable channels, and hairpin steel legs. Ships freight, fully insured.',tone:['#4a3626','#6e5138'],art:'furniture',featured:true},
+  {id:'lf-008',slug:'mountain-range-silhouette',name:'Mountain Range Silhouette',category:'Wall Art',wood:'Ash',price:12400,dimensions:'36" × 12" × 0.75"',lead:'Three-layer mountain skyline of your chosen range, cut in ash.',description:'Pick any mountain range — we pull the real elevation profile and machine it as three offset layers of ash with a smoked gradient stain. Ships with a French cleat for easy level hanging.',tone:['#5f6c5d','#93a08b'],art:'topo',personalizable:true},
+  {id:'lf-009',slug:'inlaid-chess-board',name:'Inlaid Chess Board',category:'Home Decor',wood:'Maple & Wenge',price:24500,dimensions:'20" × 20" × 1.25"',lead:'Tournament-size board with zero-gap CNC inlay and coordinate engraving.',description:'Sixty-four squares of maple and wenge inlaid to tolerances only a CNC can hold — seams disappear under your fingertip. Algebraic coordinates are micro-engraved in the border, and a felt-lined underside protects your table. Pieces not included.',tone:['#3a2f26','#d8c9a3'],art:'board'},
+  {id:'lf-010',slug:'floating-nightstand-pair',name:'Floating Nightstand (Pair)',category:'Furniture',wood:'White Oak',price:54000,dimensions:'18" × 12" × 6" each',lead:'Wall-mounted oak nightstands with hidden fixings and soft-close drawer.',description:'A pair of wall-hung nightstands machined from rift-sawn white oak. The CNC cuts the dovetailed drawer, the finger pull, and the concealed mounting cavity in one setup, so everything lines up — always. Hardwax oil finish; mounting template included.',tone:['#9c805a','#c4ab83'],art:'furniture'},
+  {id:'lf-011',slug:'monogram-charcuterie-board',name:'Monogram Charcuterie Board',category:'Kitchen',wood:'Acacia',price:7200,dimensions:'16" × 10" × 0.75"',lead:'Paddle-style board engraved with your monogram or short message.',description:'A favorite for weddings and closings. Add up to three initials or a short message at checkout and we engrave it in your choice of script or block lettering. Finished food-safe. Orders of 10+ qualify for event pricing — ask via the contact form.',tone:['#7d5a3c','#b08a5e'],art:'board',personalizable:true},
+  {id:'lf-012',slug:'acoustic-slat-wall-panel',name:'Acoustic Slat Wall Panel',category:'Wall Art',wood:'Oak & Felt',price:19800,dimensions:'94" × 24" × 0.9"',lead:'Oak slats on acoustic felt — warmth for your walls and your room tone.',description:'CNC-ripped oak slats bonded to 9mm recycled acoustic felt tame echo in offices, studios, and living rooms. Panels cut cleanly on site for outlets and corners. Price is per panel; for full-wall layouts send your dimensions through the custom request form.',tone:['#6b5138','#2f2b28'],art:'slats'}
+]
+
+const PORTFOLIO = [
+  {title:'Ember & Rye — Restaurant Interior Package',client:'Ember & Rye, Portland OR',year:2025,category:'Commercial',tone:['#4a3626','#8a6a4f'],art:'sign',summary:'Forty-two linear feet of white oak slat walls, a 9-foot carved bar sign, and 60 branded table tops — machined, finished, and installed in three weeks.'},
+  {title:'Cascade Range Headboard',client:'Private residence, Bend OR',year:2025,category:'Furniture',tone:['#5f6c5d','#93a08b'],art:'topo',summary:'A king-size headboard carving the actual Cascade skyline across five bookmatched walnut boards, with integrated reading lights and hidden wiring channels.'},
+  {title:'Founders Wall — 200 Name Donor Display',client:'Riverside Children’s Hospital',year:2024,category:'Commercial',tone:['#8a7048','#c4ab83'],art:'slats',summary:'A modular donor recognition wall in maple and brass: 200 individually machined name tiles that the hospital can rearrange and extend as the campaign grows.'},
+  {title:'Heirloom Crib Conversion Set',client:'Private commission',year:2024,category:'Furniture',tone:['#9c805a','#d8c9a3'],art:'furniture',summary:'A crib machined from a felled family oak, engineered to convert into a toddler bed and finally a desk — three lifetimes of use from one tree.'},
+  {title:'Vineyard Tasting Room Doors',client:'Solstice Cellars, Willamette Valley',year:2024,category:'Architectural',tone:['#5d4433','#b08a5e'],art:'clock',summary:'Twin 8-foot entry doors with a relief-carved sunburst spanning both leaves — 14 hours of machine time, 30 hours of hand finishing.'},
+  {title:'Soundwave Anniversary Piece',client:'Private commission',year:2023,category:'Art',tone:['#3d5a6c','#7fa8b8'],art:'topo',summary:'The waveform of a couple’s wedding song ("their first dance, frozen in walnut") carved as a 5-foot triptych with brass inlay at the chorus.'}
+]
+
+const FREE_SHIP = 25000, FLAT_SHIP = 1800
+
+// ---------- Procedural product art (mirrors wood-art.js) ----------
+let uid = 0
+function woodArt (tone, art, title) {
+  const [from, to] = tone
+  const id = 'wa' + (uid++)
+  const w = 400, h = 300
+  let grain = ''
+  for (let i = 0; i < 7; i++) {
+    const y = (h / 8) * (i + 1)
+    const wob = 6 + ((i * 7) % 11)
+    grain += `<path d="M0 ${y} C 100 ${y - wob}, 200 ${y + wob}, ${w} ${y - wob / 2}" stroke="#1f1610" stroke-opacity="0.22" stroke-width="2" fill="none"/>`
+  }
+  let motif = ''
+  if (art === 'sign') {
+    motif = `<rect x="60" y="75" width="280" height="150" rx="12" fill="none" stroke="#f7efe2" stroke-opacity="0.85" stroke-width="4"/>
+      <rect x="74" y="89" width="252" height="122" rx="8" fill="none" stroke="#f7efe2" stroke-opacity="0.4" stroke-width="2"/>
+      <text x="200" y="145" text-anchor="middle" font-family="Georgia, serif" font-size="34" fill="#f7efe2" font-weight="bold">LF</text>
+      <line x1="110" y1="168" x2="290" y2="168" stroke="#f7efe2" stroke-opacity="0.8" stroke-width="3"/>
+      <text x="200" y="192" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#f7efe2" opacity="0.85" letter-spacing="4">EST. 2016</text>`
+  } else if (art === 'topo') {
+    motif = `<g fill="none" stroke="#f7efe2" stroke-width="2.5">
+      <path d="M40 240 C 110 200, 150 235, 210 195 S 330 205, 370 165" stroke-opacity="0.9"/>
+      <path d="M40 205 C 105 165, 160 200, 215 160 S 320 170, 370 130" stroke-opacity="0.7"/>
+      <path d="M55 170 C 115 135, 170 165, 220 128 S 315 138, 360 100" stroke-opacity="0.5"/>
+      <path d="M75 138 C 125 108, 180 132, 225 100 S 305 108, 345 78" stroke-opacity="0.35"/>
+      <circle cx="226" cy="128" r="5" fill="#f7efe2" stroke="none" fill-opacity="0.9"/></g>`
+  } else if (art === 'board') {
+    motif = `<rect x="70" y="60" width="260" height="180" rx="18" fill="#00000022"/>
+      <rect x="62" y="52" width="260" height="180" rx="18" fill="${to}" stroke="#f7efe2" stroke-opacity="0.55" stroke-width="3"/>
+      <rect x="80" y="70" width="224" height="144" rx="10" fill="none" stroke="#f7efe2" stroke-opacity="0.4" stroke-width="2.5"/>
+      <circle cx="300" cy="74" r="7" fill="#1f161066"/>`
+  } else if (art === 'clock') {
+    let ticks = ''
+    for (let i = 0; i < 12; i++) {
+      const a = i * Math.PI / 6
+      ticks += `<line x1="${200 + Math.sin(a) * 70}" y1="${150 - Math.cos(a) * 70}" x2="${200 + Math.sin(a) * 80}" y2="${150 - Math.cos(a) * 80}" stroke="#f7efe2" stroke-opacity="0.8" stroke-width="${i % 3 === 0 ? 4 : 2}"/>`
+    }
+    motif = `<circle cx="200" cy="150" r="95" fill="${to}" stroke="#f7efe2" stroke-opacity="0.7" stroke-width="4"/>
+      <circle cx="200" cy="150" r="80" fill="none" stroke="#1f1610" stroke-opacity="0.25" stroke-width="1.5"/>${ticks}
+      <line x1="200" y1="150" x2="200" y2="95" stroke="#f7efe2" stroke-width="5" stroke-linecap="round"/>
+      <line x1="200" y1="150" x2="240" y2="170" stroke="#f7efe2" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="200" cy="150" r="6" fill="#e0a04e"/>`
+  } else if (art === 'furniture') {
+    motif = `<g stroke="#f7efe2" stroke-width="4" stroke-opacity="0.85" fill="none">
+      <rect x="70" y="95" width="260" height="95" rx="8" fill="#00000026"/>
+      <line x1="200" y1="100" x2="200" y2="185" stroke-width="2.5" stroke-opacity="0.5"/>
+      <line x1="85" y1="142" x2="195" y2="142" stroke-width="2.5" stroke-opacity="0.5"/>
+      <line x1="95" y1="190" x2="80" y2="240"/><line x1="305" y1="190" x2="320" y2="240"/>
+      <line x1="130" y1="190" x2="120" y2="240" stroke-opacity="0.5" stroke-width="2.5"/>
+      <line x1="270" y1="190" x2="280" y2="240" stroke-opacity="0.5" stroke-width="2.5"/>
+      <circle cx="140" cy="120" r="4" fill="#f7efe2" stroke="none"/></g>`
+  } else if (art === 'slats') {
+    let slats = ''
+    for (let i = 0; i < 9; i++) {
+      slats += `<rect x="${48 + i * 36}" y="45" width="18" height="210" rx="4" fill="${i % 2 ? to : from}" stroke="#1f1610" stroke-opacity="0.35"/>`
+    }
+    motif = slats
+  }
+  return `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${title}" preserveAspectRatio="xMidYMid slice">
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="${from}"/><stop offset="100%" stop-color="${to}"/></linearGradient>
+      <linearGradient id="${id}h" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.28"/><stop offset="100%" stop-color="#ffffff" stop-opacity="0"/></linearGradient></defs>
+    <rect width="${w}" height="${h}" fill="url(#${id})"/>${grain}
+    <rect width="${w}" height="${h * 0.45}" fill="url(#${id}h)"/>${motif}</svg>`
+}
+
+// ---------- State ----------
+const state = {
+  cart: [],
+  shop: {q: '', category: 'All', wood: 'All', band: 0, sort: 'featured'},
+  portfolioCat: 'All'
+}
+try {
+  const saved = localStorage.getItem('lfs-preview-cart')
+  if (saved) state.cart = JSON.parse(saved)
+} catch (e) {}
+
+function saveCart () {
+  try { localStorage.setItem('lfs-preview-cart', JSON.stringify(state.cart)) } catch (e) {}
+  const n = state.cart.reduce((s, i) => s + i.qty, 0)
+  document.getElementById('cart-badge').textContent = n
+}
+
+function money (c) { return (c / 100).toLocaleString('en-US', {style: 'currency', currency: 'USD'}) }
+function esc (s) { return String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])) }
+
+function addToCart (id, qty, pers) {
+  const p = PRODUCTS.find(x => x.id === id)
+  if (!p) return
+  pers = pers || ''
+  const line = state.cart.find(i => i.id === id && i.pers === pers)
+  if (line) line.qty += qty
+  else state.cart.push({id, qty, pers})
+  saveCart()
+}
+
+// ---------- Shared partials ----------
+function productCard (p) {
+  return `<article class="card">
+    <div class="card-media" onclick="go('product/${p.slug}')">${woodArt(p.tone, p.art, p.name)}</div>
+    <div class="card-body">
+      <div class="chips"><span class="chip">${esc(p.category)}</span><span class="chip">${esc(p.wood)}</span></div>
+      <h3 onclick="go('product/${p.slug}')">${esc(p.name)}</h3>
+      <p class="lead">${esc(p.lead)}</p>
+      <div class="card-foot">
+        <span class="price">${money(p.price)}</span>
+        <button class="btn btn-accent btn-sm" onclick="addToCart('${p.id}',1); this.textContent='Added ✓'; setTimeout(()=>this.textContent='Add to cart',1400)">Add to cart</button>
+      </div>
+    </div>
+  </article>`
+}
+
+// ---------- Pages ----------
+function pageHome () {
+  const featured = PRODUCTS.filter(p => p.featured)
+  return `
+  <section class="hero"><div class="container hero-inner">
+    <div>
+      <span class="eyebrow">Precision CNC Woodworking · Portland, OR</span>
+      <h1>Where light, grain, and machine meet.</h1>
+      <p>Luminary Fusion Studios pairs computer-controlled precision with old-school hand finishing. We machine custom signs, furniture, and wall art to a tolerance of a tenth of a millimeter — then sand, oil, and wax every piece by hand.</p>
+      <div class="hero-actions">
+        <button class="btn btn-accent" onclick="go('shop')">Browse the shop</button>
+        <button class="btn btn-ghost" style="color:#faf6ef" onclick="go('contact')">Start a custom project</button>
+      </div>
+    </div>
+    <div class="hero-art">${woodArt(['#3d2f22','#77593d'],'topo','Layered topographic carving')}</div>
+  </div></section>
+
+  <section class="section"><div class="container">
+    <div class="section-head"><span class="eyebrow">Featured work</span><h2>Pieces our customers keep coming back for</h2></div>
+    <div class="grid cols-4">${featured.map(productCard).join('')}</div>
+    <p style="margin-top:1.5rem"><button class="btn btn-primary" onclick="go('shop')">Shop all products →</button></p>
+  </div></section>
+
+  <section class="section section-alt"><div class="container">
+    <div class="section-head"><span class="eyebrow">How it works</span><h2>From sketch to shipped, in four steps</h2></div>
+    <div class="grid cols-4">
+      <div class="step"><span class="step-num">1</span><h3>Design</h3><p class="muted">Pick a piece from the shop or send us your idea through the custom request form. We turn it into machine-ready vectors.</p></div>
+      <div class="step"><span class="step-num">2</span><h3>Machine</h3><p class="muted">Our 4'×8' CNC router carves your piece from sustainably sourced hardwood with sub-millimeter accuracy.</p></div>
+      <div class="step"><span class="step-num">3</span><h3>Finish</h3><p class="muted">Every piece is hand-sanded through five grits and sealed with food-safe oils or furniture-grade poly.</p></div>
+      <div class="step"><span class="step-num">4</span><h3>Ship</h3><p class="muted">Pay securely online — your invoice and tracking-ready shipping label are generated the moment payment clears.</p></div>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><strong>1,400+</strong><span>pieces shipped</span></div>
+      <div class="stat"><strong>0.1mm</strong><span>machining tolerance</span></div>
+      <div class="stat"><strong>9 yrs</strong><span>in the craft</span></div>
+      <div class="stat"><strong>4.9★</strong><span>average review</span></div>
+    </div>
+  </div></section>
+
+  <section class="section"><div class="container two-col">
+    <div>
+      <span class="eyebrow">Custom commissions</span>
+      <h2>Have something one-of-a-kind in mind?</h2>
+      <p class="muted">Restaurant build-outs, donor walls, heirloom furniture, carved doors — most of our work never appears in the shop. Tell us about your project and we'll come back within two business days with a sketch and a quote.</p>
+      <button class="btn btn-primary" onclick="go('contact')">Request a custom quote</button>
+    </div>
+    <div class="framed">${woodArt(['#4a3626','#8a6a4f'],'sign','Custom carved commission')}</div>
+  </div></section>`
+}
+
+function pageAbout () {
+  const team = [
+    {name:'Rowan Ashford',role:'Founder & Lead Designer',bio:'Furniture maker turned digital fabricator. Rowan draws every commission by hand before it ever touches CAM software.'},
+    {name:'Priya Natarajan',role:'CNC Programmer & Machinist',bio:'Former aerospace machinist who traded aluminum for walnut. If a toolpath can be 10% cleaner, Priya will find it.'},
+    {name:'Marcus Bell',role:'Finishing & Shipping',bio:'The last set of hands on every piece. Marcus runs our five-grit finishing line and packs work so it arrives flawless.'}
+  ]
+  return `
+  <section class="page-hero"><div class="container">
+    <span class="eyebrow">About the studio</span>
+    <h1>Machines don't make heirlooms. People do.</h1>
+    <p>We founded Luminary Fusion Studios in 2016 with a used CNC router, a pallet of reclaimed walnut, and a conviction: digital precision and hand craftsmanship aren't opposites — together they make work neither could make alone.</p>
+  </div></section>
+  <section class="section"><div class="container two-col">
+    <div class="framed">${woodArt(['#4a3626','#8a6a4f'],'slats','Inside the workshop')}</div>
+    <div>
+      <span class="eyebrow">Our story</span>
+      <h2>From garage router to full fabrication studio</h2>
+      <p class="muted">What started as weekend sign-making in a one-car garage is now a 4,000 sq ft studio in Portland's Alberta Arts District, running a 4'×8' industrial CNC router, a laser engraver, and a full traditional bench room. The tools changed; the rule didn't: nothing leaves the shop until we'd hang it in our own homes.</p>
+      <p class="muted">We mill sustainably harvested Pacific Northwest hardwoods and FSC-certified stock, and we plant a tree for every order.</p>
+    </div>
+  </div></section>
+  <section class="section section-alt"><div class="container">
+    <div class="section-head"><span class="eyebrow">What we believe</span><h2>Three principles guide every cut</h2></div>
+    <div class="grid cols-3">
+      <div class="step"><h3>Precision is respect</h3><p class="muted">A 0.1mm tolerance isn't showing off — it's respect for the material and the person who'll live with the piece for decades.</p></div>
+      <div class="step"><h3>The hand finishes what the machine starts</h3><p class="muted">A router leaves perfect geometry; only sandpaper, oil, and patience leave warmth. Every piece gets both.</p></div>
+      <div class="step"><h3>Wood is borrowed</h3><p class="muted">A tree grew longer than we've been alive. We waste as little of it as possible and design pieces meant to outlive us.</p></div>
+    </div>
+  </div></section>
+  <section class="section"><div class="container">
+    <div class="section-head"><span class="eyebrow">The team</span><h2>Six hands, one standard</h2></div>
+    <div class="grid cols-3">
+      ${team.map(m => `<div class="step"><h3>${esc(m.name)}</h3><p style="font-size:0.82rem;font-weight:700;color:var(--amber);margin:0 0 0.5rem">${esc(m.role)}</p><p class="muted" style="font-size:0.9rem;margin:0">${esc(m.bio)}</p></div>`).join('')}
+    </div>
+    <div class="notice notice-info" style="margin-top:1.5rem">Want to see the machines run? The studio is open to visitors Tuesday through Saturday — or <a href="#contact"><strong>book a consultation</strong></a> and we'll walk your project through the shop floor.</div>
+  </div></section>`
+}
+
+const BANDS = [
+  {label: 'Any price', min: 0, max: Infinity},
+  {label: 'Under $100', min: 0, max: 10000},
+  {label: '$100 – $250', min: 10000, max: 25000},
+  {label: '$250 – $600', min: 25000, max: 60000},
+  {label: '$600 and up', min: 60000, max: Infinity}
+]
+const SORTS = {
+  featured: {label: 'Featured', fn: (a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0)},
+  'price-asc': {label: 'Price: low to high', fn: (a, b) => a.price - b.price},
+  'price-desc': {label: 'Price: high to low', fn: (a, b) => b.price - a.price},
+  name: {label: 'Name A–Z', fn: (a, b) => a.name.localeCompare(b.name)}
+}
+
+function shopFiltered () {
+  const s = state.shop
+  const band = BANDS[s.band]
+  const q = s.q.trim().toLowerCase()
+  return PRODUCTS
+    .filter(p => s.category === 'All' || p.category === s.category)
+    .filter(p => s.wood === 'All' || p.wood === s.wood)
+    .filter(p => p.price >= band.min && p.price < band.max)
+    .filter(p => !q || p.name.toLowerCase().includes(q) || p.lead.toLowerCase().includes(q) || p.wood.toLowerCase().includes(q))
+    .sort(SORTS[s.sort].fn)
+}
+
+function setShop (key, val) {
+  state.shop[key] = key === 'band' ? Number(val) : val
+  renderShopResults()
+}
+
+function renderShopResults () {
+  const list = shopFiltered()
+  const el = document.getElementById('shop-results')
+  if (!el) return
+  document.getElementById('shop-count').innerHTML =
+    `Showing <strong>${list.length}</strong> of ${PRODUCTS.length} pieces` +
+    (list.length < PRODUCTS.length ? ` · <button class="link-btn" onclick="resetShop()">clear filters</button>` : '')
+  el.innerHTML = list.length
+    ? list.map(productCard).join('')
+    : `<div class="empty" style="grid-column:1/-1"><h3>No pieces match those filters</h3><p>Try widening your search — or if you're after something specific, we probably make it to order.</p><button class="btn btn-primary" onclick="resetShop()">Clear all filters</button></div>`
+}
+
+function resetShop () {
+  state.shop = {q: '', category: 'All', wood: 'All', band: 0, sort: state.shop.sort}
+  render()
+}
+
+function pageShop () {
+  const cats = ['All', ...new Set(PRODUCTS.map(p => p.category))]
+  const woods = ['All', ...new Set(PRODUCTS.map(p => p.wood))]
+  const s = state.shop
+  setTimeout(renderShopResults, 0)
+  return `
+  <section class="page-hero"><div class="container">
+    <span class="eyebrow">The shop</span>
+    <h1>CNC-crafted, hand-finished, ready to ship</h1>
+    <p>Every piece is machined to order in our Portland studio. Checkout is secure — payment, your invoice, and a shipping label are processed automatically the moment your order clears.</p>
+  </div></section>
+  <section><div class="container">
+    <div class="filter-bar">
+      <div class="field full"><label for="f-q">Search</label><input id="f-q" type="search" placeholder="Search products…" value="${esc(s.q)}" oninput="setShop('q', this.value)"></div>
+      <div class="field"><label for="f-cat">Category</label><select id="f-cat" onchange="setShop('category', this.value)">${cats.map(c => `<option ${c === s.category ? 'selected' : ''}>${c}</option>`).join('')}</select></div>
+      <div class="field"><label for="f-wood">Wood</label><select id="f-wood" onchange="setShop('wood', this.value)">${woods.map(w => `<option ${w === s.wood ? 'selected' : ''}>${w}</option>`).join('')}</select></div>
+      <div class="field"><label for="f-price">Price</label><select id="f-price" onchange="setShop('band', this.value)">${BANDS.map((b, i) => `<option value="${i}" ${i === s.band ? 'selected' : ''}>${b.label}</option>`).join('')}</select></div>
+      <div class="field"><label for="f-sort">Sort by</label><select id="f-sort" onchange="setShop('sort', this.value)">${Object.entries(SORTS).map(([k, v]) => `<option value="${k}" ${k === s.sort ? 'selected' : ''}>${v.label}</option>`).join('')}</select></div>
+    </div>
+    <p class="count" id="shop-count"></p>
+    <div class="grid cols-4" id="shop-results"></div>
+    <div class="notice notice-info" style="margin-top:1.5rem"><strong>Don't see it here?</strong> Most of our work is made to order — <a href="#contact"><strong>send us a custom request</strong></a>.</div>
+  </div></section>`
+}
+
+function pageProduct (slug) {
+  const p = PRODUCTS.find(x => x.slug === slug)
+  if (!p) return pageShop()
+  const related = PRODUCTS.filter(x => x.category === p.category && x.id !== p.id).slice(0, 3)
+  return `
+  <div class="container"><div class="detail">
+    <div class="detail-media">${woodArt(p.tone, p.art, p.name)}</div>
+    <div>
+      <nav style="font-size:0.84rem;margin-bottom:0.6rem"><a href="#shop">Shop</a> <span class="muted">/ ${esc(p.category)}</span></nav>
+      <h1 style="font-size:clamp(1.5rem,5vw,2.1rem)">${esc(p.name)}</h1>
+      <p class="price" style="font-size:1.4rem">${money(p.price)}</p>
+      <p class="muted">${esc(p.description)}</p>
+      <ul class="spec">
+        <li><span>Wood</span><span>${esc(p.wood)}</span></li>
+        <li><span>Dimensions</span><span>${esc(p.dimensions)}</span></li>
+        <li><span>Ships</span><span>Insured, tracking emailed with your invoice</span></li>
+        <li><span>Lead time</span><span>2–3 weeks, machined to order</span></li>
+      </ul>
+      ${p.personalizable ? `<div class="field" style="margin-bottom:0.75rem"><label for="pers">Personalization (optional)</label><input id="pers" maxlength="60" placeholder="Name, date, lake, monogram…"><span class="hint">We'll confirm engraving layout by email before machining.</span></div>` : ''}
+      <div class="buy-row">
+        <div class="qty" role="group" aria-label="Quantity">
+          <button onclick="var s=document.getElementById('pq'); s.textContent=Math.max(1, +s.textContent-1)" aria-label="Decrease">−</button>
+          <span id="pq">1</span>
+          <button onclick="var s=document.getElementById('pq'); s.textContent=+s.textContent+1" aria-label="Increase">+</button>
+        </div>
+        <button class="btn btn-accent" onclick="addToCart('${p.id}', +document.getElementById('pq').textContent, (document.getElementById('pers')||{}).value); this.textContent='Added to cart ✓'; setTimeout(()=>this.textContent='Add to cart',1600)">Add to cart</button>
+      </div>
+      <p class="hint">Secure card payment at checkout. Your invoice and shipping label are generated automatically when payment completes.</p>
+    </div>
+  </div>
+  ${related.length ? `<section class="section" style="padding-top:0.5rem"><h2 style="font-size:1.3rem">More ${esc(p.category.toLowerCase())}</h2><div class="grid cols-3">${related.map(productCard).join('')}</div></section>` : ''}
+  </div>`
+}
+
+function pagePortfolio () {
+  const cats = ['All', ...new Set(PORTFOLIO.map(i => i.category))]
+  const shown = PORTFOLIO.filter(i => state.portfolioCat === 'All' || i.category === state.portfolioCat)
+  return `
+  <section class="page-hero"><div class="container">
+    <span class="eyebrow">Portfolio</span>
+    <h1>Commissions we're proud to have shipped</h1>
+    <p>Most of our work is made-to-order and never appears in the shop. Here's a sample of recent commissions — from single heirloom pieces to full commercial build-outs.</p>
+  </div></section>
+  <section><div class="container">
+    <div class="pills" role="group" aria-label="Filter by category">
+      ${cats.map(c => `<button class="pill ${c === state.portfolioCat ? 'active' : ''}" onclick="state.portfolioCat='${c}'; render()">${c}</button>`).join('')}
+    </div>
+    <div class="grid">
+      ${shown.map(i => `<article class="card">
+        <div class="card-media" style="cursor:default">${woodArt(i.tone, i.art, i.title)}</div>
+        <div class="card-body">
+          <div class="chips"><span class="chip">${esc(i.category)}</span><span class="chip">${i.year}</span></div>
+          <h3 style="cursor:default">${esc(i.title)}</h3>
+          <p class="muted" style="font-size:0.82rem;margin:0">${esc(i.client)}</p>
+          <p class="lead">${esc(i.summary)}</p>
+        </div>
+      </article>`).join('')}
+    </div>
+    <div class="notice notice-info" style="margin-top:1.5rem"><strong>Planning something like this?</strong> <a href="#contact"><strong>Tell us about your project</strong></a> and we'll reply within two business days.</div>
+  </div></section>`
+}
+
+function pageContact () {
+  const opts = arr => arr.map(o => `<option>${o}</option>`).join('')
+  return `
+  <section class="page-hero"><div class="container">
+    <span class="eyebrow">Contact us</span>
+    <h1>Tell us what you're dreaming up</h1>
+    <p>The more detail you give us — sizes, materials, deadlines, budget, inspiration — the faster and more accurate your quote. We reply to every request within two business days.</p>
+  </div></section>
+  <section><div class="container">
+    <div class="form-panel" id="contact-panel">
+      <h2 style="font-size:1.25rem">Custom request form</h2>
+      <form onsubmit="submitContact(event)">
+        <div class="form-grid">
+          <div class="field"><label for="c-name">Your name <span class="req">*</span></label><input id="c-name" required></div>
+          <div class="field"><label for="c-email">Email <span class="req">*</span></label><input id="c-email" type="email" required></div>
+          <div class="field"><label for="c-phone">Phone (optional)</label><input id="c-phone" type="tel"></div>
+          <div class="field"><label for="c-type">What kind of project? <span class="req">*</span></label>
+            <select id="c-type" required>${opts(['Custom sign or logo carving','Furniture commission','Wall art / topographic map','Kitchen & serving pieces','Commercial / restaurant build-out','Event or bulk order (10+ pieces)','Question about an existing order','Something else entirely'])}</select></div>
+          <div class="field"><label for="c-budget">Budget range</label>
+            <select id="c-budget">${opts(['Under $250','$250 – $1,000','$1,000 – $5,000','$5,000 – $20,000','$20,000+','Not sure yet — advise me'])}</select>
+            <span class="hint">A range helps us propose the right materials and scale.</span></div>
+          <div class="field"><label for="c-when">When do you need it?</label>
+            <select id="c-when">${opts(['No rush','Within 3 months','Within 6 weeks','Within 3 weeks','It’s urgent — tell me what’s possible'])}</select></div>
+          <div class="field"><label for="c-wood">Wood preference</label>
+            <select id="c-wood">${opts(['No preference — recommend one','Walnut','White Oak','Maple','Cherry','Ash','Baltic Birch','Reclaimed / customer-supplied'])}</select></div>
+          <div class="field"><label for="c-qty">Quantity</label><input id="c-qty" type="number" min="1" value="1"></div>
+          <div class="field"><label for="c-dim">Approximate dimensions</label><input id="c-dim" placeholder='e.g. 36" wide × 18" tall'></div>
+          <div class="field"><label for="c-ship">Delivery or installation?</label>
+            <select id="c-ship">${opts(['No — ship it to me','Local pickup (Portland, OR)','Local delivery','Delivery + professional installation'])}</select></div>
+          <div class="field full"><label for="c-desc">Describe your project <span class="req">*</span></label>
+            <textarea id="c-desc" required placeholder="What are we making? Where will it live? Text or artwork to include, style you love, colors to match — everything helps."></textarea></div>
+          <div class="field full"><label for="c-links">Links to inspiration or artwork files</label><input id="c-links" placeholder="Pinterest boards, Dropbox/Drive links to logos or sketches…"><span class="hint">We'll request print-ready files by email once the design is agreed.</span></div>
+        </div>
+        <button type="submit" class="btn btn-accent" style="margin-top:1.1rem">Send my custom request</button>
+      </form>
+    </div>
+    <div class="summary" style="margin-top:1.25rem">
+      <h3>Visit the studio</h3>
+      <p class="muted" style="font-size:0.9rem">1427 Sawyer Avenue, Portland, OR 97211<br>Tuesday – Saturday, 9:00am – 5:00pm<br>(503) 555-0147 · hello@luminaryfusionstudios.com</p>
+      <p class="muted" style="font-size:0.85rem;margin:0"><strong>Order questions?</strong> Include your order number and pick “Question about an existing order” — those jump the queue.</p>
+    </div>
+  </div></section>`
+}
+
+function submitContact (e) {
+  e.preventDefault()
+  document.getElementById('contact-panel').innerHTML = `
+    <div class="notice notice-success" role="status" style="margin:0">
+      <h3>Request received — thank you!</h3>
+      <p style="margin:0">On the live site this lands in the studio inbox via Netlify Forms, and you'd get a copy by email. In this preview, nothing was sent — it's a demonstration of the flow.</p>
+    </div>`
+}
+
+function pageCart () {
+  const lines = state.cart.map(l => ({...l, p: PRODUCTS.find(p => p.id === l.id)})).filter(l => l.p)
+  const n = lines.reduce((s, l) => s + l.qty, 0)
+  const subtotal = lines.reduce((s, l) => s + l.p.price * l.qty, 0)
+  const ship = subtotal >= FREE_SHIP || subtotal === 0 ? 0 : FLAT_SHIP
+  return `
+  <section class="page-hero"><div class="container">
+    <span class="eyebrow">Your cart</span>
+    <h1>${n === 0 ? 'Your cart is empty' : n + ' item' + (n === 1 ? '' : 's') + ' ready for the router'}</h1>
+  </div></section>
+  <section><div class="container">
+  ${n === 0
+    ? `<div class="empty"><h3>Nothing here yet</h3><p>Browse the shop to find a piece worth making room for.</p><button class="btn btn-primary" onclick="go('shop')">Go to the shop</button></div>`
+    : `<div class="cart-wrap"><div>
+      ${lines.map((l, idx) => `<div class="cart-line">
+        <div class="thumb" onclick="go('product/${l.p.slug}')">${woodArt(l.p.tone, l.p.art, l.p.name)}</div>
+        <div>
+          <h3>${esc(l.p.name)}</h3>
+          <p class="muted" style="margin:0;font-size:0.82rem">${esc(l.p.wood)} · ${money(l.p.price)} each${l.pers ? ' · “' + esc(l.pers) + '”' : ''}</p>
+          <div class="row2">
+            <div class="qty" role="group" aria-label="Quantity">
+              <button onclick="cartQty(${idx}, -1)" aria-label="Decrease">−</button><span>${l.qty}</span><button onclick="cartQty(${idx}, 1)" aria-label="Increase">+</button>
+            </div>
+            <span class="price" style="font-size:0.98rem">${money(l.p.price * l.qty)}</span>
+            <button class="danger-link" onclick="cartRemove(${idx})">Remove</button>
+          </div>
+        </div>
+      </div>`).join('')}
+    </div>
+    <aside class="summary">
+      <h3>Order summary</h3>
+      <div class="sum-row"><span>Subtotal</span><span>${money(subtotal)}</span></div>
+      <div class="sum-row"><span>Shipping</span><span>${ship === 0 ? 'Free' : money(ship) + ' est.'}</span></div>
+      ${ship > 0 ? `<p class="hint">Free shipping on orders over ${money(FREE_SHIP)}. Exact rate is confirmed at checkout.</p>` : ''}
+      <div class="sum-row total"><span>Total</span><span>${money(subtotal + ship)}</span></div>
+      <button class="btn btn-accent btn-block" style="margin-top:0.9rem" onclick="demoCheckout()">Check out securely</button>
+      <div id="checkout-note"></div>
+      <p class="hint" style="margin-top:0.8rem">Payments are processed by Stripe. When your payment clears, our system automatically issues your invoice and creates the shipping label — you'll get both by email with tracking.</p>
+    </aside></div>`}
+  </div></section>`
+}
+
+function cartQty (idx, delta) {
+  const line = state.cart[idx]
+  if (!line) return
+  line.qty += delta
+  if (line.qty < 1) state.cart.splice(idx, 1)
+  saveCart(); render()
+}
+function cartRemove (idx) { state.cart.splice(idx, 1); saveCart(); render() }
+
+function demoCheckout () {
+  const el = document.getElementById('checkout-note')
+  if (el) {
+    el.innerHTML = `<div class="notice notice-info" style="margin:0.8rem 0 0"><strong>Preview mode.</strong> On the deployed site this button opens Stripe Checkout (card entry, shipping address), Stripe emails your paid invoice, and a Shippo shipping label + tracking number are created automatically. Deploy with API keys to run the real flow.</div>`
+  }
+}
+
+// ---------- Router ----------
+function go (page) { location.hash = page; window.scrollTo({top: 0}) }
+
+function render () {
+  const hash = (location.hash || '#home').slice(1)
+  const [page, param] = hash.split('/')
+  const app = document.getElementById('app')
+  const pages = {home: pageHome, about: pageAbout, shop: pageShop, portfolio: pagePortfolio, contact: pageContact, cart: pageCart}
+  app.innerHTML = page === 'product' && param ? pageProduct(param) : (pages[page] || pageHome)()
+  document.querySelectorAll('#main-nav a').forEach(a => {
+    const active = a.dataset.page === page || (page === 'product' && a.dataset.page === 'shop')
+    a.classList.toggle('active', active)
+  })
+  saveCart()
+}
+
+window.addEventListener('hashchange', () => { window.scrollTo({top: 0}); render() })
+render()
+</script>
