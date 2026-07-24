@@ -23,7 +23,7 @@ export default function OrderConfirmedPage () {
           <span className='eyebrow'>Order confirmed</span>
           <h1>The router is warming up.</h1>
           <p className='muted' style={{fontSize: '1.05rem'}}>
-            Thank you — your payment went through. Here's what happens next:
+            Thank you. Your payment went through. Here's what happens next:
           </p>
           <div className='step-grid' style={{textAlign: 'left', marginTop: '2rem'}}>
             <div className='step'>
@@ -34,12 +34,12 @@ export default function OrderConfirmedPage () {
             <div className='step'>
               <span className='step-num'>2</span>
               <h3>Making</h3>
-              <p className='muted'>We machine and hand-finish your piece — typically 2–3 weeks. Personalized layouts are confirmed by email first.</p>
+              <p className='muted'>We machine and hand-finish your piece, typically 2-3 weeks. Personalized layouts are confirmed by email first.</p>
             </div>
             <div className='step'>
               <span className='step-num'>3</span>
               <h3>Shipping</h3>
-              <p className='muted'>Your shipping label and tracking number were created with your order — tracking goes live the day it leaves the studio.</p>
+              <p className='muted'>Your shipping label and tracking number were created with your order; tracking goes live the day it leaves the studio.</p>
             </div>
           </div>
           <p style={{marginTop: '2.5rem'}}>

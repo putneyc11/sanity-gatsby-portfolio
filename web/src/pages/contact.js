@@ -5,7 +5,7 @@ import Seo from '../components/seo'
 export const Head = () => (
   <Seo
     title='Contact Us'
-    description='Start a custom CNC woodworking project — tell us about your sign, furniture, or commercial commission and get a quote within two business days.'
+    description='Start a custom CNC woodworking project: tell us about your sign, furniture, or commercial commission and get a quote within two business days.'
   />
 )
 
@@ -20,9 +20,9 @@ const PROJECT_TYPES = [
   'Something else entirely'
 ]
 
-const BUDGETS = ['Under $250', '$250 – $1,000', '$1,000 – $5,000', '$5,000 – $20,000', '$20,000+', 'Not sure yet — advise me']
-const TIMELINES = ['No rush', 'Within 3 months', 'Within 6 weeks', 'Within 3 weeks', 'It\'s urgent — tell me what\'s possible']
-const WOODS = ['No preference — recommend one', 'Walnut', 'White Oak', 'Maple', 'Cherry', 'Ash', 'Baltic Birch', 'Reclaimed / customer-supplied']
+const BUDGETS = ['Under $250', '$250 to $1,000', '$1,000 to $5,000', '$5,000 to $20,000', '$20,000+', 'Not sure yet, advise me']
+const TIMELINES = ['No rush', 'Within 3 months', 'Within 6 weeks', 'Within 3 weeks', 'It\'s urgent, tell me what\'s possible']
+const WOODS = ['No preference, recommend one', 'Walnut', 'White Oak', 'Maple', 'Cherry', 'Ash', 'Baltic Birch', 'Reclaimed / customer-supplied']
 
 function encode (data) {
   return Object.keys(data)
@@ -40,7 +40,7 @@ const INITIAL = {
   wood: WOODS[0],
   dimensions: '',
   quantity: '1',
-  installation: 'No — ship it to me',
+  installation: 'No, ship it to me',
   details: '',
   referenceLinks: '',
   hearAbout: ''
@@ -71,7 +71,7 @@ export default function ContactPage () {
         state: 'error',
         message:
           'We couldn\'t send your request just now. Please try again in a minute, ' +
-          'or email us directly at hello@luminaryfusionstudios.com — we answer everything.'
+          'or email us directly at hello@luminaryfusionstudios.com. We answer everything.'
       })
     }
   }
@@ -83,8 +83,8 @@ export default function ContactPage () {
           <span className='eyebrow'>Contact us</span>
           <h1>Tell us what you're dreaming up</h1>
           <p>
-            The more detail you give us — sizes, materials, deadlines, budget,
-            inspiration — the faster and more accurate your quote. We reply to
+            The more detail you give us (sizes, materials, deadlines, budget,
+            inspiration), the faster and more accurate your quote. We reply to
             every request within two business days.
           </p>
         </div>
@@ -95,7 +95,7 @@ export default function ContactPage () {
           <div className='form-panel'>
             {status.state === 'success' ? (
               <div className='notice notice-success' role='status'>
-                <h3>Request received — thank you!</h3>
+                <h3>Request received. Thank you!</h3>
                 <p style={{margin: 0}}>
                   We've got your project details and will reply within two
                   business days with questions, a sketch, or a quote. A copy of
@@ -173,7 +173,7 @@ export default function ContactPage () {
                   <div className='form-field'>
                     <label htmlFor='cf-install'>Delivery or installation?</label>
                     <select id='cf-install' name='installation' value={form.installation} onChange={set('installation')}>
-                      <option>No — ship it to me</option>
+                      <option>No, ship it to me</option>
                       <option>Local pickup (Portland, OR)</option>
                       <option>Local delivery</option>
                       <option>Delivery + professional installation</option>
@@ -185,7 +185,7 @@ export default function ContactPage () {
                       id='cf-details'
                       name='details'
                       required
-                      placeholder='What are we making? Where will it live? Text or artwork to include, style you love, colors to match — everything helps.'
+                      placeholder='What are we making? Where will it live? Text or artwork to include, style you love, colors to match. Everything helps.'
                       value={form.details}
                       onChange={set('details')}
                     />
@@ -230,8 +230,8 @@ export default function ContactPage () {
               <p className='muted' style={{fontSize: '0.93rem'}}>
                 1427 Sawyer Avenue<br />
                 Portland, OR 97211<br /><br />
-                Tuesday – Saturday<br />
-                9:00am – 5:00pm
+                Tuesday to Saturday<br />
+                9:00am-5:00pm
               </p>
               <h3 style={{marginTop: '1.25rem'}}>Talk to a human</h3>
               <p className='muted' style={{fontSize: '0.93rem', marginBottom: 0}}>
@@ -242,7 +242,7 @@ export default function ContactPage () {
             <div className='notice notice-info' style={{marginTop: '1rem'}}>
               <strong>Order questions?</strong> Include your order number
               (it's on your invoice email) and pick “Question about an
-              existing order” above — those jump the queue.
+              existing order” above; those jump the queue.
             </div>
           </aside>
         </div>

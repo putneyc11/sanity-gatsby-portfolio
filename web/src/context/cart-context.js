@@ -13,7 +13,7 @@ export function CartProvider ({children}) {
       const saved = window.localStorage.getItem(STORAGE_KEY)
       if (saved) setItems(JSON.parse(saved))
     } catch (err) {
-      // Corrupt or unavailable storage — start with an empty cart.
+      // Corrupt or unavailable storage; start with an empty cart.
     }
     setHydrated(true)
   }, [])

@@ -2,14 +2,14 @@
 const portfolio = [
   {
     id: 'pf-01',
-    title: 'Ember & Rye — Restaurant Interior Package',
+    title: 'Ember & Rye Restaurant Interior Package',
     client: 'Ember & Rye, Portland OR',
     year: 2025,
     category: 'Commercial',
     tone: ['#4a3626', '#8a6a4f'],
     art: 'sign',
     summary:
-      'Forty-two linear feet of white oak slat walls, a 9-foot carved bar sign, and 60 branded table tops — machined, finished, and installed in three weeks.'
+      'Forty-two linear feet of white oak slat walls, a 9-foot carved bar sign, and 60 branded table tops, machined, finished, and installed in three weeks.'
   },
   {
     id: 'pf-02',
@@ -24,7 +24,7 @@ const portfolio = [
   },
   {
     id: 'pf-03',
-    title: 'Founders Wall — 200 Name Donor Display',
+    title: 'Founders Wall: 200-Name Donor Display',
     client: 'Riverside Children’s Hospital',
     year: 2024,
     category: 'Commercial',
@@ -42,7 +42,7 @@ const portfolio = [
     tone: ['#9c805a', '#d8c9a3'],
     art: 'furniture',
     summary:
-      'A crib machined from a felled family oak, engineered to convert into a toddler bed and finally a desk — three lifetimes of use from one tree.'
+      'A crib machined from a felled family oak, engineered to convert into a toddler bed and finally a desk. Three lifetimes of use from one tree.'
   },
   {
     id: 'pf-05',
@@ -53,7 +53,7 @@ const portfolio = [
     tone: ['#5d4433', '#b08a5e'],
     art: 'clock',
     summary:
-      'Twin 8-foot entry doors with a relief-carved sunburst spanning both leaves — 14 hours of machine time, 30 hours of hand finishing.'
+      'Twin 8-foot entry doors with a relief-carved sunburst spanning both leaves: 14 hours of machine time, 30 hours of hand finishing.'
   },
   {
     id: 'pf-06',

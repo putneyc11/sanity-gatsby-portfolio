@@ -13,7 +13,7 @@ export default function NotFoundPage () {
           <span className='eyebrow'>404</span>
           <h1>This cut went off the toolpath.</h1>
           <p className='muted'>
-            The page you're looking for doesn't exist — it may have been moved,
+            The page you're looking for doesn't exist. It may have been moved,
             or the link had a knot in it.
           </p>
           <p>

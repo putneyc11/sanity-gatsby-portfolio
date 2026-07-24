@@ -8,7 +8,7 @@ import {formatPrice} from '../context/cart-context'
 export const Head = () => (
   <Seo
     title='Shop'
-    description='Browse CNC-crafted signs, furniture, wall art, and kitchen pieces. Filter by category, wood, and price — secure checkout with automatic invoicing and shipping.'
+    description='Browse CNC-crafted signs, furniture, wall art, and kitchen pieces. Filter by category, wood, and price. Secure checkout with automatic invoicing and shipping.'
   />
 )
 
@@ -18,8 +18,8 @@ const WOODS = ['All', ...new Set(products.map(p => p.wood))]
 const PRICE_BANDS = [
   {label: 'Any price', min: 0, max: Infinity},
   {label: 'Under $100', min: 0, max: 10000},
-  {label: '$100 – $250', min: 10000, max: 25000},
-  {label: '$250 – $600', min: 25000, max: 60000},
+  {label: '$100 to $250', min: 10000, max: 25000},
+  {label: '$250 to $600', min: 25000, max: 60000},
   {label: '$600 and up', min: 60000, max: Infinity}
 ]
 
@@ -27,7 +27,7 @@ const SORTS = {
   featured: {label: 'Featured', fn: (a, b) => Number(b.featured) - Number(a.featured)},
   'price-asc': {label: 'Price: low to high', fn: (a, b) => a.price - b.price},
   'price-desc': {label: 'Price: high to low', fn: (a, b) => b.price - a.price},
-  name: {label: 'Name A–Z', fn: (a, b) => a.name.localeCompare(b.name)}
+  name: {label: 'Name A to Z', fn: (a, b) => a.name.localeCompare(b.name)}
 }
 
 export default function ShopPage ({location}) {
@@ -76,8 +76,8 @@ export default function ShopPage ({location}) {
           <h1>CNC-crafted, hand-finished, ready to ship</h1>
           <p>
             Every piece below is machined to order in our Portland studio.
-            Checkout is secure — payment, your invoice, and a shipping label
-            are processed automatically the moment your order clears.
+            Checkout is secure, and your invoice and shipping label are
+            processed automatically the moment your order clears.
           </p>
         </div>
       </section>
@@ -124,7 +124,7 @@ export default function ShopPage ({location}) {
           <p className='filter-count'>
             Showing <strong>{filtered.length}</strong> of {products.length} pieces
             {filtered.length > 0 && filtered.length < products.length && (
-              <> · <button className='link-danger' style={{color: 'var(--wood)'}} onClick={resetFilters}>clear filters</button></>
+              <> · <button className='link-danger' style={{color: 'var(--accent)'}} onClick={resetFilters}>clear filters</button></>
             )}
           </p>
 
@@ -132,7 +132,7 @@ export default function ShopPage ({location}) {
             <div className='empty-state'>
               <h3>No pieces match those filters</h3>
               <p>
-                Try widening your search — or if you're after something specific,{' '}
+                Try widening your search, or if you're after something specific,{' '}
                 we probably make it to order.
               </p>
               <button className='btn btn-primary' onClick={resetFilters}>Clear all filters</button>
@@ -147,8 +147,8 @@ export default function ShopPage ({location}) {
 
           <div className='notice notice-info' style={{marginTop: '2.5rem'}}>
             <strong>Don't see it here?</strong> Most of our work is made to
-            order. Prices range from {formatPrice(Math.min(...products.map(p => p.price)))} stock
-            pieces to fully bespoke commissions — <a href='/contact/'><strong>send us a custom request</strong></a>.
+            order, from {formatPrice(Math.min(...products.map(p => p.price)))} stock
+            pieces to fully bespoke commissions. <a href='/contact/'><strong>Start a custom project</strong></a>.
           </div>
         </div>
       </section>

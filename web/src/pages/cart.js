@@ -123,7 +123,7 @@ export default function CartPage () {
                 <p className='form-hint' style={{marginTop: '0.9rem'}}>
                   Payments are processed by Stripe. When your payment clears,
                   our system automatically issues your invoice and creates the
-                  shipping label — you'll get both by email with tracking.
+                  shipping label, and you'll get both by email with tracking.
                 </p>
               </aside>
             </div>

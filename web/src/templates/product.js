@@ -53,7 +53,7 @@ export default function ProductTemplate ({pageContext}) {
               <li><span>Dimensions</span><span>{product.dimensions}</span></li>
               <li><span>Category</span><span>{product.category}</span></li>
               <li><span>Ships</span><span>Insured, tracking emailed with your invoice</span></li>
-              <li><span>Lead time</span><span>2–3 weeks, machined to order</span></li>
+              <li><span>Lead time</span><span>2-3 weeks, machined to order</span></li>
             </ul>
 
             {PERSONALIZABLE.has(product.id) && (

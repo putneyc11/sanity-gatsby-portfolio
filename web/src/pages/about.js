@@ -7,7 +7,7 @@ import WoodArt from '../components/wood-art'
 export const Head = () => (
   <Seo
     title='About'
-    description='The story, people, and machines behind Luminary Fusion Studios — a precision CNC woodworking shop in Portland, Oregon.'
+    description='The story, people, and machines behind Luminary Fusion Studios, a precision CNC woodworking shop in Portland, Oregon.'
   />
 )
 
@@ -15,7 +15,7 @@ const TEAM = [
   {
     name: 'Rowan Ashford',
     role: 'Founder & Lead Designer',
-    tone: ['#5d4433', '#c8873a'],
+    tone: ['#5d4433', '#a84a24'],
     bio: 'Furniture maker turned digital fabricator. Rowan draws every commission by hand before it ever touches CAM software.'
   },
   {
@@ -42,7 +42,7 @@ export default function AboutPage () {
           <p>
             We founded Luminary Fusion Studios in 2016 with a used CNC router,
             a pallet of reclaimed walnut, and a conviction: digital precision
-            and hand craftsmanship aren't opposites — together they make work
+            and hand craftsmanship aren't opposites. Together they make work
             neither could make alone.
           </p>
         </div>
@@ -54,7 +54,6 @@ export default function AboutPage () {
             <WoodArt tone={['#4a3626', '#8a6a4f']} art='slats' title='Inside the Luminary Fusion workshop' />
           </div>
           <div>
-            <span className='eyebrow'>Our story</span>
             <h2>From garage router to full fabrication studio</h2>
             <p className='muted'>
               What started as weekend sign-making in a one-car garage is now a
@@ -75,19 +74,18 @@ export default function AboutPage () {
       <section className='section section-alt'>
         <div className='container'>
           <div className='section-head'>
-            <span className='eyebrow'>What we believe</span>
             <h2>Three principles guide every cut</h2>
           </div>
-          <div className='step-grid'>
-            <div className='step'>
+          <div className='value-cols'>
+            <div>
               <h3>Precision is respect</h3>
-              <p className='muted'>A 0.1mm tolerance isn't showing off — it's respect for the material and the person who'll live with the piece for decades.</p>
+              <p className='muted'>A 0.1mm tolerance isn't showing off. It's respect for the material and the person who'll live with the piece for decades.</p>
             </div>
-            <div className='step'>
+            <div>
               <h3>The hand finishes what the machine starts</h3>
               <p className='muted'>A router leaves perfect geometry; only sandpaper, oil, and patience leave warmth. Every piece gets both.</p>
             </div>
-            <div className='step'>
+            <div>
               <h3>Wood is borrowed</h3>
               <p className='muted'>A tree grew longer than we've been alive. We waste as little of it as possible and design pieces meant to outlive us.</p>
             </div>
@@ -98,27 +96,28 @@ export default function AboutPage () {
       <section className='section'>
         <div className='container'>
           <div className='section-head'>
-            <span className='eyebrow'>The team</span>
             <h2>Six hands, one standard</h2>
           </div>
-          <div className='team-grid'>
+          <div className='team-list'>
             {TEAM.map(member => (
-              <div className='step' key={member.name}>
+              <div className='team-row' key={member.name}>
                 <svg className='avatar' viewBox='0 0 72 72' role='img' aria-label={member.name}>
                   <circle cx='36' cy='36' r='36' fill={member.tone[0]} />
                   <circle cx='36' cy='28' r='12' fill={member.tone[1]} />
                   <path d='M12 66 a24 18 0 0 1 48 0 Z' fill={member.tone[1]} />
                 </svg>
-                <h3>{member.name}</h3>
-                <p style={{fontSize: '0.85rem', fontWeight: 700, color: 'var(--amber)', margin: '0 0 0.5rem'}}>{member.role}</p>
-                <p className='muted' style={{fontSize: '0.92rem'}}>{member.bio}</p>
+                <div>
+                  <h3 style={{marginBottom: 0}}>{member.name}</h3>
+                  <p className='team-role'>{member.role}</p>
+                  <p className='muted' style={{fontSize: '0.92rem', margin: 0}}>{member.bio}</p>
+                </div>
               </div>
             ))}
           </div>
           <div className='notice notice-info' style={{marginTop: '2.5rem'}}>
             Want to see the machines run? The studio is open to visitors
-            Tuesday through Saturday — or <Link to='/contact/'><strong>book a consultation</strong></Link> and
-            we'll walk your project through the shop floor.
+            Tuesday through Saturday, or <Link to='/contact/'><strong>start a custom project</strong></Link> and
+            we'll walk your idea through the shop floor.
           </div>
         </div>
       </section>

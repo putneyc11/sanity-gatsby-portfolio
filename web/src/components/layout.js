@@ -89,7 +89,7 @@ export default function Layout ({children}) {
             <p style={{fontSize: '0.92rem'}}>
               1427 Sawyer Avenue<br />
               Portland, OR 97211<br />
-              Tue–Sat, 9am–5pm<br />
+              Tue-Sat, 9am-5pm<br />
               (503) 555-0147<br />
               hello@luminaryfusionstudios.com
             </p>
