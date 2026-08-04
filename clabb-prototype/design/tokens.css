@@ -1,0 +1,151 @@
+/* ============================================================
+   CLABB — DESIGN TOKENS
+   Canonical source for the pine / marigold / clay system.
+
+   NOTE: reconcile these values against clabb-prototype's
+   original tokens when that branch is available. Hex values
+   here were derived from the palette names, not read from
+   the prototype source.
+   ============================================================ */
+
+:root {
+  /* ---- PINE — primary. Deep, grounded, the studio at dusk. ---- */
+  --pine-950: #101B15;
+  --pine-900: #16241C;
+  --pine-800: #1D3126;
+  --pine-700: #274434;
+  --pine-600: #33573F;
+  --pine-500: #4A7358;
+  --pine-400: #6B9179;
+  --pine-300: #8FAE99;
+  --pine-200: #B8CDBF;
+  --pine-100: #DCE7DF;
+
+  /* ---- MARIGOLD — accent. Warmth, invitation, the single CTA. ---- */
+  --marigold-700: #A56C10;
+  --marigold-600: #C8871A;
+  --marigold-500: #E0A22B;
+  --marigold-400: #F0B94A;
+  --marigold-300: #F5CC75;
+  --marigold-200: #F7D98F;
+  --marigold-100: #FBEDC9;
+
+  /* ---- CLAY — secondary. Material, hands, the made thing. ---- */
+  --clay-700: #8A4232;
+  --clay-600: #A65442;
+  --clay-500: #C26B52;
+  --clay-400: #D68A6E;
+  --clay-300: #E3A88F;
+  --clay-200: #EFC4B2;
+  --clay-100: #F7E2D8;
+
+  /* ---- NEUTRALS — warm paper, never cold grey. ---- */
+  --bone-50:  #FBF8F2;
+  --bone-100: #F6F1E8;
+  --bone-200: #EDE5D8;
+  --bone-300: #DED4C4;
+  --ink-900:  #1A1714;
+  --ink-700:  #3B342C;
+  --ink-500:  #6E6154;
+  /* ink-400 is the lightest text tone in the system. It carries tab labels and
+     all mono metadata at 10–12px, so it must clear 4.5:1 on bone — #8C7F70 was
+     3.47:1 and failed. Do not lighten it. */
+  --ink-400:  #786B5C;
+
+  /* ---- SEMANTIC ---- */
+  --surface:          var(--bone-100);
+  --surface-raised:   var(--bone-50);
+  --surface-inverse:  var(--pine-900);
+  --text-primary:     var(--ink-900);
+  --text-secondary:   var(--ink-500);
+  --text-on-dark:     var(--bone-100);
+  --text-on-dark-dim: var(--pine-200);
+  --accent:           var(--marigold-500);
+  --accent-press:     var(--marigold-600);
+  --hairline:         rgba(26, 23, 20, 0.09);
+  --hairline-dark:    rgba(246, 241, 232, 0.14);
+
+  /* ---- TYPE ---- */
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino,
+                  'Book Antiqua', Georgia, serif;
+  --font-ui: -apple-system, BlinkMacSystemFont, 'SF Pro Text',
+             'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'SF Mono', ui-monospace, Menlo, 'Roboto Mono', monospace;
+
+  /* Display sizes are serif; UI sizes are grotesque. Never mix roles. */
+  --t-display:  32px;  --t-display-lh:  36px;
+  --t-title:    22px;  --t-title-lh:    27px;
+  --t-heading:  17px;  --t-heading-lh:  22px;
+  --t-body:     15px;  --t-body-lh:     21px;
+  --t-small:    13px;  --t-small-lh:    18px;
+  --t-label:    10px;  --t-label-ls:  0.14em;
+
+  /* ---- SPACE — 4pt base, 8pt rhythm. ---- */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 20px; --s-6: 24px; --s-8: 32px; --s-10: 40px; --s-12: 48px;
+
+  /* ---- RADIUS ---- */
+  --r-sm: 8px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
+
+  /* ---- ELEVATION — warm-tinted, never neutral black. ---- */
+  --shadow-card: 0 1px 2px rgba(26,23,20,.04), 0 8px 24px rgba(26,23,20,.07);
+  --shadow-lift: 0 2px 4px rgba(26,23,20,.05), 0 18px 44px rgba(26,23,20,.13);
+  --shadow-bar:  0 -1px 0 var(--hairline), 0 -12px 32px rgba(26,23,20,.06);
+  /* CTA elevation is warm-neutral, never a halo in the accent colour —
+     a coloured glow under a marigold button reads as decoration, not lift. */
+  --shadow-cta:  0 2px 4px rgba(58,40,8,.10), 0 10px 22px -6px rgba(58,40,8,.22);
+}
+
+/* ============================================================
+   TEXTURE — the system is tactile. Every image surface carries
+   grain; flat fills are reserved for chrome and type.
+   ============================================================ */
+
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .34;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Material studies — stand in for commissioned photography.
+   Each is an abstract read of one craft discipline. */
+.mat-clay {
+  background:
+    radial-gradient(120% 90% at 22% 18%, #E9A582 0%, rgba(233,165,130,0) 58%),
+    radial-gradient(90% 80% at 82% 78%, #8A4232 0%, rgba(138,66,50,0) 62%),
+    linear-gradient(152deg, #C77857 0%, #A65442 46%, #7C3B2C 100%);
+}
+.mat-pine {
+  background:
+    radial-gradient(110% 85% at 78% 14%, #4A7358 0%, rgba(74,115,88,0) 60%),
+    radial-gradient(100% 90% at 18% 86%, #101B15 0%, rgba(16,27,21,0) 64%),
+    linear-gradient(158deg, #33573F 0%, #1D3126 52%, #101B15 100%);
+}
+.mat-marigold {
+  background:
+    radial-gradient(115% 90% at 26% 22%, #F7D98F 0%, rgba(247,217,143,0) 56%),
+    radial-gradient(95% 85% at 80% 82%, #A56C10 0%, rgba(165,108,16,0) 60%),
+    linear-gradient(148deg, #F0B94A 0%, #C8871A 54%, #8A5B0E 100%);
+}
+.mat-textile {
+  background:
+    repeating-linear-gradient(46deg, rgba(251,248,242,.10) 0 2px, rgba(0,0,0,0) 2px 7px),
+    repeating-linear-gradient(-44deg, rgba(16,27,21,.16) 0 2px, rgba(0,0,0,0) 2px 7px),
+    linear-gradient(150deg, #C26B52 0%, #A6564A 44%, #4A3B3A 100%);
+}
+.mat-wood {
+  background:
+    repeating-linear-gradient(97deg, rgba(26,23,20,.16) 0 1px, rgba(0,0,0,0) 1px 9px),
+    repeating-linear-gradient(93deg, rgba(251,248,242,.07) 0 1px, rgba(0,0,0,0) 1px 14px),
+    linear-gradient(160deg, #B07A4E 0%, #8A5A38 50%, #5A3A24 100%);
+}
+.mat-ink {
+  background:
+    radial-gradient(100% 80% at 30% 26%, #6B9179 0%, rgba(107,145,121,0) 55%),
+    radial-gradient(90% 90% at 74% 76%, #1A1714 0%, rgba(26,23,20,0) 62%),
+    linear-gradient(140deg, #274434 0%, #1A1714 100%);
+}

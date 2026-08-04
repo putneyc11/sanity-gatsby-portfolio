@@ -47,11 +47,25 @@ styles) · Messages list · Profile with mentoring settings.
   system sans (`--sans`) for UI text; uppercase letterspaced eyebrows.
 - Photos are placeholder craft-colored tiles (prototype is fully offline).
 
+## 2026-08-04 session
+
+- Full visual redesign of `index.html` via /impeccable: category-standard
+  canon at the Airbnb Experiences × ClassPass × Sweatpals bar (user-chosen
+  over a rolled alternative). All flows kept working; layered craft-scene
+  tiles, drawn SVG icon set, social-proof stacks, serif prices, sticky CTA
+  bars. System recorded in repo-root `DESIGN.md`; product truth in
+  repo-root `PRODUCT.md`.
+- Brand kit added under `brand/` (board + PNG + README with a token
+  reconciliation note); extended tokens under `design/tokens.css`.
+- Deep links for demos: `#discover #mentors #create #messages #profile
+  #detail #pay #mentor`.
+
 ## Likely next steps
 
-- Replace placeholder tiles with generated imagery (brand/app screens).
-- A brand kit / visual identity board for Clabb.
-- Higher-fidelity or multi-screen visual concepts of key screens.
+- Replace authored tile scenes with real photography when online assets
+  are allowed.
+- Reconcile the brand board's ramps to the app tokens (see
+  `brand/README.md`).
 - Chat threads, host dashboard for studios, notifications.
 - Porting the prototype to a real app framework (React Native/Expo).
 
