@@ -30,12 +30,26 @@ the top of `<body>` in the artifact.
 Discipline: marigold never appears on an action; clay never appears on a
 rating. One saturated surface per screen — the craft media tile.
 
+**Evening chrome (2026-08 redesign):** the status bar and screen headers
+sit on a deep pine band — `--chrome-1:#1B3B2F` → `--chrome-2:#122419`,
+text `--on-chrome:#F2EFE6` — extending the accepted evening-pine welcome
+into the whole app's chrome. Content below stays on porcelain daylight;
+Discover's search pill floats white on the band. Chips on chrome use
+`rgba(242,239,230,.14)` fills, never pine-soft.
+
 ## Type
 
-- `--serif` (Iowan Old Style / Palatino stack): wordmark, screen titles,
-  section heads, stat numbers, **every price and total**.
+- `--serif` = **Calistoga** (latin subset embedded as base64 woff2 so the
+  prototype stays offline; single 400 weight — every display role sets
+  `font-weight:400` explicitly, never synthetic bold): wordmark, screen
+  titles, section heads, stat numbers, **every price and total**.
+  Display roles run ~2px smaller than the former Iowan sizes and carry
+  zero letter-spacing (Calistoga needs no negative tracking).
+- Taglines ("creative collaboration feeds the soul") keep the Iowan /
+  Palatino stack for **true italics** — Calistoga has none; synthetic
+  oblique is banned.
 - `--sans` (system stack): all UI text. Weights 600–750 for emphasis;
-  tabular numerals on times, totals, and card numbers.
+  tabular numerals on times, totals, card numbers, seat counts, ratings.
 - No eyebrow/kicker labels above headings anywhere. Form labels and
   sheet sub-lines are the only small-bold text.
 
