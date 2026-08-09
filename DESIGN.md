@@ -1,107 +1,88 @@
 # Clabb — Design System
 
 Recorded from the built world in `clabb-prototype/index.html` after the
-2026-08-04 redesign. Ground truth is the code; this file describes it.
+2026-08-09 "Midnight Studio" restyle (user-directed full visual redesign
+via /high-end-visual-design: new palette, bold modern type, refined icons,
+full signup flow). Ground truth is the code; this file describes it.
 
 ## Direction
 
-Category standard, played straight — the warm consumer booking-app canon at
-the Airbnb Experiences × ClassPass × Sweatpals bar. Chosen by the user over
-a rolled "pegboard shadow-board" direction (seed key `f1ae72da`). No irony,
-no smuggled quirk. The full direction contract lives as the HTML comment at
-the top of `<body>` in the artifact.
+Ethereal-glass consumer booking app: OLED-black ground with iris/ember
+mesh glow, hairline glass surfaces, floating island tab bar, double-bezel
+cards, nested-icon CTAs. Structure and flows remain the category-standard
+booking canon from the 2026-08-04 redesign.
 
 ## Color
 
 | Token | Value | Role |
 |---|---|---|
-| `--pine` | `#22574A` | Primary actions, active tabs, focus |
-| `--pine-deep` | `#1A443A` | Pressed state |
-| `--pine-soft` | `#E3ECE7` | Soft chips, icon wells, selected fills |
-| `--marigold` | `#E8A33D` | **Ratings/highlights only** (stars, rating bars) |
-| `--clay` | `#C4643B` | **Money only** (paid prices, budgets, unread dots) |
-| `--clay-deep` / `--clay-soft` | `#8F4527` / `#F7E4D6` | Paid text on tint / paid chip fill |
-| `--porcelain` | `#F6F4EF` | App ground |
-| `--paper` | `#FFFFFF` | Cards, bars, sheets |
-| `--ink` / `--ink-soft` / `--muted` | `#24211B` / `#443F36` / `#6E675C` | Text ramp |
-| `--line` | `#E6E1D7` | Hairlines |
-| `--c-*` / `--c-*-d` | per craft | Craft hue pairs for media tiles |
+| `--ground` | `#0B0C10` | App ground (OLED black, blue cast) |
+| `--surface` / `--surface-2` | `#14161C` / `#101218` | Sheets, inputs |
+| `--glass` / `--glass-2` | `white 5% / 8%` | Cards, chips, wells |
+| `--hairline` / `--hairline-2` | `white 9% / 14%` | All borders |
+| `--ink` / `--ink-soft` / `--muted` / `--faint` | `#F5F6F8 / #C9CDD6 / #A7ADBB / #7E8494` | Text ramp |
+| `--iris` / `--iris-deep` | `#8B8BF4 / #5B5BD6` | **The action color**: buttons, active tabs, FAB, links, focus |
+| `--ember` | `#F2A85C` | **The value color**: prices, ratings, budgets, seat scarcity |
+| `--good` | `#63D6A4` | Free pricing |
+| `--c-*` / `--c-*-d` | per craft | Duotone tile pairs (deepened for dark ground) |
 
-Discipline: marigold never appears on an action; clay never appears on a
-rating. One saturated surface per screen — the craft media tile.
-
-**Evening chrome (2026-08 redesign):** the status bar and screen headers
-sit on a deep pine band — `--chrome-1:#1B3B2F` → `--chrome-2:#122419`,
-text `--on-chrome:#F2EFE6` — extending the accepted evening-pine welcome
-into the whole app's chrome. Content below stays on porcelain daylight;
-Discover's search pill floats white on the band. Chips on chrome use
-`rgba(242,239,230,.14)` fills, never pine-soft.
+Discipline: iris acts, ember values — never swapped. Two accents total;
+everything else is glass and hairlines. Craft tiles are the only
+polychrome moments.
 
 ## Type
 
-- `--serif` = **Calistoga** (latin subset embedded as base64 woff2 so the
-  prototype stays offline; single 400 weight — every display role sets
-  `font-weight:400` explicitly, never synthetic bold): wordmark, screen
-  titles, section heads, stat numbers, **every price and total**.
-  Display roles run ~2px smaller than the former Iowan sizes and carry
-  zero letter-spacing (Calistoga needs no negative tracking).
-- Taglines ("creative collaboration feeds the soul") keep the Iowan /
-  Palatino stack for **true italics** — Calistoga has none; synthetic
-  oblique is banned.
-- `--sans` (system stack): all UI text. Weights 600–750 for emphasis;
-  tabular numerals on times, totals, card numbers, seat counts, ratings.
-- No eyebrow/kicker labels above headings anywhere. Form labels and
-  sheet sub-lines are the only small-bold text.
+- Display: **Clash Display 600/700** (embedded woff2, offline-safe) —
+  wordmark, screen titles, card titles, stats, prices, sheet heads.
+  Tight tracking (-.005 to -.02em), never below 600.
+- UI: **Plus Jakarta Sans** variable 400–800 (embedded). Flagged by the
+  mechanical detector as an overused face; kept deliberately — the
+  invoked skill names it approved, and Clash Display carries identity.
+- Tabular numerals on all data (times, totals, counts, ratings).
+- Eyebrow pills (uppercase, .2em+ tracking) allowed in this world —
+  welcome hero, kind tags.
 
-## Surfaces & elevation
+## Surfaces & components
 
-- Cards: `--paper`, radius 16–18, `--shadow-card` (warm-neutral, offset +
-  blur — never colored glows).
-- Sheets: porcelain, radius 26 top, grabber, `up` rise animation.
-- Sticky CTA bars: white, radius 20 top, `--shadow-bar`, `z-index:10`.
-- Media tiles: layered scenes — duo-hue craft gradient (128deg), two
-  rotated watermark line-drawings of the craft glyph, radial
-  highlight/vignette, SVG-noise grain overlay. Never a centered icon in a
-  colored box.
+- **Double-bezel cards**: outer glass shell (`--glass`, hairline, r24,
+  p6) around inner media tile (r18) — machined-hardware nesting.
+- **Floating island tab bar**: detached pill, `rgba(18,20,26,.78)` +
+  22px blur (fixed element — blur budget respected), iris FAB with glow.
+- **Nested-icon CTAs**: primary buttons are iris gradient pills; trailing
+  arrows sit inside their own `white/16` circle (`.btnic`).
+- Sheets: `--surface`, r28 top, hairline top edge, cover the island
+  (screenhold must NOT create a stacking context — no z-index on it).
+- Sticky detail CTA: blurred glass bar, 88px bottom padding clears island.
+- Icons: single hand-drawn SVG set, 24-grid, **1.5 stroke** (light,
+  precise), round caps; fills only for stars and brand marks.
 
-## Components
+## Onboarding / auth
 
-- **Event card**: tile (168px) with kind pill + spots pill (white, clay
-  dot) + host avatar badge overlapping the body seam; title row with
-  marigold star rating; two meta lines; serif price + note.
-- **Ask card**: deliberately a different object — compact row, 58px craft
-  thumb, "Project ask" kicker in clay, budget tag top-right. The four
-  content kinds must be tellable apart without reading (product principle).
-- **Segmented control**: recessed track `#EDE9E0`, white raised active.
-- **Chips**: pill, white/hairline; active = solid pine.
-- **Buttons**: `.btn` pine pill radius 14; `.done` state = pine-soft with
-  drawn check; ghost = white/pine border. Scale-down press transitions.
-- **Icons**: single stroke-drawn SVG set (`ICONS`/`GLYPHS`), stroke 1.7–2.
-  No emoji, no unicode glyphs standing in for icons (stars, checks, and
-  chevrons are all drawn paths).
-- **Avatars**: initials on craft hue with radial sheen; `avstack` for
-  social proof ("N going · N spots left").
+Welcome (glass mosaic w/ rotations, eyebrow, Clash wordmark) → auth
+(Continue with Apple / Google / Facebook + email; sign-in variant via
+`authMode`) → email form (name/email/password + Show toggle) → interests
+→ mentoring. Social/email auth are demo stubs (toast + advance); brand
+marks are inline SVG. Steps: `0 → 'auth' → 'email' → 1 → 2`.
 
 ## Motion
 
-One system: screens slide in 260ms `cubic-bezier(.2,.8,.2,1)`; sheets rise;
-success check draws its stroke once. Press states scale 0.94–0.985.
+One system: `cubic-bezier(0.32,0.72,0,1)` everywhere; screens rise 18px
+over 500ms; sheets rise 56px; welcome staggers its children (riseup);
+press states scale .975–.98; success check draws once.
 `prefers-reduced-motion` kills all of it.
 
 ## Known constraints
 
-- Prototype is offline and dependency-free: media tiles are authored
-  CSS/SVG scenes standing in for photography. In production these slots are
-  photographic (Airbnb-class art direction) and the tile grammar (kind pill,
-  spots pill, host badge) transfers unchanged.
-- Deep links: `#discover #mentors #create #messages #profile #detail #pay
-  #mentor` boot past onboarding for tooling and demos.
+- Single offline file: fonts embedded as base64 (Clash 600/700 +
+  PJS variable ≈ 57KB); tiles are authored CSS/SVG scenes standing in
+  for photography.
+- Deep links: `#discover #mentors #create #messages #profile #detail
+  #pay #mentor`.
 
-## Brand kit (sibling deliverable)
+## Prior worlds
 
-`clabb-prototype/brand/` holds the identity board (vessel-C mark, tagline
-board, ramps). It was authored as a standalone identity concept with its own
-extended dusk-toned ramps and a "marigold = the one action" rule that
-**diverges from the app system recorded here** (app: marigold = ratings,
-clay = money, pine `#22574A`). Treat the app system as authoritative for
-product UI; reconcile the board's ramps before using it as a spec.
+The 2026-08-04 "studio daylight" system (pine/marigold/clay, porcelain,
+Palatino-class serif) and its evening-chrome variant are superseded by
+this restyle at the user's direction. The brand kit under
+`clabb-prototype/brand/` still reflects the old palette — treat as
+historical until rebuilt.
