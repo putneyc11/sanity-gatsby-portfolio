@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gojiberry — AI Sales Outreach</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍒</text></svg>">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">🍒</span>
+      <span class="brand-name">Gojiberry</span>
+      <span class="brand-tag">AI sales outreach</span>
+    </div>
+    <nav class="tabs">
+      <button class="tab active" data-tab="leads">Leads</button>
+      <button class="tab" data-tab="setup">Business setup</button>
+    </nav>
+    <div id="key-status" class="key-status" hidden>⚠ No API key — generation disabled</div>
+  </header>
+
+  <main>
+    <!-- ============ LEADS TAB ============ -->
+    <section id="tab-leads" class="tab-panel">
+      <div class="columns">
+        <div class="col col-leads">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Leads</h2>
+              <div class="panel-actions">
+                <label class="btn btn-ghost" for="csv-input">Import CSV</label>
+                <input type="file" id="csv-input" accept=".csv,text/csv" hidden>
+                <button class="btn btn-ghost" id="btn-toggle-add">+ Add lead</button>
+              </div>
+            </div>
+
+            <form id="add-lead-form" class="add-lead" hidden>
+              <div class="grid-2">
+                <input name="name" placeholder="Contact name *" required>
+                <input name="title" placeholder="Job title">
+                <input name="company" placeholder="Company">
+                <input name="email" placeholder="Email">
+                <input name="industry" placeholder="Industry">
+                <input name="website" placeholder="Website">
+              </div>
+              <textarea name="notes" rows="2" placeholder="Notes / context — recent news, pain points, how you found them…"></textarea>
+              <div class="form-row">
+                <button class="btn btn-primary" type="submit">Save lead</button>
+              </div>
+            </form>
+
+            <ul id="lead-list" class="lead-list"></ul>
+            <p id="lead-empty" class="empty" hidden>
+              No leads yet. Add one manually or import a CSV with columns like
+              <code>name, title, company, email, industry, website, notes</code>.
+            </p>
+          </div>
+        </div>
+
+        <div class="col col-compose">
+          <div class="panel">
+            <div class="panel-head">
+              <h2 id="compose-title">Write outreach</h2>
+            </div>
+            <div id="compose-empty" class="empty">Select a lead to generate an email.</div>
+            <div id="compose" hidden>
+              <div class="compose-lead" id="compose-lead-summary"></div>
+              <div class="compose-controls">
+                <label>Email type
+                  <select id="gen-type">
+                    <option value="cold">Cold email (first touch)</option>
+                    <option value="followup">Follow-up (no reply)</option>
+                    <option value="breakup">Break-up email</option>
+                    <option value="sequence">Full 3-email sequence</option>
+                  </select>
+                </label>
+                <label>Tone override
+                  <input id="gen-tone" placeholder="e.g. casual, formal, playful (optional)">
+                </label>
+              </div>
+              <label class="stacked">Extra instructions
+                <input id="gen-instructions" placeholder="e.g. mention their recent funding round (optional)">
+              </label>
+              <div class="form-row">
+                <button class="btn btn-primary" id="btn-generate">Generate with AI</button>
+                <button class="btn btn-ghost" id="btn-copy" hidden>Copy</button>
+                <span id="gen-status" class="gen-status"></span>
+              </div>
+              <pre id="output" class="output" hidden></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SETUP TAB ============ -->
+    <section id="tab-setup" class="tab-panel" hidden>
+      <div class="panel panel-narrow">
+        <div class="panel-head"><h2>Business setup</h2></div>
+        <p class="hint">Gojiberry uses this profile to personalize every email. The more specific, the better the output.</p>
+        <form id="profile-form">
+          <div class="grid-2">
+            <label>Business name<input name="businessName" placeholder="Acme Studio"></label>
+            <label>Your name (sender)<input name="senderName" placeholder="Corey Putney"></label>
+            <label>Your role<input name="senderRole" placeholder="Founder"></label>
+            <label>Default tone<input name="tone" placeholder="friendly and direct"></label>
+          </div>
+          <label class="stacked">What you sell
+            <textarea name="whatYouSell" rows="2" placeholder="Custom portfolio websites and branding for freelancers and small studios"></textarea>
+          </label>
+          <label class="stacked">Target customer
+            <textarea name="targetCustomer" rows="2" placeholder="Freelance designers and small creative agencies without an in-house web team"></textarea>
+          </label>
+          <label class="stacked">Value proposition
+            <textarea name="valueProp" rows="2" placeholder="A polished site live in two weeks that wins higher-paying clients"></textarea>
+          </label>
+          <label class="stacked">Proof points
+            <textarea name="proofPoints" rows="2" placeholder="30+ sites shipped; clients report 2x more inbound inquiries"></textarea>
+          </label>
+          <label class="stacked">Call to action
+            <textarea name="callToAction" rows="2" placeholder="Book a free 15-minute intro call"></textarea>
+          </label>
+          <div class="form-row">
+            <button class="btn btn-primary" type="submit">Save profile</button>
+            <span id="profile-status" class="gen-status"></span>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "gojiberry",
+  "version": "1.0.0",
+  "description": "Gojiberry — AI sales outreach tool. Manage leads and generate personalized outreach emails with Claude.",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.116.0"
+  }
+}
